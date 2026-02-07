@@ -1,6 +1,6 @@
 # mrcloudchase-blog
 
-Blog content for [mrcloudchase.github.io](https://mrcloudchase.github.io).
+Blog content for [cdovey.dev](https://cdovey.dev).
 
 ## Structure
 
