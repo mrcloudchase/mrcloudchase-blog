@@ -9,9 +9,9 @@ draft: false
 
 ## Introduction
 
-When you type "The capital of France is" into an LLM and it responds "Paris", what actually happened? Not at the API level - at the tensor level. What math ran, what shapes flowed where, and how did a stack of matrix multiplications produce a coherent English word?
+When I was building [nanollama](/blog/how-llm-inference-engines-work/), I kept running into bugs where the tensor shapes were wrong at some layer and I had to trace the entire forward pass by hand to find the problem. That process - tracking exact dimensions through every operation - turned out to be the best way to understand what a transformer actually does.
 
-This post follows a single prompt through every operation inside a decoder-only transformer. We'll use concrete tensor dimensions from a real model architecture (1.5B parameters, 22 layers, 32 attention heads) so you can see the exact shapes at each step. No hand-waving, no "and then magic happens" - every layer, every reshape, every multiply.
+So here's that trace, written out as a post. We'll follow the prompt "The capital of France is" through every single operation inside a decoder-only transformer, using concrete dimensions from a real 1.5B parameter model. No hand-waving, no "and then magic happens." Every layer, every reshape, every multiply, with the exact tensor shapes at each step.
 
 Here's the full journey:
 
@@ -577,7 +577,7 @@ The bulk of parameters (~96%) are in the per-layer weight matrices, with the att
 
 ## What Each Layer Contributes
 
-A natural question: what does each of the 22 layers actually *do*? Research on LLM interpretability suggests a rough division:
+A natural question: what does each of the 22 layers actually *do*? This is where understanding the architecture pays off. Research on LLM interpretability, plus my own experience tracing activations in nanollama, suggests a rough division:
 
 **Layers 1–3: Token-level features.** The model identifies basic properties - is this a noun, a verb, a punctuation mark? Is it capitalized? What language is it?
 
@@ -593,7 +593,7 @@ The residual stream carries all of this forward. Information from layer 3 ("Fran
 
 ## Key Takeaways
 
-**An LLM is a giant lookup table followed by a cascade of matrix multiplications.** Embedding is a lookup. Attention is matrix multiply + softmax + matrix multiply. FFN is matrix multiply + activation + matrix multiply. That's it - repeated 22 times with residual connections.
+**An LLM is simpler than it looks.** Once you strip away the jargon, it's an embedding lookup followed by a cascade of matrix multiplications. Attention is matmul + softmax + matmul. FFN is matmul + activation + matmul. Repeated 22 times with residual connections. The complexity is in the *scale* and *training*, not in the forward pass itself.
 
 **The model never "understands" text.** It operates on vectors - 2,048-dimensional points in a learned space. The fact that "Paris" emerges as the prediction is because the training process arranged the weight matrices such that this specific cascade of multiplications, applied to this specific input, produces a high score for token 8756.
 
