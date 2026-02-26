@@ -1,9 +1,9 @@
 ---
-title: "Prompt Injection Explained: Direct vs. Indirect (With Examples)"
+title: "Prompt Injection: Direct vs. Indirect"
 date: "2026-02-28"
 excerpt: "Prompt injection is the most critical vulnerability in LLM-powered applications. Here's how direct and indirect injection work, why they're hard to defend against, and what you can do about it."
 author: "Chase Dovey"
-tags: ["AI", "Security", "LLM", "Prompt Injection"]
+tags: ["AI", "Security"]
 draft: false
 ---
 

@@ -1,9 +1,9 @@
 ---
-title: "How LLM Inference Engines Work: Building One from Scratch in PyTorch"
+title: "How LLM Inference Engines Work"
 date: "2026-02-26"
 excerpt: "A deep dive into building a complete LLM inference engine - from transformer math to OpenAI-compatible API - using nanollama, an educational implementation in ~1400 lines of Python."
 author: "Chase Dovey"
-tags: ["AI", "LLM", "Python", "PyTorch", "Inference"]
+tags: ["AI", "Python"]
 draft: false
 ---
 
