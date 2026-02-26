@@ -1,0 +1,467 @@
+---
+title: "What Is Model Context Protocol (MCP)"
+date: "2026-03-04"
+excerpt: "MCP is the standard that lets AI agents use external tools. Here's how the protocol works, what the message flow looks like, and how to build a web search MCP server from scratch."
+author: "Chase Dovey"
+tags: ["AI", "Architecture"]
+draft: false
+---
+
+## Introduction
+
+If you've used Claude Desktop with a file system tool, or Cursor with a database connection, you've used MCP without knowing it. **Model Context Protocol** is an open standard that lets AI applications connect to external tools and data sources through a common interface. It's the reason a single AI host can talk to a web search API, a database, a browser, and a code execution sandbox - all through the same protocol.
+
+I think of MCP as the **USB-C of AI tooling**. Before USB-C, every device had its own connector. Before MCP, every AI tool integration was a custom implementation - different APIs, different auth flows, different data formats. MCP standardizes the connector so that any compliant host can use any compliant server, and any server can work with any host.
+
+This post explains what MCP is, how the protocol works at the message level, and walks through building a working web search/fetch MCP server that an agent can use.
+
+## The Architecture
+
+MCP uses a **host-client-server** architecture with clear separation of concerns:
+
+```mermaid
+graph TD
+    subgraph "Host (e.g. Claude Desktop, Cursor, VS Code)"
+        H[Host Application]
+        C1[MCP Client 1]
+        C2[MCP Client 2]
+        C3[MCP Client 3]
+        H --> C1
+        H --> C2
+        H --> C3
+    end
+
+    C1 <-->|JSON-RPC 2.0| S1["MCP Server: Web Search"]
+    C2 <-->|JSON-RPC 2.0| S2["MCP Server: Database"]
+    C3 <-->|JSON-RPC 2.0| S3["MCP Server: File System"]
+```
+
+**Host** - The AI application the user interacts with. Claude Desktop, Cursor, VS Code with Copilot, or any custom agent. The host creates MCP client instances, manages permissions, and coordinates the AI model's access to tools.
+
+**Client** - A connector within the host that maintains a dedicated 1:1 connection to a single MCP server. Each client handles protocol negotiation, capability exchange, and message routing for its server. A host runs multiple clients simultaneously - one per connected server.
+
+**Server** - A lightweight process that exposes specific capabilities: tools, resources, or prompts. Each server is focused and independent - a web search server doesn't know about the database server. Servers can be local processes (communicating over stdio) or remote services (communicating over HTTP with Server-Sent Events).
+
+The key design principle is **separation of concerns**. The host handles AI model integration and user consent. The client handles protocol mechanics. The server handles the actual tool logic. No layer needs to understand the others' internals.
+
+## What Servers Expose
+
+MCP servers can expose three types of capabilities:
+
+### Tools
+
+Functions that the AI model can invoke. A web search tool, a file reader, a database query executor. Tools have a name, description, and a JSON Schema defining their input parameters. The model decides *when* to call a tool based on the user's request.
+
+```json
+{
+  "name": "web_search",
+  "description": "Search the web for a query and return results",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "The search query"
+      },
+      "count": {
+        "type": "number",
+        "description": "Number of results to return",
+        "default": 5
+      }
+    },
+    "required": ["query"]
+  }
+}
+```
+
+### Resources
+
+Data that the server makes available for the model's context - file contents, database records, API responses. Unlike tools (which the model calls), resources are typically read by the client to populate the model's context window. They're identified by URIs (e.g., `file:///path/to/doc.md` or `db://users/123`).
+
+### Prompts
+
+Templated messages or workflows that servers provide. Think of them as reusable prompt snippets - a code review template, a SQL query builder, a debugging checklist. The user or host can select a prompt, fill in parameters, and inject it into the conversation.
+
+## The Protocol: JSON-RPC 2.0
+
+All MCP communication uses **JSON-RPC 2.0** - the same framing protocol used by the Language Server Protocol (LSP). Three message types:
+
+**Requests** (expect a response):
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "web_search",
+    "arguments": { "query": "rust programming language", "count": 3 }
+  }
+}
+```
+
+**Responses** (reply to a request):
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "1. The Rust Programming Language - rust-lang.org\n2. Rust (programming language) - Wikipedia\n3. Learn Rust - rust-lang.org/learn"
+      }
+    ]
+  }
+}
+```
+
+**Notifications** (fire-and-forget, no `id` field):
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/initialized"
+}
+```
+
+The `id` field is what distinguishes requests from notifications. Requests have an `id` and expect a response with the same `id`. Notifications have no `id` and expect nothing back.
+
+## The Connection Lifecycle
+
+Every MCP connection follows a strict three-phase lifecycle:
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+
+    Note over C,S: Phase 1: Initialization
+    C->>S: initialize (capabilities, protocol version)
+    S->>C: initialize response (server capabilities)
+    C->>S: notifications/initialized
+
+    Note over C,S: Phase 2: Operation
+    C->>S: tools/list
+    S->>C: tool definitions
+    C->>S: tools/call (web_search, {query: "..."})
+    S->>C: tool result
+    S->>C: notifications/tools/list_changed
+    C->>S: tools/list
+    S->>C: updated tool definitions
+
+    Note over C,S: Phase 3: Shutdown
+    C->>S: close connection
+```
+
+### Phase 1: Initialization
+
+The client and server negotiate capabilities. This is mandatory before any tool calls:
+
+```json
+// Client -> Server: "Here's what I support"
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "roots": { "listChanged": true },
+      "sampling": {}
+    },
+    "clientInfo": {
+      "name": "my-ai-agent",
+      "version": "1.0.0"
+    }
+  }
+}
+
+// Server -> Client: "Here's what I provide"
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "tools": { "listChanged": true }
+    },
+    "serverInfo": {
+      "name": "web-tools-server",
+      "version": "1.0.0"
+    }
+  }
+}
+
+// Client -> Server: "Ready to go"
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/initialized"
+}
+```
+
+The capability exchange is important - it tells each side what the other supports. A server that declares `"tools": {}` can respond to `tools/list` and `tools/call`. A server that also declares `"resources": {}` can respond to `resources/list` and `resources/read`. The client only sends methods the server has declared support for.
+
+### Phase 2: Operation
+
+Normal message exchange. The client discovers tools, calls them, reads resources, and uses prompts. The server can send notifications (e.g., "my tool list changed") and log messages.
+
+### Phase 3: Shutdown
+
+Either side can close the connection. Well-behaved implementations send a close signal and wait for acknowledgment before terminating.
+
+## Transport: How Messages Move
+
+MCP supports two transport mechanisms:
+
+**stdio** - The server runs as a child process. The client writes JSON-RPC messages to the server's stdin and reads responses from stdout. This is the simplest transport and what most local MCP servers use. Claude Desktop, Cursor, and VS Code all launch MCP servers this way.
+
+**Streamable HTTP** - The server runs as an HTTP service. The client sends requests via POST and receives responses (and server-initiated messages) via Server-Sent Events. This supports remote servers, multiple concurrent clients, and session resumption.
+
+For local tools, stdio is the standard. The host launches the server process, pipes messages through stdin/stdout, and kills the process on shutdown. No networking, no ports, no authentication.
+
+## Building a Web Tools MCP Server
+
+Let's build a working MCP server that exposes two tools: `web_search` (search the web via Brave Search API) and `web_fetch` (fetch a URL and extract text). An AI agent can use these tools to research topics, verify facts, or summarize web pages.
+
+### Project Setup
+
+```bash
+mkdir mcp-web-tools && cd mcp-web-tools
+npm init -y
+npm install @modelcontextprotocol/sdk zod
+```
+
+### The Server
+
+```typescript
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const server = new McpServer({
+  name: "web-tools",
+  version: "1.0.0",
+});
+
+// Tool 1: Web Search via Brave Search API
+server.tool(
+  "web_search",
+  "Search the web and return results with titles, URLs, and snippets",
+  { query: z.string().describe("The search query"), count: z.number().default(5).describe("Number of results") },
+  async ({ query, count }) => {
+    const apiKey = process.env.BRAVE_API_KEY;
+    if (!apiKey) {
+      return { content: [{ type: "text", text: "Error: BRAVE_API_KEY not set" }] };
+    }
+
+    const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${count}`;
+    const res = await fetch(url, {
+      headers: { "X-Subscription-Token": apiKey, Accept: "application/json" },
+    });
+
+    if (!res.ok) {
+      return { content: [{ type: "text", text: `Search failed: ${res.status} ${res.statusText}` }] };
+    }
+
+    const data = await res.json();
+    const results = (data.web?.results ?? [])
+      .map((r: any, i: number) => `${i + 1}. ${r.title}\n   ${r.url}\n   ${r.description}`)
+      .join("\n\n");
+
+    return {
+      content: [{ type: "text", text: results || "No results found" }],
+    };
+  }
+);
+
+// Tool 2: Fetch a URL and extract text content
+server.tool(
+  "web_fetch",
+  "Fetch a URL and return its text content (HTML stripped)",
+  { url: z.string().url().describe("The URL to fetch") },
+  async ({ url }) => {
+    try {
+      const res = await fetch(url, {
+        headers: { "User-Agent": "MCP-WebTools/1.0" },
+        signal: AbortSignal.timeout(10_000),
+      });
+
+      if (!res.ok) {
+        return { content: [{ type: "text", text: `Fetch failed: ${res.status} ${res.statusText}` }] };
+      }
+
+      const contentType = res.headers.get("content-type") ?? "";
+      const raw = await res.text();
+
+      let text: string;
+      if (contentType.includes("text/html")) {
+        // Strip HTML tags, scripts, styles; decode entities
+        text = raw
+          .replace(/<script[\s\S]*?<\/script>/gi, "")
+          .replace(/<style[\s\S]*?<\/style>/gi, "")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/&nbsp;/g, " ")
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/\s+/g, " ")
+          .trim();
+      } else {
+        text = raw;
+      }
+
+      // Truncate to avoid overwhelming the context window
+      const maxLen = 50_000;
+      if (text.length > maxLen) {
+        text = text.slice(0, maxLen) + "\n\n[Truncated]";
+      }
+
+      return { content: [{ type: "text", text }] };
+    } catch (err) {
+      return {
+        content: [{ type: "text", text: `Fetch error: ${err instanceof Error ? err.message : String(err)}` }],
+      };
+    }
+  }
+);
+
+// Start the server on stdio
+const transport = new StdioServerTransport();
+await server.connect(transport);
+```
+
+### How It Works Under the Hood
+
+When a host like Claude Desktop launches this server, here's the actual message exchange:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Host as Claude Desktop
+    participant Client as MCP Client
+    participant Server as web-tools Server
+
+    User->>Host: "Search for the latest Rust release"
+    Host->>Client: Start server process
+    Client->>Server: initialize
+    Server->>Client: capabilities: {tools: {}}
+    Client->>Server: notifications/initialized
+    Client->>Server: tools/list
+    Server->>Client: [web_search, web_fetch]
+
+    Host->>Host: LLM decides to call web_search
+    Client->>Server: tools/call {name: "web_search", arguments: {query: "latest Rust release"}}
+    Server->>Server: fetch Brave Search API
+    Server->>Client: {content: [{type: "text", text: "1. Rust 1.84..."}]}
+
+    Host->>Host: LLM reads results, decides to fetch a URL
+    Client->>Server: tools/call {name: "web_fetch", arguments: {url: "https://blog.rust-lang.org/..."}}
+    Server->>Server: fetch URL, strip HTML
+    Server->>Client: {content: [{type: "text", text: "Announcing Rust 1.84..."}]}
+
+    Host->>Host: LLM synthesizes answer
+    Host->>User: "The latest Rust release is 1.84, announced on..."
+```
+
+The key insight: **the model decides which tools to call and when**. The host sends the tool definitions (names, descriptions, schemas) to the model as part of its context. The model generates a tool call as structured output. The host routes that call through the MCP client to the server, gets the result, feeds it back to the model, and the model continues generating.
+
+### Connecting to Claude Desktop
+
+Add the server to Claude Desktop's configuration at `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "web-tools": {
+      "command": "node",
+      "args": ["path/to/mcp-web-tools/server.js"],
+      "env": {
+        "BRAVE_API_KEY": "your-brave-api-key"
+      }
+    }
+  }
+}
+```
+
+Claude Desktop launches the server as a child process, connects via stdio, runs the initialization handshake, and discovers the `web_search` and `web_fetch` tools. From that point on, the model can use them in any conversation.
+
+### Connecting Programmatically
+
+You can also connect to MCP servers from your own code using the client SDK:
+
+```typescript
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+
+const transport = new StdioClientTransport({
+  command: "node",
+  args: ["path/to/server.js"],
+  env: { BRAVE_API_KEY: "your-key" },
+});
+
+const client = new Client({ name: "my-agent", version: "1.0.0" }, { capabilities: {} });
+await client.connect(transport);
+
+// Discover available tools
+const { tools } = await client.listTools();
+console.log("Available tools:", tools.map(t => t.name));
+
+// Call a tool
+const result = await client.callTool({
+  name: "web_search",
+  arguments: { query: "Model Context Protocol", count: 3 },
+});
+console.log("Results:", result.content);
+
+await client.close();
+```
+
+This is the pattern for building autonomous agents - your code acts as the host, creates an MCP client, connects to servers, and routes tool calls based on the model's output.
+
+## Why MCP Matters
+
+### Before MCP
+
+Every AI tool integration was bespoke:
+
+```
+Claude Desktop ─── custom plugin API ──── File System
+Cursor ─────────── custom extension API ── Database
+ChatGPT ────────── custom actions API ──── Web Search
+Your Agent ─────── custom code ─────────── Everything
+```
+
+Every host had its own plugin format. Every tool had to be reimplemented for each host. If you built a web search tool for Claude Desktop, you'd rebuild it from scratch for Cursor.
+
+### After MCP
+
+One protocol, universal interoperability:
+
+```
+Claude Desktop ─┐
+Cursor ─────────┤
+VS Code ────────┼── MCP ──┬── Web Search Server
+Your Agent ─────┤         ├── Database Server
+Any Host ───────┘         ├── File System Server
+                          └── Any Server
+```
+
+Build a server once, and it works with every MCP-compatible host. Build a host once, and it can use every MCP server. The ecosystem compounds - every new server benefits every existing host, and every new host benefits from every existing server.
+
+### The LSP Analogy
+
+MCP is explicitly modeled after the **Language Server Protocol**. Before LSP, every code editor reimplemented language support for every language - VS Code had its own TypeScript support, Sublime had its own, Vim had its own. LSP standardized the interface: one TypeScript language server works in every LSP-compatible editor.
+
+MCP does the same for AI tools. One web search server works in every MCP-compatible AI host. The economics are the same: an N editors x M languages problem becomes N + M.
+
+## Key Takeaways
+
+**MCP is a protocol, not a framework.** It defines the message format (JSON-RPC 2.0), the lifecycle (initialize, operate, shutdown), and the capability types (tools, resources, prompts). How you implement the server logic is entirely up to you.
+
+**Tools are the primary capability.** Resources and prompts matter, but tools are what give AI agents the ability to act in the world - search the web, read files, query databases, execute code. The tool definition (name + description + JSON Schema) is what the model sees; the implementation is what the server executes.
+
+**stdio is the default transport.** For local tools, the host launches the server as a child process and communicates through stdin/stdout. No networking, no ports, no authentication overhead. This makes MCP servers trivial to develop and test.
+
+**The model decides, the protocol routes.** The host sends tool definitions to the model. The model generates tool calls as structured output. The host routes those calls through MCP clients to servers. The results flow back to the model. MCP is the plumbing between "the model wants to search the web" and "here are the search results."
+
+**The ecosystem is the value.** A single MCP server is useful. A thousand MCP servers that all work with every AI host is transformative. MCP's value grows with adoption, just as LSP's value grew as more editors and language servers adopted it.
