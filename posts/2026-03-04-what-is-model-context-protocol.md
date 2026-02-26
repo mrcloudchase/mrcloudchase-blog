@@ -385,38 +385,123 @@ Add the server to Claude Desktop's configuration at `~/Library/Application Suppo
 
 Claude Desktop launches the server as a child process, connects via stdio, runs the initialization handshake, and discovers the `web_search` and `web_fetch` tools. From that point on, the model can use them in any conversation.
 
-### Connecting Programmatically
+### Connecting an Agent to MCP
 
-You can also connect to MCP servers from your own code using the client SDK:
+The examples above show the server and the config, but the interesting part is the **agent loop** - where the model decides which tools to call, your code routes those calls through MCP, and the results feed back into the model. Here's a complete minimal agent that does this:
 
 ```typescript
+import Anthropic from "@anthropic-ai/sdk";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
+// Step 1: Connect to the MCP server
 const transport = new StdioClientTransport({
   command: "node",
   args: ["path/to/server.js"],
   env: { BRAVE_API_KEY: "your-key" },
 });
+const mcpClient = new Client({ name: "my-agent", version: "1.0.0" }, { capabilities: {} });
+await mcpClient.connect(transport);
 
-const client = new Client({ name: "my-agent", version: "1.0.0" }, { capabilities: {} });
-await client.connect(transport);
+// Step 2: Discover tools and convert to Anthropic's tool format
+const { tools: mcpTools } = await mcpClient.listTools();
+const anthropicTools = mcpTools.map((tool) => ({
+  name: tool.name,
+  description: tool.description ?? "",
+  input_schema: tool.inputSchema,
+}));
 
-// Discover available tools
-const { tools } = await client.listTools();
-console.log("Available tools:", tools.map(t => t.name));
+// Step 3: The agent loop
+const anthropic = new Anthropic();
 
-// Call a tool
-const result = await client.callTool({
-  name: "web_search",
-  arguments: { query: "Model Context Protocol", count: 3 },
-});
-console.log("Results:", result.content);
+async function runAgent(userMessage: string): Promise<string> {
+  const messages: Anthropic.MessageParam[] = [
+    { role: "user", content: userMessage },
+  ];
 
-await client.close();
+  // Loop until the model stops calling tools
+  while (true) {
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-5-20250929",
+      max_tokens: 4096,
+      tools: anthropicTools,
+      messages,
+    });
+
+    // Collect text and tool use blocks from the response
+    const toolUseBlocks = response.content.filter((b) => b.type === "tool_use");
+
+    // If no tool calls, extract the final text and return
+    if (toolUseBlocks.length === 0) {
+      const textBlock = response.content.find((b) => b.type === "text");
+      return textBlock?.type === "text" ? textBlock.text : "";
+    }
+
+    // Add the assistant's response (with tool_use blocks) to history
+    messages.push({ role: "assistant", content: response.content });
+
+    // Execute each tool call through MCP and collect results
+    const toolResults: Anthropic.ToolResultBlockParam[] = [];
+    for (const toolUse of toolUseBlocks) {
+      if (toolUse.type !== "tool_use") continue;
+
+      console.log(`Calling tool: ${toolUse.name}(${JSON.stringify(toolUse.input)})`);
+
+      // Route the tool call through MCP
+      const result = await mcpClient.callTool({
+        name: toolUse.name,
+        arguments: toolUse.input as Record<string, unknown>,
+      });
+
+      const text = result.content
+        .filter((c): c is { type: "text"; text: string } => c.type === "text")
+        .map((c) => c.text)
+        .join("\n");
+
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: toolUse.id,
+        content: text,
+      });
+    }
+
+    // Feed tool results back to the model
+    messages.push({ role: "user", content: toolResults });
+    // Loop continues - model sees the results and either calls more tools or responds
+  }
+}
+
+// Run it
+const answer = await runAgent("What is the latest version of Rust? Give me details from the official blog.");
+console.log(answer);
+
+await mcpClient.close();
 ```
 
-This is the pattern for building autonomous agents - your code acts as the host, creates an MCP client, connects to servers, and routes tool calls based on the model's output.
+Here's what's happening in that loop:
+
+```mermaid
+graph TD
+    A[User: 'What is the latest Rust version?'] --> B[Send to model with tool definitions]
+    B --> C{Model response}
+    C -->|tool_use: web_search| D[Route call through MCP client]
+    D --> E[MCP server calls Brave API]
+    E --> F[Return results to model]
+    F --> C
+    C -->|tool_use: web_fetch| G[Route call through MCP client]
+    G --> H[MCP server fetches URL]
+    H --> I[Return page content to model]
+    I --> C
+    C -->|text: final answer| J[Return to user]
+```
+
+The three pieces fit together like this:
+
+1. **MCP server** exposes tools with names, descriptions, and schemas
+2. **MCP client** discovers those tools and converts them to the model's tool format
+3. **Agent loop** sends tools to the model, routes the model's tool calls through MCP, feeds results back, and repeats until the model produces a final text response
+
+The model never talks to MCP directly. Your agent code is the bridge - it translates between the model's tool-calling format and MCP's `tools/call` protocol. This is the same pattern that Claude Desktop, Cursor, and every other MCP host uses internally.
 
 ## Why MCP Matters
 
