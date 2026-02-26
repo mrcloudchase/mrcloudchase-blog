@@ -17,31 +17,31 @@ This post walks that path. We'll start with the mathematical model of a single n
 
 McCulloch and Pitts proposed the first mathematical model of a neuron in 1943. The idea: a neuron receives inputs, weights them, sums the result, and fires if the sum exceeds a threshold. In modern notation:
 
-\[
-y = f\left(\sum_{i=1}^{n} w_i x_i + b\right)
-\]
+```
+y = f(w1*x1 + w2*x2 + ... + wn*xn + b)
+```
 
 Where:
-- \(x_i\) are the inputs (signals from other neurons)
-- \(w_i\) are the weights (how much each input matters)
-- \(b\) is the bias (the threshold, shifted)
-- \(f\) is the activation function (the firing rule)
-- \(y\) is the output
+- `xi` are the inputs (signals from other neurons)
+- `wi` are the weights (how much each input matters)
+- `b` is the bias (the threshold, shifted)
+- `f` is the activation function (the firing rule)
+- `y` is the output
 
 This is a weighted sum followed by a nonlinear function. That's it. Everything in deep learning - every layer of every transformer - is a variation of this single equation.
 
-The original McCulloch-Pitts neuron used a step function for \(f\): output 1 if the sum exceeds the threshold, 0 otherwise. This models the all-or-nothing firing of biological neurons, but it creates a problem we'll see soon: the step function isn't differentiable, which makes learning impossible with calculus-based methods.
+The original McCulloch-Pitts neuron used a step function for `f`: output 1 if the sum exceeds the threshold, 0 otherwise. This models the all-or-nothing firing of biological neurons, but it creates a problem we'll see soon: the step function isn't differentiable, which makes learning impossible with calculus-based methods.
 
 ## The Perceptron (1958)
 
 Rosenblatt's perceptron took the artificial neuron and added a **learning rule**. Instead of manually choosing weights, the perceptron adjusts them based on errors:
 
-\[
-w_i \leftarrow w_i + \alpha \cdot (y_{\text{true}} - y_{\text{pred}}) \cdot x_i
-\]
+```
+wi ← wi + α * (y_true - y_pred) * xi
+```
 
-Where \(\alpha\) is the learning rate. The logic is intuitive:
-- If the prediction is correct, \(y_{\text{true}} - y_{\text{pred}} = 0\), no update
+Where `α` is the learning rate. The logic is intuitive:
+- If the prediction is correct, `y_true - y_pred = 0`, no update
 - If the prediction is too low, increase weights for active inputs
 - If the prediction is too high, decrease weights for active inputs
 
@@ -80,24 +80,22 @@ The solution to XOR is simple: use **multiple layers** of neurons. The first lay
 
 A 2-layer MLP for XOR:
 
-\[
-h = \sigma(W_1 x + b_1) \quad \text{(hidden layer)}
-\]
-\[
-y = \sigma(W_2 h + b_2) \quad \text{(output layer)}
-\]
+```
+h = σ(W1 * x + b1)     (hidden layer)
+y = σ(W2 * h + b2)     (output layer)
+```
 
-Where \(\sigma\) is the activation function and \(W_1, W_2\) are weight matrices. The hidden layer learns a nonlinear transformation that maps the inputs into a space where XOR is separable.
+Where `σ` is the activation function and `W1`, `W2` are weight matrices. The hidden layer learns a nonlinear transformation that maps the inputs into a space where XOR is separable.
 
-For XOR specifically, one hidden neuron can compute \(x_1 \text{ AND } x_2\) and another can compute \(x_1 \text{ OR } x_2\). The output layer then computes \(\text{OR} \text{ AND NOT } \text{AND}\), which is XOR.
+For XOR specifically, one hidden neuron can compute `x1 AND x2` and another can compute `x1 OR x2`. The output layer then computes `OR AND NOT AND`, which is XOR.
 
 ### Why Activation Functions Matter
 
-Without a nonlinear activation function, stacking layers is pointless. If every layer is just a linear transformation \(Wx + b\), then the composition of N layers is still a single linear transformation:
+Without a nonlinear activation function, stacking layers is pointless. If every layer is just a linear transformation `Wx + b`, then the composition of N layers is still a single linear transformation:
 
-\[
-W_N(W_{N-1}(\ldots W_1 x + b_1\ldots) + b_{N-1}) + b_N = W'x + b'
-\]
+```
+WN(WN-1(...W1*x + b1...) + bN-1) + bN = W'x + b'
+```
 
 No matter how many layers you stack, the network can only learn linear functions. The activation function is what gives depth its power - each layer can carve a new nonlinear boundary in the representation space.
 
@@ -105,21 +103,21 @@ No matter how many layers you stack, the network can only learn linear functions
 
 The choice of activation function has evolved over decades:
 
-**Sigmoid** \(\sigma(x) = \frac{1}{1 + e^{-x}}\)
+**Sigmoid:** `σ(x) = 1 / (1 + e^(-x))`
 
-The classic. Outputs between 0 and 1. Smooth, differentiable everywhere. Two problems: (1) it **saturates** - for large \(|x|\), the gradient approaches zero, killing learning in deep networks ("vanishing gradient problem"). (2) Outputs are not zero-centered, which slows convergence.
+The classic. Outputs between 0 and 1. Smooth, differentiable everywhere. Two problems: (1) it **saturates** - for large `|x|`, the gradient approaches zero, killing learning in deep networks ("vanishing gradient problem"). (2) Outputs are not zero-centered, which slows convergence.
 
-**Tanh** \(\tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}\)
+**Tanh:** `tanh(x) = (e^x - e^(-x)) / (e^x + e^(-x))`
 
 Zero-centered, outputs between -1 and 1. Still saturates.
 
-**ReLU** \(f(x) = \max(0, x)\)
+**ReLU:** `f(x) = max(0, x)`
 
 The breakthrough activation for deep learning. No saturation for positive inputs - the gradient is exactly 1, so gradients flow unchanged through layers. Much faster to compute (just a threshold). Downside: "dying ReLU" - neurons with negative inputs have zero gradient and never recover.
 
-**SiLU/Swish** \(f(x) = x \cdot \sigma(x)\)
+**SiLU/Swish:** `f(x) = x * σ(x)`
 
-Used in modern transformers (LLaMA, GPT, etc). Smooth like sigmoid but unbounded like ReLU. Allows small negative values through (unlike ReLU), which empirically helps training. The self-gating property (\(x\) multiplied by its own sigmoid) gives it adaptive behavior.
+Used in modern transformers (LLaMA, GPT, etc). Smooth like sigmoid but unbounded like ReLU. Allows small negative values through (unlike ReLU), which empirically helps training. The self-gating property (`x` multiplied by its own sigmoid) gives it adaptive behavior.
 
 ```
        |      SiLU         ReLU
@@ -150,33 +148,33 @@ The loss function measures the distance between prediction and truth.
 
 **Mean Squared Error** (regression):
 
-\[
-L = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2
-\]
+```
+L = (1/n) * Σ(yi - ŷi)²
+```
 
 **Cross-Entropy** (classification, and what LLMs use):
 
-\[
-L = -\sum_{i=1}^{C} y_i \log(\hat{y}_i)
-\]
+```
+L = -Σ yi * log(ŷi)
+```
 
-Where \(C\) is the number of classes (vocabulary size for LLMs), \(y_i\) is the true distribution (one-hot: 1 for the correct token, 0 elsewhere), and \(\hat{y}_i\) is the predicted probability.
+Where the sum is over all classes (vocabulary size for LLMs), `yi` is the true distribution (one-hot: 1 for the correct token, 0 elsewhere), and `ŷi` is the predicted probability.
 
 For next-token prediction, cross-entropy reduces to:
 
-\[
-L = -\log(\hat{y}_{\text{correct}})
-\]
+```
+L = -log(ŷ_correct)
+```
 
-If the model assigns probability 0.9 to the correct next token, the loss is \(-\log(0.9) = 0.105\). If it assigns 0.01, the loss is \(-\log(0.01) = 4.6\). The loss penalizes confident wrong predictions exponentially more than uncertain ones.
+If the model assigns probability 0.9 to the correct next token, the loss is `-log(0.9) = 0.105`. If it assigns 0.01, the loss is `-log(0.01) = 4.6`. The loss penalizes confident wrong predictions exponentially more than uncertain ones.
 
 ### The Chain Rule: Why Calculus Makes Learning Possible
 
-The key insight that makes neural networks trainable is the **chain rule** from calculus. If you have a composition of functions \(f(g(x))\), the derivative of the whole is the product of the derivatives of the parts:
+The key insight that makes neural networks trainable is the **chain rule** from calculus. If you have a composition of functions `f(g(x))`, the derivative of the whole is the product of the derivatives of the parts:
 
-\[
-\frac{d}{dx}f(g(x)) = f'(g(x)) \cdot g'(x)
-\]
+```
+d/dx f(g(x)) = f'(g(x)) * g'(x)
+```
 
 A neural network is a composition of functions - layer 1 feeds into layer 2 feeds into layer 3 feeds into the loss. The chain rule lets us compute how the loss changes with respect to **any** weight, no matter how deep in the network, by multiplying derivatives along the path from the loss back to that weight.
 
@@ -190,14 +188,12 @@ Rumelhart, Hinton, and Williams popularized backpropagation in 1986 (the idea ex
 
 Compute the output layer by layer:
 
-\[
-z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)} \quad \text{(linear combination)}
-\]
-\[
-a^{(l)} = f(z^{(l)}) \quad \text{(activation)}
-\]
+```
+z(l) = W(l) * a(l-1) + b(l)     (linear combination)
+a(l) = f(z(l))                    (activation)
+```
 
-Where \(a^{(0)} = x\) (the input), and the final \(a^{(L)}\) is the prediction.
+Where `a(0) = x` (the input), and the final `a(L)` is the prediction.
 
 ### Backward Pass
 
@@ -207,52 +203,51 @@ Starting from the loss, compute gradients layer by layer in reverse:
 
 For cross-entropy with softmax output:
 
-\[
-\delta^{(L)} = \hat{y} - y
-\]
+```
+δ(L) = ŷ - y
+```
 
 This is remarkably clean - the gradient of cross-entropy loss with respect to the softmax input (logits) is just the predicted distribution minus the true distribution.
 
 **Step 2: Propagate backward through each layer.**
 
-For layer \(l\), the error signal from the layer above:
+For layer `l`, the error signal from the layer above:
 
-\[
-\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \odot f'(z^{(l)})
-\]
+```
+δ(l) = W(l+1)ᵀ * δ(l+1) ⊙ f'(z(l))
+```
 
-Where \(\odot\) is element-wise multiplication and \(f'\) is the derivative of the activation function. This is the chain rule in action - we multiply by the transposed weight matrix (which "distributes" the error back to the previous layer's neurons) and by the local derivative of the activation.
+Where `⊙` is element-wise multiplication and `f'` is the derivative of the activation function. This is the chain rule in action - we multiply by the transposed weight matrix (which "distributes" the error back to the previous layer's neurons) and by the local derivative of the activation.
 
 **Step 3: Compute weight gradients.**
 
-\[
-\frac{\partial L}{\partial W^{(l)}} = \delta^{(l)} (a^{(l-1)})^T
-\]
-\[
-\frac{\partial L}{\partial b^{(l)}} = \delta^{(l)}
-\]
+```
+∂L/∂W(l) = δ(l) * a(l-1)ᵀ
+∂L/∂b(l) = δ(l)
+```
 
 **Step 4: Update weights.**
 
-\[
-W^{(l)} \leftarrow W^{(l)} - \alpha \frac{\partial L}{\partial W^{(l)}}
-\]
+```
+W(l) ← W(l) - α * ∂L/∂W(l)
+```
 
 ### Why Activation Derivatives Matter
 
-The backward pass multiplies by \(f'(z^{(l)})\) at every layer. This is why sigmoid caused problems in deep networks:
+The backward pass multiplies by `f'(z(l))` at every layer. This is why sigmoid caused problems in deep networks:
 
-\[
-\sigma'(x) = \sigma(x)(1 - \sigma(x))
-\]
+```
+σ'(x) = σ(x) * (1 - σ(x))
+```
 
-The maximum value of \(\sigma'\) is 0.25 (at \(x = 0\)). After 10 layers, the gradient is multiplied by at most \(0.25^{10} \approx 0.000001\). The gradient **vanishes** - early layers barely learn.
+The maximum value of `σ'` is 0.25 (at `x = 0`). After 10 layers, the gradient is multiplied by at most `0.25^10 ≈ 0.000001`. The gradient **vanishes** - early layers barely learn.
 
 ReLU fixes this:
 
-\[
-\text{ReLU}'(x) = \begin{cases} 1 & \text{if } x > 0 \\ 0 & \text{if } x < 0 \end{cases}
-\]
+```
+ReLU'(x) = 1   if x > 0
+            0   if x < 0
+```
 
 For positive inputs, the gradient is exactly 1 - it passes through unchanged regardless of depth. This is why ReLU enabled training networks with dozens or hundreds of layers.
 
@@ -260,19 +255,19 @@ For positive inputs, the gradient is exactly 1 - it passes through unchanged reg
 
 Backpropagation computes the gradients. **Gradient descent** uses them to update the weights:
 
-\[
-\theta \leftarrow \theta - \alpha \nabla_\theta L
-\]
+```
+θ ← θ - α * ∇θL
+```
 
-Move each parameter in the direction that decreases the loss, scaled by the learning rate \(\alpha\).
+Move each parameter in the direction that decreases the loss, scaled by the learning rate `α`.
 
 ### Stochastic Gradient Descent (SGD)
 
 Computing the loss over the entire dataset is expensive. **SGD** estimates the gradient from a small random batch (typically 32-512 examples):
 
-\[
-\theta \leftarrow \theta - \alpha \nabla_\theta L_{\text{batch}}
-\]
+```
+θ ← θ - α * ∇θL_batch
+```
 
 The estimate is noisy but unbiased - on average, it points in the right direction. The noise actually helps by preventing the optimizer from getting stuck in sharp local minima.
 
@@ -280,28 +275,23 @@ The estimate is noisy but unbiased - on average, it points in the right directio
 
 **Adam** (Kingma & Ba, 2014) maintains per-parameter running averages of the gradient and squared gradient:
 
-\[
-m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t \quad \text{(first moment: gradient momentum)}
-\]
-\[
-v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2 \quad \text{(second moment: gradient variance)}
-\]
-\[
-\hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t} \quad \text{(bias correction)}
-\]
-\[
-\theta_t = \theta_{t-1} - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
-\]
+```
+m_t = β1 * m_(t-1) + (1 - β1) * g_t          (first moment: gradient momentum)
+v_t = β2 * v_(t-1) + (1 - β2) * g_t²          (second moment: gradient variance)
+m̂_t = m_t / (1 - β1^t)                         (bias correction)
+v̂_t = v_t / (1 - β2^t)                         (bias correction)
+θ_t = θ_(t-1) - α * m̂_t / (√v̂_t + ε)         (update)
+```
 
-The intuition: parameters with consistently large gradients get larger updates (momentum), while parameters with high-variance gradients get smaller, more cautious updates (adaptive rate). The bias correction terms compensate for the fact that \(m\) and \(v\) are initialized to zero.
+The intuition: parameters with consistently large gradients get larger updates (momentum), while parameters with high-variance gradients get smaller, more cautious updates (adaptive rate). The bias correction terms compensate for the fact that `m` and `v` are initialized to zero.
 
 Modern LLMs use **AdamW**, which decouples weight decay from the adaptive learning rate:
 
-\[
-\theta_t = \theta_{t-1} - \alpha\left(\frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} + \lambda \theta_{t-1}\right)
-\]
+```
+θ_t = θ_(t-1) - α * (m̂_t / (√v̂_t + ε) + λ * θ_(t-1))
+```
 
-The \(\lambda \theta_{t-1}\) term shrinks weights toward zero (regularization), applied directly to the parameters rather than through the gradient. This prevents the adaptive scaling from interfering with regularization.
+The `λ * θ_(t-1)` term shrinks weights toward zero (regularization), applied directly to the parameters rather than through the gradient. This prevents the adaptive scaling from interfering with regularization.
 
 ## From MLPs to Sequence Models: The Context Problem
 
@@ -311,13 +301,13 @@ An MLP processes a fixed-size input and produces a fixed-size output. But langua
 
 RNNs process sequences one token at a time, maintaining a hidden state that carries information forward:
 
-\[
-h_t = f(W_h h_{t-1} + W_x x_t + b)
-\]
+```
+h_t = f(W_h * h_(t-1) + W_x * x_t + b)
+```
 
-At each time step \(t\), the hidden state \(h_t\) is a function of the previous hidden state \(h_{t-1}\) and the current input \(x_t\). This gives the network a "memory" of past inputs.
+At each time step `t`, the hidden state `h_t` is a function of the previous hidden state `h_(t-1)` and the current input `x_t`. This gives the network a "memory" of past inputs.
 
-The problem: the chain rule strikes again. During backpropagation through time (BPTT), gradients are multiplied by \(W_h\) at every time step. Over 100+ steps, the gradient either vanishes (if the largest eigenvalue of \(W_h\) is less than 1) or explodes (if it's greater than 1). Long-range dependencies - understanding that "bank" at position 100 relates to "river" at position 3 - are nearly impossible to learn.
+The problem: the chain rule strikes again. During backpropagation through time (BPTT), gradients are multiplied by `W_h` at every time step. Over 100+ steps, the gradient either vanishes (if the largest eigenvalue of `W_h` is less than 1) or explodes (if it's greater than 1). Long-range dependencies - understanding that "bank" at position 100 relates to "river" at position 3 - are nearly impossible to learn.
 
 **LSTMs** and **GRUs** partially solved this with gating mechanisms that control information flow, but they're still fundamentally sequential - you can't process position 100 until you've processed positions 1 through 99. This makes them slow and hard to parallelize.
 
@@ -327,30 +317,28 @@ The transformer (Vaswani et al., 2017) replaced recurrence with **attention** - 
 
 ### Scaled Dot-Product Attention
 
-The core attention operation takes three inputs - Queries (\(Q\)), Keys (\(K\)), and Values (\(V\)) - and produces a weighted combination of the values:
+The core attention operation takes three inputs - Queries (Q), Keys (K), and Values (V) - and produces a weighted combination of the values:
 
-\[
-\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V
-\]
+```
+Attention(Q, K, V) = softmax(Q * Kᵀ / √d_k) * V
+```
 
 The analogy I use: imagine a library. The **query** is what you're looking for ("information about France"). The **keys** are the labels on each book. The **values** are the contents of each book. Attention computes how well each key matches your query (dot product), normalizes the scores (softmax), and returns a weighted blend of the book contents.
 
-The \(\sqrt{d_k}\) scaling prevents the dot products from growing too large as the dimension increases. Without it, the softmax saturates - one position gets all the weight and the gradient vanishes.
+The `√d_k` scaling prevents the dot products from growing too large as the dimension increases. Without it, the softmax saturates - one position gets all the weight and the gradient vanishes.
 
-Mathematically, for two vectors of dimension \(d_k\), the expected value of their dot product is \(d_k\) (assuming unit variance entries). Dividing by \(\sqrt{d_k}\) normalizes the variance back to 1, keeping the softmax in its sensitive region.
+Mathematically, for two vectors of dimension `d_k`, the expected value of their dot product is `d_k` (assuming unit variance entries). Dividing by `√d_k` normalizes the variance back to 1, keeping the softmax in its sensitive region.
 
 ### Multi-Head Attention
 
 A single attention computation captures one type of relationship. **Multi-head attention** runs multiple attention operations in parallel, each with its own learned projections:
 
-\[
-\text{head}_i = \text{Attention}(XW_i^Q, XW_i^K, XW_i^V)
-\]
-\[
-\text{MultiHead}(X) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) W^O
-\]
+```
+head_i = Attention(X * Wi_Q, X * Wi_K, X * Wi_V)
+MultiHead(X) = Concat(head_1, ..., head_h) * W_O
+```
 
-Each head operates on a subspace of dimension \(d_k = d_{\text{model}} / h\). Different heads learn to attend to different types of relationships - syntactic dependencies, semantic similarity, positional patterns, coreference. The output projection \(W^O\) combines information from all heads.
+Each head operates on a subspace of dimension `d_k = d_model / h`. Different heads learn to attend to different types of relationships - syntactic dependencies, semantic similarity, positional patterns, coreference. The output projection `W_O` combines information from all heads.
 
 ### Self-Attention
 
@@ -360,34 +348,32 @@ When Q, K, and V all come from the same sequence, it's called **self-attention**
 
 A transformer block combines attention with a feed-forward network, connected by residual connections and normalization:
 
-\[
-h = x + \text{Attention}(\text{Norm}(x))
-\]
-\[
-\text{out} = h + \text{FFN}(\text{Norm}(h))
-\]
+```
+h   = x + Attention(Norm(x))
+out = h + FFN(Norm(h))
+```
 
 ### Residual Connections
 
-The \(+ x\) (adding the input back to the output) is a **residual connection**. Introduced by He et al. (2015) for image recognition, it solves the degradation problem - without residuals, very deep networks perform *worse* than shallow ones because gradients degrade over many layers.
+The `+ x` (adding the input back to the output) is a **residual connection**. Introduced by He et al. (2015) for image recognition, it solves the degradation problem - without residuals, very deep networks perform *worse* than shallow ones because gradients degrade over many layers.
 
 With residuals, the gradient of the loss with respect to an early layer includes a direct term:
 
-\[
-\frac{\partial L}{\partial x^{(l)}} = \frac{\partial L}{\partial x^{(L)}} \cdot \prod_{i=l}^{L-1}\left(1 + \frac{\partial F^{(i)}}{\partial x^{(i)}}\right)
-\]
+```
+∂L/∂x(l) = ∂L/∂x(L) * Π(i=l to L-1) (1 + ∂F(i)/∂x(i))
+```
 
-The "1 +" in each factor means the gradient always has a path that doesn't decay - even if \(\frac{\partial F^{(i)}}{\partial x^{(i)}}\) is small, the 1 ensures the gradient passes through. This is what makes training 22+ layer transformers feasible.
+The "1 +" in each factor means the gradient always has a path that doesn't decay - even if `∂F(i)/∂x(i)` is small, the 1 ensures the gradient passes through. This is what makes training 22+ layer transformers feasible.
 
 ### Layer Normalization
 
 **RMSNorm** (used in modern transformers) normalizes each vector by its root-mean-square:
 
-\[
-\text{RMSNorm}(x) = \frac{x}{\sqrt{\frac{1}{d}\sum_{i=1}^{d} x_i^2 + \epsilon}} \cdot \gamma
-\]
+```
+RMSNorm(x) = x / √(mean(x²) + ε) * γ
+```
 
-Where \(\gamma\) is a learned scale parameter. This prevents activations from growing or shrinking exponentially as they pass through layers, stabilizing training.
+Where `γ` is a learned scale parameter. This prevents activations from growing or shrinking exponentially as they pass through layers, stabilizing training.
 
 Modern transformers use **pre-norm** placement - normalize *before* each sublayer rather than after. Pre-norm produces more stable gradients because the normalization controls the input to each sublayer, preventing pathological scale changes.
 
@@ -395,17 +381,17 @@ Modern transformers use **pre-norm** placement - normalize *before* each sublaye
 
 The FFN in a transformer is a position-wise MLP - it processes each token independently (no interaction between positions):
 
-\[
-\text{FFN}(x) = W_2 \cdot \text{SiLU}(W_1 x) + b
-\]
+```
+FFN(x) = W2 * SiLU(W1 * x) + b
+```
 
 Modern transformers use **SwiGLU**, a gated variant:
 
-\[
-\text{FFN}(x) = W_{\text{down}} \cdot (\text{SiLU}(W_{\text{gate}} x) \odot W_{\text{up}} x)
-\]
+```
+FFN(x) = W_down * (SiLU(W_gate * x) ⊙ W_up * x)
+```
 
-The gate projection, after SiLU, controls which features from the up projection pass through. This is an element-wise multiplication (\(\odot\)) - a form of multiplicative gating that lets the network learn to selectively activate dimensions.
+The gate projection, after SiLU, controls which features from the up projection pass through. This is an element-wise multiplication (`⊙`) - a form of multiplicative gating that lets the network learn to selectively activate dimensions.
 
 The FFN expands the dimension (typically 3.5x), applies the nonlinearity, then compresses back. This expansion gives the model more computational capacity at each position.
 
@@ -417,47 +403,45 @@ Modern LLMs use a **decoder-only** architecture, which differs from the original
 
 In a decoder, each token can only attend to tokens at its position or earlier. This is enforced by masking future positions to negative infinity before softmax:
 
-\[
-\text{CausalAttention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}} + M\right) V
-\]
+```
+CausalAttention(Q, K, V) = softmax(Q * Kᵀ / √d_k + M) * V
+```
 
-Where \(M\) is the causal mask:
+Where M is the causal mask:
 
-\[
-M_{ij} = \begin{cases} 0 & \text{if } i \geq j \\ -\infty & \text{if } i < j \end{cases}
-\]
+```
+M[i,j] = 0      if i >= j    (can attend)
+M[i,j] = -inf   if i < j     (cannot attend)
+```
 
-After softmax, \(e^{-\infty} = 0\), so future positions contribute nothing. This makes the model **autoregressive** - the prediction at position \(t\) depends only on positions \(0, 1, \ldots, t\), which is what allows left-to-right text generation.
+After softmax, `e^(-inf) = 0`, so future positions contribute nothing. This makes the model **autoregressive** - the prediction at position `t` depends only on positions `0, 1, ..., t`, which is what allows left-to-right text generation.
 
 ### Positional Encoding: RoPE
 
-Attention is permutation-invariant by default - `softmax(QK^T)` doesn't change if you shuffle the positions. The model needs position information injected explicitly.
+Attention is permutation-invariant by default - `softmax(Q * Kᵀ)` doesn't change if you shuffle the positions. The model needs position information injected explicitly.
 
-**Rotary Positional Embeddings (RoPE)** encode position by rotating query and key vectors:
+**Rotary Positional Embeddings (RoPE)** encode position by rotating query and key vectors. For each pair of dimensions `(x1, x2)` at position `p`:
 
-\[
-\text{RoPE}(x, p) = \begin{pmatrix} x_1 \cos(p\theta_1) - x_2 \sin(p\theta_1) \\ x_2 \cos(p\theta_1) + x_1 \sin(p\theta_1) \\ x_3 \cos(p\theta_2) - x_4 \sin(p\theta_2) \\ x_4 \cos(p\theta_2) + x_3 \sin(p\theta_2) \\ \vdots \end{pmatrix}
-\]
+```
+x1' = x1 * cos(p * θ) - x2 * sin(p * θ)
+x2' = x2 * cos(p * θ) + x1 * sin(p * θ)
+```
 
-Where \(p\) is the position and \(\theta_i = \frac{1}{10000^{2i/d}}\) are frequencies. Each pair of dimensions is rotated by a position-dependent angle.
+Where `θ_i = 1 / 10000^(2i/d)` are frequencies. Each pair of dimensions is rotated by a position-dependent angle.
 
-The key mathematical property: when you compute the dot product of a rotated query at position \(m\) and a rotated key at position \(n\), the result depends only on \(m - n\) (the relative distance):
-
-\[
-\langle \text{RoPE}(q, m), \text{RoPE}(k, n) \rangle = \langle q, k \rangle_{\text{rotated by } (m-n)}
-\]
-
-This gives the model relative position awareness without adding position as a separate input.
+The key mathematical property: when you compute the dot product of a rotated query at position `m` and a rotated key at position `n`, the result depends only on `m - n` (the relative distance). This gives the model relative position awareness without adding position as a separate input.
 
 ### Grouped-Query Attention (GQA)
 
 Standard multi-head attention gives each head its own Q, K, V projections. **GQA** shares K and V across groups of query heads:
 
-\[
-Q: d_{\text{model}} \rightarrow h_q \times d_k \quad K: d_{\text{model}} \rightarrow h_{kv} \times d_k \quad V: d_{\text{model}} \rightarrow h_{kv} \times d_k
-\]
+```
+Q: d_model -> h_q  * d_k     (e.g., 32 query heads)
+K: d_model -> h_kv * d_k     (e.g., 8 KV heads)
+V: d_model -> h_kv * d_k     (e.g., 8 KV heads)
+```
 
-Where \(h_q > h_{kv}\). This reduces the KV cache size (which dominates memory during generation) by a factor of \(h_q / h_{kv}\) with minimal quality loss.
+Where `h_q > h_kv`. This reduces the KV cache size (which dominates memory during generation) by a factor of `h_q / h_kv` with minimal quality loss.
 
 ## The Full Decoder-Only Transformer
 
@@ -489,30 +473,24 @@ graph TD
 
 **Formally, one forward pass through the full model:**
 
-\[
-h_0 = \text{Embed}(\text{tokens}) \in \mathbb{R}^{B \times S \times d}
-\]
-\[
-h_l = h_{l-1} + \text{Attention}_l(\text{RMSNorm}(h_{l-1})) \quad l = 1, \ldots, L
-\]
-\[
-h_l = h_l + \text{FFN}_l(\text{RMSNorm}(h_l)) \quad l = 1, \ldots, L
-\]
-\[
-\text{logits} = \text{RMSNorm}(h_L) \cdot W_{\text{vocab}}^T \in \mathbb{R}^{B \times S \times V}
-\]
+```
+h_0 = Embed(tokens)                                    ∈ R^(B × S × d)
+h_l = h_(l-1) + Attention_l(RMSNorm(h_(l-1)))          l = 1, ..., L
+h_l = h_l + FFN_l(RMSNorm(h_l))                        l = 1, ..., L
+logits = RMSNorm(h_L) * W_vocab^T                       ∈ R^(B × S × V)
+```
 
 Where each Attention uses causal masking, RoPE, and GQA, and each FFN uses SwiGLU gating.
 
 ### The Training Objective
 
-The model is trained with **next-token prediction** (causal language modeling). Given a sequence of tokens \((t_1, t_2, \ldots, t_n)\), the model predicts each token from its predecessors:
+The model is trained with **next-token prediction** (causal language modeling). Given a sequence of tokens `(t1, t2, ..., tn)`, the model predicts each token from its predecessors:
 
-\[
-L = -\frac{1}{n}\sum_{i=1}^{n} \log P(t_i \mid t_1, \ldots, t_{i-1})
-\]
+```
+L = -(1/n) * Σ log P(ti | t1, ..., t_(i-1))
+```
 
-This is cross-entropy loss averaged over all positions. The causal mask ensures that the prediction at position \(i\) can only see tokens \(1\) through \(i-1\), so every position in the sequence provides a training signal simultaneously. A single sequence of 4096 tokens yields 4095 training examples.
+This is cross-entropy loss averaged over all positions. The causal mask ensures that the prediction at position `i` can only see tokens `1` through `i-1`, so every position in the sequence provides a training signal simultaneously. A single sequence of 4096 tokens yields 4095 training examples.
 
 Backpropagation through this entire structure - cross-entropy loss back through the LM head, through L transformer blocks (each with attention and FFN sublayers), through the embedding - uses the same chain rule we started with. The gradient flows backward through every layer, with residual connections ensuring it doesn't vanish, RMSNorm keeping activations stable, and Adam adapting the learning rate per parameter.
 
