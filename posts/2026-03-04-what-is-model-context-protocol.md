@@ -385,38 +385,350 @@ Add the server to Claude Desktop's configuration at `~/Library/Application Suppo
 
 Claude Desktop launches the server as a child process, connects via stdio, runs the initialization handshake, and discovers the `web_search` and `web_fetch` tools. From that point on, the model can use them in any conversation.
 
-### Connecting Programmatically
+### Connecting an Agent to MCP
 
-You can also connect to MCP servers from your own code using the client SDK:
+The examples above show the server and the config, but the interesting part is the **agent loop** - where the model decides which tools to call, your code routes those calls through MCP, and the results feed back into the model. Here's a complete minimal agent that does this:
 
 ```typescript
+import Anthropic from "@anthropic-ai/sdk";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
+// Step 1: Connect to the MCP server
 const transport = new StdioClientTransport({
   command: "node",
   args: ["path/to/server.js"],
   env: { BRAVE_API_KEY: "your-key" },
 });
+const mcpClient = new Client({ name: "my-agent", version: "1.0.0" }, { capabilities: {} });
+await mcpClient.connect(transport);
 
-const client = new Client({ name: "my-agent", version: "1.0.0" }, { capabilities: {} });
-await client.connect(transport);
+// Step 2: Discover tools and convert to Anthropic's tool format
+const { tools: mcpTools } = await mcpClient.listTools();
+const anthropicTools = mcpTools.map((tool) => ({
+  name: tool.name,
+  description: tool.description ?? "",
+  input_schema: tool.inputSchema,
+}));
 
-// Discover available tools
-const { tools } = await client.listTools();
-console.log("Available tools:", tools.map(t => t.name));
+// Step 3: The agent loop
+const anthropic = new Anthropic();
 
-// Call a tool
-const result = await client.callTool({
-  name: "web_search",
-  arguments: { query: "Model Context Protocol", count: 3 },
-});
-console.log("Results:", result.content);
+async function runAgent(userMessage: string): Promise<string> {
+  const messages: Anthropic.MessageParam[] = [
+    { role: "user", content: userMessage },
+  ];
 
-await client.close();
+  // Loop until the model stops calling tools
+  while (true) {
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-5-20250929",
+      max_tokens: 4096,
+      tools: anthropicTools,
+      messages,
+    });
+
+    // Collect text and tool use blocks from the response
+    const toolUseBlocks = response.content.filter((b) => b.type === "tool_use");
+
+    // If no tool calls, extract the final text and return
+    if (toolUseBlocks.length === 0) {
+      const textBlock = response.content.find((b) => b.type === "text");
+      return textBlock?.type === "text" ? textBlock.text : "";
+    }
+
+    // Add the assistant's response (with tool_use blocks) to history
+    messages.push({ role: "assistant", content: response.content });
+
+    // Execute each tool call through MCP and collect results
+    const toolResults: Anthropic.ToolResultBlockParam[] = [];
+    for (const toolUse of toolUseBlocks) {
+      if (toolUse.type !== "tool_use") continue;
+
+      console.log(`Calling tool: ${toolUse.name}(${JSON.stringify(toolUse.input)})`);
+
+      // Route the tool call through MCP
+      const result = await mcpClient.callTool({
+        name: toolUse.name,
+        arguments: toolUse.input as Record<string, unknown>,
+      });
+
+      const text = result.content
+        .filter((c): c is { type: "text"; text: string } => c.type === "text")
+        .map((c) => c.text)
+        .join("\n");
+
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: toolUse.id,
+        content: text,
+      });
+    }
+
+    // Feed tool results back to the model
+    messages.push({ role: "user", content: toolResults });
+    // Loop continues - model sees the results and either calls more tools or responds
+  }
+}
+
+// Run it
+const answer = await runAgent("What is the latest version of Rust? Give me details from the official blog.");
+console.log(answer);
+
+await mcpClient.close();
 ```
 
-This is the pattern for building autonomous agents - your code acts as the host, creates an MCP client, connects to servers, and routes tool calls based on the model's output.
+Here's what's happening in that loop:
+
+```mermaid
+graph TD
+    A[User: 'What is the latest Rust version?'] --> B[Send to model with tool definitions]
+    B --> C{Model response}
+    C -->|tool_use: web_search| D[Route call through MCP client]
+    D --> E[MCP server calls Brave API]
+    E --> F[Return results to model]
+    F --> C
+    C -->|tool_use: web_fetch| G[Route call through MCP client]
+    G --> H[MCP server fetches URL]
+    H --> I[Return page content to model]
+    I --> C
+    C -->|text: final answer| J[Return to user]
+```
+
+The three pieces fit together like this:
+
+1. **MCP server** exposes tools with names, descriptions, and schemas
+2. **MCP client** discovers those tools and converts them to the model's tool format
+3. **Agent loop** sends tools to the model, routes the model's tool calls through MCP, feeds results back, and repeats until the model produces a final text response
+
+The model never talks to MCP directly. Your agent code is the bridge - it translates between the model's tool-calling format and MCP's `tools/call` protocol. This is the same pattern that Claude Desktop, Cursor, and every other MCP host uses internally.
+
+## Building an MCP Plugin System
+
+The examples above connect to a single server. But real hosts like Claude Desktop, Cursor, and VS Code manage **multiple MCP servers** from a config file - users add servers, the host launches and connects to all of them, and the model sees a unified set of tools across every server. This is the plugin system pattern.
+
+Here's how to build one.
+
+### The Config File
+
+The standard approach is a JSON config that maps server names to launch commands, similar to what Claude Desktop and VS Code use:
+
+```json
+{
+  "mcpServers": {
+    "web-tools": {
+      "command": "node",
+      "args": ["./servers/web-tools/server.js"],
+      "env": { "BRAVE_API_KEY": "your-key" }
+    },
+    "filesystem": {
+      "command": "node",
+      "args": ["./servers/filesystem/server.js"],
+      "env": { "ALLOWED_DIRS": "/home/user/projects" }
+    },
+    "database": {
+      "command": "python",
+      "args": ["./servers/database/server.py"],
+      "env": { "DATABASE_URL": "postgresql://localhost/mydb" }
+    }
+  }
+}
+```
+
+Each entry defines how to launch one server process. The host doesn't need to know what tools each server provides - it discovers them at runtime via `tools/list`.
+
+### The Server Manager
+
+The manager reads the config, launches each server as a child process, connects an MCP client to each one, discovers their tools, and provides a unified interface for the agent loop:
+
+```typescript
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import fs from "node:fs";
+
+interface ServerConfig {
+  command: string;
+  args?: string[];
+  env?: Record<string, string>;
+}
+
+interface ConnectedServer {
+  name: string;
+  client: Client;
+  tools: Array<{ name: string; description: string; inputSchema: any }>;
+}
+
+class McpServerManager {
+  private servers = new Map<string, ConnectedServer>();
+  private toolIndex = new Map<string, string>(); // tool name -> server name
+
+  async loadFromConfig(configPath: string): Promise<void> {
+    const raw = fs.readFileSync(configPath, "utf-8");
+    const config = JSON.parse(raw);
+    const entries = Object.entries(config.mcpServers ?? {}) as [string, ServerConfig][];
+
+    // Connect to all servers in parallel
+    await Promise.all(entries.map(([name, cfg]) => this.connectServer(name, cfg)));
+  }
+
+  private async connectServer(name: string, cfg: ServerConfig): Promise<void> {
+    try {
+      const transport = new StdioClientTransport({
+        command: cfg.command,
+        args: cfg.args,
+        env: { ...process.env, ...cfg.env } as Record<string, string>,
+      });
+
+      const client = new Client(
+        { name: `host-client-${name}`, version: "1.0.0" },
+        { capabilities: {} },
+      );
+      await client.connect(transport);
+
+      // Discover tools from this server
+      const { tools } = await client.listTools();
+
+      // Index each tool back to its server
+      for (const tool of tools) {
+        this.toolIndex.set(tool.name, name);
+      }
+
+      this.servers.set(name, { name, client, tools });
+      console.log(`Connected: ${name} (${tools.length} tools: ${tools.map(t => t.name).join(", ")})`);
+    } catch (err) {
+      console.error(`Failed to connect ${name}: ${err}`);
+    }
+  }
+
+  // Get all tools across all servers, formatted for the model
+  getAllTools(): Array<{ name: string; description: string; input_schema: any }> {
+    const tools: Array<{ name: string; description: string; input_schema: any }> = [];
+    for (const server of this.servers.values()) {
+      for (const tool of server.tools) {
+        tools.push({
+          name: tool.name,
+          description: tool.description ?? "",
+          input_schema: tool.inputSchema,
+        });
+      }
+    }
+    return tools;
+  }
+
+  // Route a tool call to the correct server
+  async callTool(name: string, args: Record<string, unknown>): Promise<string> {
+    const serverName = this.toolIndex.get(name);
+    if (!serverName) throw new Error(`Unknown tool: ${name}`);
+
+    const server = this.servers.get(serverName);
+    if (!server) throw new Error(`Server not connected: ${serverName}`);
+
+    const result = await server.client.callTool({ name, arguments: args });
+    return result.content
+      .filter((c): c is { type: "text"; text: string } => c.type === "text")
+      .map((c) => c.text)
+      .join("\n");
+  }
+
+  async shutdown(): Promise<void> {
+    for (const server of this.servers.values()) {
+      await server.client.close();
+    }
+    this.servers.clear();
+    this.toolIndex.clear();
+  }
+}
+```
+
+### Wiring It Into the Agent
+
+With the manager, the agent loop barely changes - it just uses `manager.getAllTools()` and `manager.callTool()` instead of talking to a single client:
+
+```typescript
+import Anthropic from "@anthropic-ai/sdk";
+
+const manager = new McpServerManager();
+await manager.loadFromConfig("./mcp-config.json");
+// Connected: web-tools (2 tools: web_search, web_fetch)
+// Connected: filesystem (3 tools: read_file, write_file, list_dir)
+// Connected: database (2 tools: query, execute)
+
+const anthropic = new Anthropic();
+
+async function runAgent(userMessage: string): Promise<string> {
+  const messages: Anthropic.MessageParam[] = [
+    { role: "user", content: userMessage },
+  ];
+
+  while (true) {
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-5-20250929",
+      max_tokens: 4096,
+      tools: manager.getAllTools(),  // 7 tools from 3 servers
+      messages,
+    });
+
+    const toolUseBlocks = response.content.filter((b) => b.type === "tool_use");
+
+    if (toolUseBlocks.length === 0) {
+      const textBlock = response.content.find((b) => b.type === "text");
+      return textBlock?.type === "text" ? textBlock.text : "";
+    }
+
+    messages.push({ role: "assistant", content: response.content });
+
+    const toolResults: Anthropic.ToolResultBlockParam[] = [];
+    for (const toolUse of toolUseBlocks) {
+      if (toolUse.type !== "tool_use") continue;
+
+      // Manager routes to the correct server automatically
+      const text = await manager.callTool(
+        toolUse.name,
+        toolUse.input as Record<string, unknown>,
+      );
+
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: toolUse.id,
+        content: text,
+      });
+    }
+
+    messages.push({ role: "user", content: toolResults });
+  }
+}
+
+const answer = await runAgent("Read my project's README and search the web for similar projects");
+console.log(answer);
+// Model calls read_file (routed to filesystem server)
+// Then calls web_search (routed to web-tools server)
+// Then synthesizes an answer using both results
+
+await manager.shutdown();
+```
+
+The model sees 7 tools from 3 servers as a flat list. When it calls `read_file`, the manager routes it to the filesystem server. When it calls `web_search`, the manager routes it to the web-tools server. The model doesn't know or care that the tools come from different processes.
+
+```mermaid
+graph TD
+    U[User] --> A[Agent Loop]
+    A --> M[LLM]
+    M -->|tool_use: web_search| A
+    M -->|tool_use: read_file| A
+    M -->|tool_use: query| A
+    A --> MGR[Server Manager]
+    MGR -->|Route by tool name| S1[web-tools server]
+    MGR -->|Route by tool name| S2[filesystem server]
+    MGR -->|Route by tool name| S3[database server]
+    S1 --> MGR
+    S2 --> MGR
+    S3 --> MGR
+    MGR --> A
+    A --> M
+    M -->|text: final answer| U
+```
+
+This is the same architecture that Claude Desktop, Cursor, and VS Code use internally. The config file is the plugin registry. The server manager is the plugin host. Each MCP server is a plugin. Users add capabilities by adding entries to the config - no code changes, no recompilation, no plugin API to learn.
 
 ## Why MCP Matters
 
