@@ -1,9 +1,9 @@
 ---
-title: "Building an AI Agent Platform from Scratch in TypeScript"
+title: "Building an AI Agent Platform"
 date: "2026-02-27"
 excerpt: "A technical deep dive into TinyClaw - a full-featured AI agent platform in ~11K lines of TypeScript. From message pipeline to multi-channel delivery, here's how every layer of an AI assistant system works."
 author: "Chase Dovey"
-tags: ["AI", "TypeScript", "Agents", "Architecture"]
+tags: ["AI", "Architecture"]
 draft: false
 ---
 
