@@ -1,7 +1,7 @@
 ---
 title: "Life of a Token: What Happens Inside an LLM From Input to Output"
-date: "2026-02-26"
-excerpt: "Follow a single prompt through every layer of a decoder-only transformer — from raw text to tokenization to embedding, through 22 transformer blocks, to autoregressive next-token prediction and EOS."
+date: "2026-03-01"
+excerpt: "Follow a single prompt through every layer of a decoder-only transformer - from raw text to tokenization to embedding, through 22 transformer blocks, to autoregressive next-token prediction and EOS."
 author: "Chase Dovey"
 tags: ["AI", "LLM", "Transformers", "Deep Learning"]
 draft: false
@@ -9,9 +9,9 @@ draft: false
 
 ## Introduction
 
-When you type "The capital of France is" into an LLM and it responds "Paris", what actually happened? Not at the API level — at the tensor level. What math ran, what shapes flowed where, and how did a stack of matrix multiplications produce a coherent English word?
+When you type "The capital of France is" into an LLM and it responds "Paris", what actually happened? Not at the API level - at the tensor level. What math ran, what shapes flowed where, and how did a stack of matrix multiplications produce a coherent English word?
 
-This post follows a single prompt through every operation inside a decoder-only transformer. We'll use concrete tensor dimensions from a real model architecture (1.5B parameters, 22 layers, 32 attention heads) so you can see the exact shapes at each step. No hand-waving, no "and then magic happens" — every layer, every reshape, every multiply.
+This post follows a single prompt through every operation inside a decoder-only transformer. We'll use concrete tensor dimensions from a real model architecture (1.5B parameters, 22 layers, 32 attention heads) so you can see the exact shapes at each step. No hand-waving, no "and then magic happens" - every layer, every reshape, every multiply.
 
 Here's the full journey:
 
@@ -46,7 +46,7 @@ For concrete numbers, we'll use this architecture:
 | `hidden_size` | 2,048 |
 | `num_hidden_layers` | 22 |
 | `num_attention_heads` | 32 (query heads) |
-| `num_key_value_heads` | 4 (KV heads — this is GQA) |
+| `num_key_value_heads` | 4 (KV heads - this is GQA) |
 | `head_dim` | 64 (= 2048 / 32) |
 | `intermediate_size` | 5,632 |
 | `max_position_embeddings` | 2,048 |
@@ -56,7 +56,7 @@ This is a ~1.5B parameter model. Every dimension in this post is real and follow
 
 ## Step 1: Tokenization
 
-The model doesn't see text. It sees integers. A **tokenizer** converts the input string into a sequence of token IDs — indices into a fixed vocabulary of 32,000 entries.
+The model doesn't see text. It sees integers. A **tokenizer** converts the input string into a sequence of token IDs - indices into a fixed vocabulary of 32,000 entries.
 
 ```
 Input:  "The capital of France is"
@@ -72,11 +72,11 @@ A special **BOS (beginning of sequence)** token is prepended:
  ^BOS
 ```
 
-This gives us 6 tokens. In tensor form: `[1, 6]` — batch size 1, sequence length 6.
+This gives us 6 tokens. In tensor form: `[1, 6]` - batch size 1, sequence length 6.
 
 ## Step 2: Embedding Lookup
 
-Each token ID indexes into an **embedding table** — a learned matrix of shape `[32000, 2048]`. Each of the 32,000 tokens in the vocabulary has a 2,048-dimensional vector that represents its meaning in the model's internal space.
+Each token ID indexes into an **embedding table** - a learned matrix of shape `[32000, 2048]`. Each of the 32,000 tokens in the vocabulary has a 2,048-dimensional vector that represents its meaning in the model's internal space.
 
 ```
 embed_tokens.weight: [32000, 2048]
@@ -88,9 +88,9 @@ Token 6629 ("France") → row 6629  → [2048] vector
 Token 374 ("is")     → row 374    → [2048] vector
 ```
 
-This is a simple table lookup, not a computation. The output is a tensor of shape `[1, 6, 2048]` — 6 tokens, each represented as a 2,048-dimensional vector. These vectors are dense, learned representations where similar concepts end up near each other in the high-dimensional space.
+This is a simple table lookup, not a computation. The output is a tensor of shape `[1, 6, 2048]` - 6 tokens, each represented as a 2,048-dimensional vector. These vectors are dense, learned representations where similar concepts end up near each other in the high-dimensional space.
 
-At this point, the model has no idea about **word order** — it just has 6 vectors with no position information. That comes next.
+At this point, the model has no idea about **word order** - it just has 6 vectors with no position information. That comes next.
 
 ## Step 3: Positional Encoding (RoPE)
 
@@ -152,13 +152,13 @@ Step 4: Scale and apply learned weights
   output = (x * norm) * weight            → [1, 6, 2048]
 ```
 
-The `weight` vector is `[2048]` — one learnable scale per dimension. This normalization stabilizes training by preventing activations from growing or shrinking as they pass through layers.
+The `weight` vector is `[2048]` - one learnable scale per dimension. This normalization stabilizes training by preventing activations from growing or shrinking as they pass through layers.
 
 Why not LayerNorm? RMSNorm skips the mean-centering step (subtracting the mean before scaling). This is simpler, faster, and works just as well in practice.
 
 ### 4b: Self-Attention
 
-This is the core mechanism — where each token looks at all previous tokens and decides what's relevant. It has five sub-steps.
+This is the core mechanism - where each token looks at all previous tokens and decides what's relevant. It has five sub-steps.
 
 #### 4b-i: QKV Projections
 
@@ -182,11 +182,11 @@ K: [1, 6, 256]  → [1, 6, 4, 64]     (4 KV heads × 64 dims each)
 V: [1, 6, 256]  → [1, 6, 4, 64]     (4 KV heads × 64 dims each)
 ```
 
-Each head operates on 64 dimensions independently. The idea is that different heads learn to attend to different types of relationships — one head might track syntactic dependencies, another semantic similarity, another coreference.
+Each head operates on 64 dimensions independently. The idea is that different heads learn to attend to different types of relationships - one head might track syntactic dependencies, another semantic similarity, another coreference.
 
 #### 4b-ii: RoPE (Position Encoding)
 
-Now RoPE is applied to Q and K (not V — values carry content, not position):
+Now RoPE is applied to Q and K (not V - values carry content, not position):
 
 ```
 For each token at position p:
@@ -217,7 +217,7 @@ Read back full history:
   V = cache_v[:, 0:6]  → [1, 6, 4, 64]
 ```
 
-During prefill (first pass), this is a no-op — we write and immediately read back the same values. The cache pays off during decode, when we only compute K and V for the one new token and read the rest from cache.
+During prefill (first pass), this is a no-op - we write and immediately read back the same values. The cache pays off during decode, when we only compute K and V for the one new token and read the rest from cache.
 
 #### 4b-iv: Attention Score Computation
 
@@ -241,7 +241,7 @@ This is a 6×6 matrix for each of the 32 heads. Entry `[i, j]` is how much token
 
 #### 4b-v: Causal Mask and Softmax
 
-A **causal mask** prevents tokens from attending to future positions. This is what makes the model autoregressive — token 3 can only see tokens 0, 1, 2, and 3:
+A **causal mask** prevents tokens from attending to future positions. This is what makes the model autoregressive - token 3 can only see tokens 0, 1, 2, and 3:
 
 ```
 mask = [
@@ -304,7 +304,7 @@ normed = RMSNorm(h)    → [1, 6, 2048]
 
 ### 4e: Feed-Forward Network (SwiGLU)
 
-The FFN is where the model does its "thinking" — transforming each token's representation independently (no cross-token interaction, unlike attention). Modern LLMs use **SwiGLU**, a gated variant:
+The FFN is where the model does its "thinking" - transforming each token's representation independently (no cross-token interaction, unlike attention). Modern LLMs use **SwiGLU**, a gated variant:
 
 ```
 Input: [1, 6, 2048]
@@ -319,7 +319,7 @@ output = activated @ W_down  W_down: [5632, 2048]  → [1, 6, 2048]
 
 Three things happen here:
 
-1. **Expansion.** The hidden dimension expands from 2,048 to 5,632 (2.75×). This gives the model more room to compute — more dimensions means more capacity to represent complex functions.
+1. **Expansion.** The hidden dimension expands from 2,048 to 5,632 (2.75×). This gives the model more room to compute - more dimensions means more capacity to represent complex functions.
 
 2. **Gating.** `SiLU(gate) * up` is element-wise multiplication. The gate projection, after passing through the SiLU activation (a smooth version of ReLU), learns *which dimensions to activate*. Dimensions where the gate is near zero are suppressed. This is more expressive than applying a single activation function to everything.
 
@@ -339,11 +339,11 @@ Same pattern as post-attention. The block output has the same shape as the input
 
 This block repeats 22 times. Each layer refines the token representations:
 
-- **Early layers** (1–5) tend to handle local syntax — part of speech, basic phrase structure, token-level patterns
-- **Middle layers** (6–16) build compositional meaning — relating "capital" to "France", understanding "is" as a copula that expects a noun phrase
-- **Late layers** (17–22) form the final prediction — converging on "Paris" as the most likely next token given the full context
+- **Early layers** (1–5) tend to handle local syntax - part of speech, basic phrase structure, token-level patterns
+- **Middle layers** (6–16) build compositional meaning - relating "capital" to "France", understanding "is" as a copula that expects a noun phrase
+- **Late layers** (17–22) form the final prediction - converging on "Paris" as the most likely next token given the full context
 
-The residual connections mean information from early layers persists through the entire stack. The model doesn't have to "re-learn" that the input contains "France" at every layer — that information flows directly through the residual stream.
+The residual connections mean information from early layers persists through the entire stack. The model doesn't have to "re-learn" that the input contains "France" at every layer - that information flows directly through the residual stream.
 
 ## Step 5: Final Normalization
 
@@ -365,13 +365,13 @@ lm_head.weight: [32000, 2048]
 logits = h @ lm_head.weight^T    → [1, 6, 32000]
 ```
 
-Each of the 6 token positions now has 32,000 scores — one for every token in the vocabulary. The score at position `[0, 5, 8756]` represents how strongly the model believes token 8756 should follow the "is" token, given all the context.
+Each of the 6 token positions now has 32,000 scores - one for every token in the vocabulary. The score at position `[0, 5, 8756]` represents how strongly the model believes token 8756 should follow the "is" token, given all the context.
 
 Many models **tie** the LM head weights to the embedding table. The embedding matrix maps token IDs to vectors; the LM head maps vectors back to token IDs. Using the same matrix for both ensures the input and output spaces are consistent.
 
 ## Step 7: Sampling
 
-We only care about the logits at the **last position** — position 5, after "is". This gives us a vector of 32,000 raw scores:
+We only care about the logits at the **last position** - position 5, after "is". This gives us a vector of 32,000 raw scores:
 
 ```
 last_logits = logits[0, -1, :]    → [32000]
@@ -424,14 +424,14 @@ Keep top 50 tokens, set the rest to probability 0.
 **Top-p** (nucleus sampling) keeps the smallest set whose cumulative probability exceeds p:
 ```
 Sort by probability descending.
-Token "Paris" (0.82) — cumulative: 0.82 → keep
-Token "Lyon" (0.05) — cumulative: 0.87 → keep
-Token "Berlin" (0.03) — cumulative: 0.90 → keep (just crossed p=0.9)
-Token "Rome" (0.02) — cumulative: 0.92 → remove
+Token "Paris" (0.82) - cumulative: 0.82 → keep
+Token "Lyon" (0.05) - cumulative: 0.87 → keep
+Token "Berlin" (0.03) - cumulative: 0.90 → keep (just crossed p=0.9)
+Token "Rome" (0.02) - cumulative: 0.92 → remove
 ...all remaining → remove
 ```
 
-Top-p is adaptive — when the model is confident, only 1–3 tokens survive. When it's uncertain, dozens might pass.
+Top-p is adaptive - when the model is confident, only 1–3 tokens survive. When it's uncertain, dozens might pass.
 
 ### Token Selection
 
@@ -445,11 +445,11 @@ With greedy decoding (temperature 0), this is always the argmax. With stochastic
 
 ## Step 8: The Autoregressive Decode Loop
 
-We have our first generated token: "Paris" (ID 8756). Now the process repeats — but with a critical optimization.
+We have our first generated token: "Paris" (ID 8756). Now the process repeats - but with a critical optimization.
 
 ### Prefill vs. Decode
 
-The first pass (processing the full prompt) is called **prefill**. It processes all 6 tokens in parallel — a single batched forward pass through all 22 layers. This is fast because modern GPUs excel at large matrix multiplications.
+The first pass (processing the full prompt) is called **prefill**. It processes all 6 tokens in parallel - a single batched forward pass through all 22 layers. This is fast because modern GPUs excel at large matrix multiplications.
 
 Every subsequent pass is a **decode** step. We only feed the single newly generated token:
 
@@ -473,9 +473,9 @@ scores = Q @ K^T      → [1, 32, 1, 7]   (one query attending to 7 keys)
 attn = softmax(scores) @ V  → [1, 32, 1, 64]
 ```
 
-No causal mask is needed during decode — there's only one query position, and it's allowed to see everything before it.
+No causal mask is needed during decode - there's only one query position, and it's allowed to see everything before it.
 
-The KV cache is why decode is fast: we compute Q, K, V for **one** token instead of recomputing for all previous tokens. Without the cache, generating N tokens would require O(N²) compute because you'd reprocess the full sequence at each step. With the cache, each step is O(N) — read the cached keys/values, compute one new attention.
+The KV cache is why decode is fast: we compute Q, K, V for **one** token instead of recomputing for all previous tokens. Without the cache, generating N tokens would require O(N²) compute because you'd reprocess the full sequence at each step. With the cache, each step is O(N) - read the cached keys/values, compute one new attention.
 
 ### The Full Loop
 
@@ -490,7 +490,7 @@ At each decode step:
 2. Use the KV cache for all previous context
 3. Extract logits at the last (only) position
 4. Sample the next token
-5. Check if it's EOS — if yes, stop. If no, go to step 1.
+5. Check if it's EOS - if yes, stop. If no, go to step 1.
 
 ### The Speed Profile
 
@@ -501,9 +501,9 @@ The two phases have very different performance characteristics:
 | Prefill | All prompt tokens at once | Compute (large matmuls) | Fast (thousands of tok/s on GPU) |
 | Decode | One token at a time | Memory bandwidth (reading KV cache) | Slow (tens of tok/s on GPU) |
 
-Prefill is **compute-bound** — the GPU does massive matrix multiplications on all prompt tokens in parallel. Decode is **memory-bandwidth-bound** — the GPU reads the entire KV cache from memory for each token, but only does a small amount of compute. This is why you see much higher tokens/second for prefill than decode in inference benchmarks.
+Prefill is **compute-bound** - the GPU does massive matrix multiplications on all prompt tokens in parallel. Decode is **memory-bandwidth-bound** - the GPU reads the entire KV cache from memory for each token, but only does a small amount of compute. This is why you see much higher tokens/second for prefill than decode in inference benchmarks.
 
-## Step 9: EOS — When to Stop
+## Step 9: EOS - When to Stop
 
 The model has a special **end-of-sequence (EOS)** token in its vocabulary. When this token is sampled as the next prediction, generation stops:
 
@@ -512,7 +512,7 @@ if next_token == tokenizer.eos_token_id:
     break
 ```
 
-If the model doesn't produce EOS, generation continues until it hits the configured `max_tokens` limit. Different models use different EOS tokens — some use `</s>`, others use `<|endoftext|>`, others use `<|im_end|>`. The tokenizer knows which one to look for.
+If the model doesn't produce EOS, generation continues until it hits the configured `max_tokens` limit. Different models use different EOS tokens - some use `</s>`, others use `<|endoftext|>`, others use `<|im_end|>`. The tokenizer knows which one to look for.
 
 ## The Complete Data Flow
 
@@ -579,7 +579,7 @@ The bulk of parameters (~96%) are in the per-layer weight matrices, with the att
 
 A natural question: what does each of the 22 layers actually *do*? Research on LLM interpretability suggests a rough division:
 
-**Layers 1–3: Token-level features.** The model identifies basic properties — is this a noun, a verb, a punctuation mark? Is it capitalized? What language is it?
+**Layers 1–3: Token-level features.** The model identifies basic properties - is this a noun, a verb, a punctuation mark? Is it capitalized? What language is it?
 
 **Layers 4–8: Local patterns.** Bigram and trigram patterns emerge. The model recognizes "capital of" as a prepositional phrase, "France" as a proper noun entity.
 
@@ -589,16 +589,16 @@ A natural question: what does each of the 22 layers actually *do*? Research on L
 
 **Layers 21–22: Final refinement.** The model commits to "Paris" and adjusts the logit distribution to give it high confidence. These layers often sharpen the prediction rather than changing it.
 
-The residual stream carries all of this forward. Information from layer 3 ("France is an entity") is still present in layer 22 — it doesn't need to be recomputed, just refined.
+The residual stream carries all of this forward. Information from layer 3 ("France is an entity") is still present in layer 22 - it doesn't need to be recomputed, just refined.
 
 ## Key Takeaways
 
-**An LLM is a giant lookup table followed by a cascade of matrix multiplications.** Embedding is a lookup. Attention is matrix multiply + softmax + matrix multiply. FFN is matrix multiply + activation + matrix multiply. That's it — repeated 22 times with residual connections.
+**An LLM is a giant lookup table followed by a cascade of matrix multiplications.** Embedding is a lookup. Attention is matrix multiply + softmax + matrix multiply. FFN is matrix multiply + activation + matrix multiply. That's it - repeated 22 times with residual connections.
 
-**The model never "understands" text.** It operates on vectors — 2,048-dimensional points in a learned space. The fact that "Paris" emerges as the prediction is because the training process arranged the weight matrices such that this specific cascade of multiplications, applied to this specific input, produces a high score for token 8756.
+**The model never "understands" text.** It operates on vectors - 2,048-dimensional points in a learned space. The fact that "Paris" emerges as the prediction is because the training process arranged the weight matrices such that this specific cascade of multiplications, applied to this specific input, produces a high score for token 8756.
 
 **The KV cache is the key inference optimization.** Without it, generating 100 tokens requires processing ~100 + 99 + 98 + ... + 1 = ~5,000 token forward passes. With it, you process ~100 + 1 + 1 + ... + 1 = ~200 forward passes. That's a 25× reduction.
 
-**Attention is where tokens interact.** The FFN processes each token independently. Only the attention mechanism allows information to flow between token positions. This is why attention patterns are so studied — they reveal what the model considers relevant.
+**Attention is where tokens interact.** The FFN processes each token independently. Only the attention mechanism allows information to flow between token positions. This is why attention patterns are so studied - they reveal what the model considers relevant.
 
 **Every generated token is a fresh decision.** The model doesn't have a "plan" for the full response. It generates "Paris", feeds it back in, and then decides what comes next. The appearance of coherent multi-sentence responses emerges from the model consistently making good single-token predictions conditioned on the growing context.

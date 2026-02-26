@@ -1,7 +1,7 @@
 ---
 title: "How LLM Inference Engines Work: Building One from Scratch in PyTorch"
 date: "2026-02-26"
-excerpt: "A deep dive into building a complete LLM inference engine — from transformer math to OpenAI-compatible API — using nanollama, an educational implementation in ~1400 lines of Python."
+excerpt: "A deep dive into building a complete LLM inference engine - from transformer math to OpenAI-compatible API - using nanollama, an educational implementation in ~1400 lines of Python."
 author: "Chase Dovey"
 tags: ["AI", "LLM", "Python", "PyTorch", "Inference"]
 draft: false
@@ -9,9 +9,9 @@ draft: false
 
 ## Introduction
 
-When you send a message to ChatGPT, Claude, or a local model through Ollama, an **inference engine** turns your text into tokens, runs them through a neural network, and streams back a response. That engine handles weight loading, memory management, sampling strategies, KV caching, and often an HTTP API layer — all behind a simple chat interface.
+When you send a message to ChatGPT, Claude, or a local model through Ollama, an **inference engine** turns your text into tokens, runs them through a neural network, and streams back a response. That engine handles weight loading, memory management, sampling strategies, KV caching, and often an HTTP API layer - all behind a simple chat interface.
 
-Most people treat this as a black box. I wanted to understand every layer of it, so I built [nanollama](https://github.com/mrcloudchase/nanollama) — a single-file LLM inference engine in ~1400 lines of PyTorch. It loads real models from HuggingFace, runs the full transformer forward pass, and serves an OpenAI-compatible API. Not for production — for understanding.
+Most people treat this as a black box. I wanted to understand every layer of it, so I built [nanollama](https://github.com/mrcloudchase/nanollama) - a single-file LLM inference engine in ~1400 lines of PyTorch. It loads real models from HuggingFace, runs the full transformer forward pass, and serves an OpenAI-compatible API. Not for production - for understanding.
 
 This post walks through how inference engines are built, using nanollama's code as the reference implementation. By the end, you'll understand the complete path from raw model weights to streamed HTTP responses.
 
@@ -60,11 +60,11 @@ class Config:
     rope_theta: float = 10000.0
 ```
 
-These numbers tell the engine how to build the model. `num_hidden_layers` is the depth (how many transformer blocks to stack). `hidden_size` is the width (the dimension of the vector representing each token). `num_attention_heads` vs `num_key_value_heads` defines the attention strategy — when they differ, it's **Grouped-Query Attention**, which we'll cover shortly.
+These numbers tell the engine how to build the model. `num_hidden_layers` is the depth (how many transformer blocks to stack). `hidden_size` is the width (the dimension of the vector representing each token). `num_attention_heads` vs `num_key_value_heads` defines the attention strategy - when they differ, it's **Grouped-Query Attention**, which we'll cover shortly.
 
 ### RMSNorm
 
-Before each sublayer in the transformer, activations are normalized. Modern LLMs use **RMSNorm** instead of LayerNorm — it skips the mean-centering step and just scales by the root-mean-square:
+Before each sublayer in the transformer, activations are normalized. Modern LLMs use **RMSNorm** instead of LayerNorm - it skips the mean-centering step and just scales by the root-mean-square:
 
 ```python
 class RMSNorm(nn.Module):
@@ -78,11 +78,11 @@ class RMSNorm(nn.Module):
         return (x.float() * norm).type_as(x) * self.weight
 ```
 
-The `.float()` call matters — when running in float16, the squaring and mean operations can overflow without promoting to float32 first. This is one of the many numerical stability details that inference engines have to handle.
+The `.float()` call matters - when running in float16, the squaring and mean operations can overflow without promoting to float32 first. This is one of the many numerical stability details that inference engines have to handle.
 
 ### Rotary Positional Embeddings (RoPE)
 
-Transformers are position-agnostic by default — they don't know if a token is at position 0 or position 500. **RoPE** encodes position by rotating pairs of dimensions in the query and key vectors. The key insight: the dot product of two rotated vectors depends only on their *relative* position, giving the model translation-invariant position awareness.
+Transformers are position-agnostic by default - they don't know if a token is at position 0 or position 500. **RoPE** encodes position by rotating pairs of dimensions in the query and key vectors. The key insight: the dot product of two rotated vectors depends only on their *relative* position, giving the model translation-invariant position awareness.
 
 ```python
 def precompute_rope(dim: int, max_seq: int, theta: float = 10000.0):
@@ -105,9 +105,9 @@ Each dimension pair gets a different frequency (like the hands of a clock moving
 
 Attention is where the model decides which previous tokens matter for predicting the next one. The standard formula is `softmax(QK^T / sqrt(d)) * V`, where Q (queries), K (keys), and V (values) are linear projections of the input.
 
-**GQA** is a memory optimization: instead of giving every query head its own key/value head, multiple query heads *share* key/value heads. DeepSeek-R1-Distill-Qwen-1.5B uses 32 query heads but only 4 KV heads — an 8:1 ratio that cuts KV memory by 8x.
+**GQA** is a memory optimization: instead of giving every query head its own key/value head, multiple query heads *share* key/value heads. DeepSeek-R1-Distill-Qwen-1.5B uses 32 query heads but only 4 KV heads - an 8:1 ratio that cuts KV memory by 8x.
 
-The **KV cache** is what makes autoregressive generation fast. During the prefill phase, we compute keys and values for all prompt tokens and store them. During decode, we only process *one new token at a time* — we compute its Q, K, V, write K and V into the cache, then attend over the full cached history:
+The **KV cache** is what makes autoregressive generation fast. During the prefill phase, we compute keys and values for all prompt tokens and store them. During decode, we only process *one new token at a time* - we compute its Q, K, V, write K and V into the cache, then attend over the full cached history:
 
 ```python
 class Attention(nn.Module):
@@ -143,7 +143,7 @@ Notice the `.float()` on the score computation. On Apple Silicon (MPS), float16 
 
 ### SwiGLU Feed-Forward Network
 
-After attention, each token passes through a gated feed-forward network. **SwiGLU** uses a gate mechanism — one linear projection controls *which features pass through*, making it more expressive than a plain ReLU FFN:
+After attention, each token passes through a gated feed-forward network. **SwiGLU** uses a gate mechanism - one linear projection controls *which features pass through*, making it more expressive than a plain ReLU FFN:
 
 ```python
 class FFN(nn.Module):
@@ -185,7 +185,7 @@ The output logits are a score for every token in the vocabulary. The sampling st
 
 ## Loading Pre-Trained Weights
 
-The architecture is just an empty shell. The knowledge lives in the weights — billions of floating-point numbers learned during training. HuggingFace models store them in **safetensors** format.
+The architecture is just an empty shell. The knowledge lives in the weights - billions of floating-point numbers learned during training. HuggingFace models store them in **safetensors** format.
 
 ```python
 def load_model(model_id, device="cpu", dtype=torch.float32):
@@ -196,7 +196,7 @@ def load_model(model_id, device="cpu", dtype=torch.float32):
     for f in sorted(path.glob("*.safetensors")):
         weights.update(load_file(f))
 
-    # HuggingFace prefixes with "model." — strip it
+    # HuggingFace prefixes with "model." - strip it
     mapped = {(k[6:] if k.startswith("model.") else k): v for k, v in weights.items()}
 
     # Some models tie lm_head weights to the embedding layer
@@ -211,7 +211,7 @@ def load_model(model_id, device="cpu", dtype=torch.float32):
 
 Weight name mapping is a consistent pain point. Different model families use different naming conventions. HuggingFace prefixes everything with `model.`, GGUF files use names like `blk.0.attn_q.weight` instead of `layers.0.self_attn.q_proj.weight`. Every inference engine needs a translation layer.
 
-**Tied embeddings** are another common pattern — models like Qwen share the same weight matrix between the input embedding layer and the output LM head. If you don't handle this, the model loads with a zero LM head and outputs uniform random logits.
+**Tied embeddings** are another common pattern - models like Qwen share the same weight matrix between the input embedding layer and the output LM head. If you don't handle this, the model loads with a zero LM head and outputs uniform random logits.
 
 ## Text Generation: The Prefill/Decode Loop
 
@@ -229,7 +229,7 @@ graph LR
 
 **Prefill** processes the entire prompt in one batched forward pass. This is fast because all tokens run in parallel. The KV cache fills up with the prompt's keys and values.
 
-**Decode** generates one token at a time. Each step only processes one new token, but it attends over the full cached history. This is the bottleneck — it's memory-bandwidth-bound, not compute-bound, because we're reading the entire KV cache for each new token.
+**Decode** generates one token at a time. Each step only processes one new token, but it attends over the full cached history. This is the bottleneck - it's memory-bandwidth-bound, not compute-bound, because we're reading the entire KV cache for each new token.
 
 ```python
 # Prefill: process entire prompt
@@ -246,11 +246,11 @@ for i in range(max_tokens):
         logits = model(inp, start_pos=len(prompt_ids) + i)
 ```
 
-The `start_pos` parameter tells the model where to write in the KV cache. During prefill it's 0. During decode, it advances by 1 each step. This is what makes the cache work — we never recompute past positions.
+The `start_pos` parameter tells the model where to write in the KV cache. During prefill it's 0. During decode, it advances by 1 each step. This is what makes the cache work - we never recompute past positions.
 
 ## Sampling: Controlling the Output
 
-The model outputs raw logits — unbounded scores for every token in the vocabulary. **Sampling** converts these into a token selection. The strategy dramatically affects output quality.
+The model outputs raw logits - unbounded scores for every token in the vocabulary. **Sampling** converts these into a token selection. The strategy dramatically affects output quality.
 
 ### Temperature
 
@@ -262,7 +262,7 @@ if temperature == 0:
 logits = logits / temperature
 ```
 
-At temperature 0, it's deterministic — always the highest-scoring token. At 0.7, it's balanced. At 1.5+, the model gets creative (and sometimes incoherent).
+At temperature 0, it's deterministic - always the highest-scoring token. At 0.7, it's balanced. At 1.5+, the model gets creative (and sometimes incoherent).
 
 ### Top-k Filtering
 
@@ -304,11 +304,11 @@ if repeat_penalty != 1.0:
             logits[0, tid] *= repeat_penalty
 ```
 
-The sign-aware logic matters — positive logits are divided (reducing probability), negative logits are multiplied (making them more negative). Both operations reduce the chance of repetition, regardless of the logit's sign.
+The sign-aware logic matters - positive logits are divided (reducing probability), negative logits are multiplied (making them more negative). Both operations reduce the chance of repetition, regardless of the logit's sign.
 
 ## Chat Templates
 
-Raw LLMs are text completion models — they continue whatever text you give them. **Chat-tuned** models are fine-tuned on conversations with special role markers like `<|user|>` and `<|assistant|>`. Without the right template, the model doesn't know it should *respond* — it just continues your text like autocomplete.
+Raw LLMs are text completion models - they continue whatever text you give them. **Chat-tuned** models are fine-tuned on conversations with special role markers like `<|user|>` and `<|assistant|>`. Without the right template, the model doesn't know it should *respond* - it just continues your text like autocomplete.
 
 Every model stores its chat template as a Jinja2 string in `tokenizer_config.json`. A proper inference engine loads and renders it automatically:
 
@@ -327,7 +327,7 @@ def apply_chat_template(messages, tokenizer):
     return f"<|user|>\n{messages[-1]['content']}</s>\n<|assistant|>\n"
 ```
 
-This is how HuggingFace, Ollama, and nanollama support dozens of chat formats with one codebase — the template is data, not code. Switch the model, and the template switches automatically.
+This is how HuggingFace, Ollama, and nanollama support dozens of chat formats with one codebase - the template is data, not code. Switch the model, and the template switches automatically.
 
 ## Performance: Making It Fast
 
@@ -335,7 +335,7 @@ A naive implementation works but is painfully slow. Here's how inference engines
 
 ### Precision: Float16 and BFloat16
 
-Switching from float32 to float16 halves memory usage and can dramatically improve speed. But you have to be careful — normalization layers, attention scores, and softmax all need float32 intermediate values to avoid overflow:
+Switching from float32 to float16 halves memory usage and can dramatically improve speed. But you have to be careful - normalization layers, attention scores, and softmax all need float32 intermediate values to avoid overflow:
 
 ```python
 # Attention scores in float32 to prevent overflow
@@ -365,7 +365,7 @@ class QuantizedLinear(nn.Module):
             quantized = (even << 4) | (odd & 0x0F)
 ```
 
-The 4-bit packing is particularly interesting — two values share one byte. Unpacking requires arithmetic right shifts (which preserve sign) for the high nibble and a shift-left-then-right trick for the low nibble. Real production engines (llama.cpp, GPTQ) use fused GPU kernels for this, but the math is the same.
+The 4-bit packing is particularly interesting - two values share one byte. Unpacking requires arithmetic right shifts (which preserve sign) for the high nibble and a shift-left-then-right trick for the low nibble. Real production engines (llama.cpp, GPTQ) use fused GPU kernels for this, but the math is the same.
 
 ### Batched Generation
 
@@ -388,11 +388,11 @@ for i, pl in enumerate(pad_lengths):
     pad_mask[i, :max_len - pl] = True
 ```
 
-The padding mask is critical — without it, the model attends to padding tokens and produces incoherent output. A subtle gotcha: you need to use `torch.where` instead of multiplication when combining the padding mask with the causal mask, because `0.0 * -inf = NaN` under IEEE 754 floating-point rules.
+The padding mask is critical - without it, the model attends to padding tokens and produces incoherent output. A subtle gotcha: you need to use `torch.where` instead of multiplication when combining the padding mask with the causal mask, because `0.0 * -inf = NaN` under IEEE 754 floating-point rules.
 
 ## Serving: The API Layer
 
-A local inference engine isn't useful unless other tools can talk to it. The standard approach is an **OpenAI-compatible API** — the same endpoints and JSON format that the OpenAI SDK expects. This makes your engine a drop-in replacement for any tool that supports OpenAI (LangChain, Open WebUI, Continue, etc.).
+A local inference engine isn't useful unless other tools can talk to it. The standard approach is an **OpenAI-compatible API** - the same endpoints and JSON format that the OpenAI SDK expects. This makes your engine a drop-in replacement for any tool that supports OpenAI (LangChain, Open WebUI, Continue, etc.).
 
 nanollama implements this with FastAPI:
 
@@ -420,9 +420,9 @@ def create_app(model, tokenizer):
 
 A few design decisions worth noting:
 
-**Request queuing with `asyncio.Lock`.** The model's KV cache is mutable shared state — two concurrent generations would corrupt each other's cache. The lock serializes model access so requests queue safely. Production engines solve this with continuous batching (vLLM's PagedAttention), but a lock works for single-user scenarios.
+**Request queuing with `asyncio.Lock`.** The model's KV cache is mutable shared state - two concurrent generations would corrupt each other's cache. The lock serializes model access so requests queue safely. Production engines solve this with continuous batching (vLLM's PagedAttention), but a lock works for single-user scenarios.
 
-**SSE streaming.** When `stream=true`, the engine yields tokens as Server-Sent Events — each chunk is `data: {json}\n\n`, ending with `data: [DONE]\n\n`. This matches OpenAI's format exactly:
+**SSE streaming.** When `stream=true`, the engine yields tokens as Server-Sent Events - each chunk is `data: {json}\n\n`, ending with `data: [DONE]\n\n`. This matches OpenAI's format exactly:
 
 ```
 data: {"choices":[{"delta":{"content":"The"}}]}
@@ -459,7 +459,7 @@ GGUF also uses different tensor naming conventions than HuggingFace, so a name m
 
 ## Modelfile: Configuration as DSL
 
-Ollama popularized the Modelfile concept — a simple DSL that bundles a model reference, system prompt, and sampling parameters into one config:
+Ollama popularized the Modelfile concept - a simple DSL that bundles a model reference, system prompt, and sampling parameters into one config:
 
 ```
 FROM Qwen/Qwen2-0.5B-Instruct-GGUF/qwen2-0_5b-instruct-q4_0.gguf
@@ -469,7 +469,7 @@ PARAMETER top_k 50
 SYSTEM You are a helpful coding assistant.
 ```
 
-This is simple to parse — line-by-line, split on whitespace, match directives — but it's a powerful UX pattern. Instead of remembering a dozen CLI flags, users create a config file per persona or use case. The parser is ~30 lines:
+This is simple to parse - line-by-line, split on whitespace, match directives - but it's a powerful UX pattern. Instead of remembering a dozen CLI flags, users create a config file per persona or use case. The parser is ~30 lines:
 
 ```python
 def parse_modelfile(path):
@@ -540,21 +540,21 @@ graph TD
 | Code size | ~100K lines | ~50K lines | ~1400 lines |
 | Goal | Production local inference | Production serving | Learning |
 
-The architectural patterns are identical — the difference is optimization depth. Production engines use fused CUDA kernels for quantized matmuls, PagedAttention for memory-efficient batching, and continuous batching to maximize GPU utilization. nanollama uses pure PyTorch, which makes the logic readable at the cost of speed.
+The architectural patterns are identical - the difference is optimization depth. Production engines use fused CUDA kernels for quantized matmuls, PagedAttention for memory-efficient batching, and continuous batching to maximize GPU utilization. nanollama uses pure PyTorch, which makes the logic readable at the cost of speed.
 
 ## Key Takeaways
 
 **An inference engine is a pipeline, not a monolith.** It's tokenization → embedding → attention → FFN → sampling → decoding, with a KV cache for speed and an API layer for access. Each piece is independently understandable.
 
-**The KV cache is the central optimization.** Without it, generating N tokens requires O(N^2) compute because you'd reprocess the entire sequence each step. With it, each decode step is O(N) — read the cache, compute one new token.
+**The KV cache is the central optimization.** Without it, generating N tokens requires O(N^2) compute because you'd reprocess the entire sequence each step. With it, each decode step is O(N) - read the cache, compute one new token.
 
-**Sampling is where the "personality" lives.** The model outputs the same logits regardless — it's the combination of temperature, top-k, top-p, and repetition penalty that determines whether output is focused or creative, repetitive or varied.
+**Sampling is where the "personality" lives.** The model outputs the same logits regardless - it's the combination of temperature, top-k, top-p, and repetition penalty that determines whether output is focused or creative, repetitive or varied.
 
 **Platform-specific numerics will bite you.** Float16 on MPS vs CUDA behaves differently. IEEE 754 edge cases (0 * -inf = NaN) break padding masks. RMSNorm overflows without float32 promotion. Test on every target platform.
 
 **OpenAI compatibility is the API standard.** If your engine speaks the OpenAI protocol, every tool in the ecosystem works with it out of the box. It's worth implementing correctly.
 
-If you want to explore the code yourself, [nanollama is on GitHub](https://github.com/mrcloudchase/nanollama). It's designed to be read top to bottom in one sitting — every section builds on the one above it.
+If you want to explore the code yourself, [nanollama is on GitHub](https://github.com/mrcloudchase/nanollama). It's designed to be read top to bottom in one sitting - every section builds on the one above it.
 
 ```bash
 $ git clone https://github.com/mrcloudchase/nanollama.git

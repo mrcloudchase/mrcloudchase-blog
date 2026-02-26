@@ -1,7 +1,7 @@
 ---
 title: "Building an AI Agent Platform from Scratch in TypeScript"
-date: "2026-02-26"
-excerpt: "A technical deep dive into TinyClaw — a full-featured AI agent platform in ~11K lines of TypeScript. From message pipeline to multi-channel delivery, here's how every layer of an AI assistant system works."
+date: "2026-02-27"
+excerpt: "A technical deep dive into TinyClaw - a full-featured AI agent platform in ~11K lines of TypeScript. From message pipeline to multi-channel delivery, here's how every layer of an AI assistant system works."
 author: "Chase Dovey"
 tags: ["AI", "TypeScript", "Agents", "Architecture"]
 draft: false
@@ -11,13 +11,13 @@ draft: false
 
 AI coding agents like Claude Code, Cursor, and Windsurf feel magical, but underneath they're software systems with concrete architecture: a message pipeline, a session manager, a tool executor, a retry loop, and an API layer. The same patterns that power a CLI coding agent also power a multi-channel assistant that responds on WhatsApp, Discord, and Slack.
 
-I built [TinyClaw](https://github.com/mrcloudchase/tinyclaw) to understand these patterns from the inside. It's a full-featured AI agent platform in ~11K lines of TypeScript — extracted from [OpenClaw's](https://github.com/nicepkg/openclaw) core and rebuilt to be readable. It includes a CLI agent, a gateway server with WebSocket + HTTP API, messaging channels, a plugin system, Docker sandboxing, persistent memory, and a 10-layer security engine.
+I built [TinyClaw](https://github.com/mrcloudchase/tinyclaw) to understand these patterns from the inside. It's a full-featured AI agent platform in ~11K lines of TypeScript - extracted from [OpenClaw's](https://github.com/nicepkg/openclaw) core and rebuilt to be readable. It includes a CLI agent, a gateway server with WebSocket + HTTP API, messaging channels, a plugin system, Docker sandboxing, persistent memory, and a 10-layer security engine.
 
-This post walks through the architecture of TinyClaw to explain how AI agent platforms are built — from the moment a message arrives to the moment a response is delivered.
+This post walks through the architecture of TinyClaw to explain how AI agent platforms are built - from the moment a message arrives to the moment a response is delivered.
 
 ## The Big Picture
 
-Every AI agent platform solves the same fundamental problem: take user input from *somewhere*, route it through an AI model with tools, and deliver the response back. The complexity comes from all the things that can go wrong in between — and from supporting multiple "somewheres" at once.
+Every AI agent platform solves the same fundamental problem: take user input from *somewhere*, route it through an AI model with tools, and deliver the response back. The complexity comes from all the things that can go wrong in between - and from supporting multiple "somewheres" at once.
 
 ```mermaid
 graph TD
@@ -56,7 +56,7 @@ TinyClaw implements every box in this diagram. Let's go layer by layer.
 
 ## The Message Pipeline
 
-The pipeline is the central nervous system. Every message — whether from the CLI, a WebSocket client, or a WhatsApp user — enters through a single `dispatch()` function:
+The pipeline is the central nervous system. Every message - whether from the CLI, a WebSocket client, or a WhatsApp user - enters through a single `dispatch()` function:
 
 ```typescript
 export async function dispatch(params: {
@@ -73,7 +73,7 @@ export async function dispatch(params: {
 }
 ```
 
-This single entry point is a deliberate design choice. It means every message — regardless of origin — goes through the same deduplication, injection detection, directive parsing, and security checks. No channel gets special treatment, and no pathway bypasses security.
+This single entry point is a deliberate design choice. It means every message - regardless of origin - goes through the same deduplication, injection detection, directive parsing, and security checks. No channel gets special treatment, and no pathway bypasses security.
 
 ### Message Deduplication
 
@@ -143,7 +143,7 @@ const INJECTION_PATTERNS = [
 ];
 ```
 
-When injection is detected, the message is wrapped in `<<<EXTERNAL_UNTRUSTED_CONTENT>>>` tags before reaching the model. This isn't foolproof — no injection detection is — but it raises the bar significantly by signaling to the model that the content should be treated with suspicion.
+When injection is detected, the message is wrapped in `<<<EXTERNAL_UNTRUSTED_CONTENT>>>` tags before reaching the model. This isn't foolproof - no injection detection is - but it raises the bar significantly by signaling to the model that the content should be treated with suspicion.
 
 ## The Agent Runner: Retry and Recovery
 
@@ -218,7 +218,7 @@ export function classifyFailoverReason(error: unknown): FailureReason {
 }
 ```
 
-Format errors (malformed requests) never retry — they'll fail forever. Timeouts retry the same key with a short backoff. Rate limits back off longer and rotate keys. Auth/billing failures rotate to a completely different model. This prevents the agent from burning through credits or hammering a rate-limited endpoint.
+Format errors (malformed requests) never retry - they'll fail forever. Timeouts retry the same key with a short backoff. Rate limits back off longer and rotate keys. Auth/billing failures rotate to a completely different model. This prevents the agent from burning through credits or hammering a rate-limited endpoint.
 
 ### Auth Resilience: Multi-Key Rotation with Persistent Cooldowns
 
@@ -250,7 +250,7 @@ Sessions are how the agent maintains conversation history across turns. Each ses
 
 ### File Locking
 
-When you have a gateway server and a CLI both running, they can both try to write to the same session file. TinyClaw uses advisory file locking via `O_CREAT | O_EXCL` — the atomic file creation flag that fails if the file already exists:
+When you have a gateway server and a CLI both running, they can both try to write to the same session file. TinyClaw uses advisory file locking via `O_CREAT | O_EXCL` - the atomic file creation flag that fails if the file already exists:
 
 ```typescript
 export async function acquireSessionLock(sessionFile: string, timeoutMs = 10000): Promise<void> {
@@ -308,7 +308,7 @@ export function repairSessionFileIfNeeded(sessionFile: string): void {
 }
 ```
 
-The write-to-temp-then-rename pattern ensures the repair itself is atomic — if the process crashes during repair, the original file is untouched.
+The write-to-temp-then-rename pattern ensures the repair itself is atomic - if the process crashes during repair, the original file is untouched.
 
 ## The Security Engine
 
@@ -342,11 +342,11 @@ export function evaluatePolicy(config: TinyClawConfig, ctx: PolicyContext): Poli
 }
 ```
 
-Each layer is a short-circuit — the first match wins. This means hardcoded denies can never be overridden by config, and per-agent restrictions layer on top of global ones.
+Each layer is a short-circuit - the first match wins. This means hardcoded denies can never be overridden by config, and per-agent restrictions layer on top of global ones.
 
 ### SSRF Protection
 
-The web fetch tool can access URLs — which means an attacker could try to access cloud metadata endpoints or internal services. The SSRF guard blocks private IPs, cloud metadata endpoints, and non-HTTP protocols:
+The web fetch tool can access URLs - which means an attacker could try to access cloud metadata endpoints or internal services. The SSRF guard blocks private IPs, cloud metadata endpoints, and non-HTTP protocols:
 
 ```typescript
 export function ssrfCheck(url: string, config: TinyClawConfig): { allowed: boolean; reason?: string } {
@@ -376,7 +376,7 @@ export function trackApproval(command: string): void {
 }
 ```
 
-This balances safety with usability — the first `npm install` requires approval, but the fourth one runs automatically.
+This balances safety with usability - the first `npm install` requires approval, but the fourth one runs automatically.
 
 ## The Gateway: HTTP + WebSocket Server
 
@@ -411,11 +411,11 @@ export async function startGateway(config: TinyClawConfig): Promise<GatewayConte
 }
 ```
 
-The WebSocket layer uses JSON-RPC 2.0 as the framing protocol — each message has a `method`, `params`, and `id`. Responses include `result` or `error`. This maps cleanly to the 23 supported operations: `chat.send`, `chat.stream`, `sessions.list`, `memory.search`, `cron.add`, `exec.approve`, etc.
+The WebSocket layer uses JSON-RPC 2.0 as the framing protocol - each message has a `method`, `params`, and `id`. Responses include `result` or `error`. This maps cleanly to the 23 supported operations: `chat.send`, `chat.stream`, `sessions.list`, `memory.search`, `cron.add`, `exec.approve`, etc.
 
 ### Broadcast Events
 
-The gateway broadcasts 17 event types to all connected WebSocket clients. This enables real-time UIs — a WebChat client sees tool executions as they happen, session compactions, channel connects/disconnects, and config reloads:
+The gateway broadcasts 17 event types to all connected WebSocket clients. This enables real-time UIs - a WebChat client sees tool executions as they happen, session compactions, channel connects/disconnects, and config reloads:
 
 ```typescript
 type BroadcastEvent =
@@ -459,7 +459,7 @@ export interface ChannelAdapter {
 }
 ```
 
-The pipeline doesn't know or care which channel it's talking to. It calls `adapter.sendText()`, and the adapter translates to the platform-specific API — WhatsApp Cloud API, grammY for Telegram, discord.js for Discord, Bolt for Slack.
+The pipeline doesn't know or care which channel it's talking to. It calls `adapter.sendText()`, and the adapter translates to the platform-specific API - WhatsApp Cloud API, grammY for Telegram, discord.js for Discord, Bolt for Slack.
 
 ### Block Streaming with Channel-Aware Limits
 
@@ -471,7 +471,7 @@ Each messaging platform has different message length limits. The coalescer chunk
 | Discord | 2,000 |
 | Telegram | 4,096 |
 
-The chunker splits at paragraph boundaries first, then sentences, then newlines, and hard-splits as a last resort. Code blocks are tracked — a chunk never splits in the middle of a fenced code block.
+The chunker splits at paragraph boundaries first, then sentences, then newlines, and hard-splits as a last resort. Code blocks are tracked - a chunk never splits in the middle of a fenced code block.
 
 ### DM Pairing
 
@@ -517,7 +517,7 @@ CREATE VIRTUAL TABLE memories_fts USING fts5(content, content=memories, content_
 
 ## The Config System
 
-Every behavior in TinyClaw is config-driven. The config schema is defined with Zod — which provides both runtime validation and TypeScript type inference from a single source:
+Every behavior in TinyClaw is config-driven. The config schema is defined with Zod - which provides both runtime validation and TypeScript type inference from a single source:
 
 ```typescript
 export const TinyClawConfigSchema = z.object({
@@ -534,7 +534,7 @@ export const TinyClawConfigSchema = z.object({
 export type TinyClawConfig = z.infer<typeof TinyClawConfigSchema>;
 ```
 
-All config types throughout the codebase are inferred from the Zod schema. This means there's a single source of truth — if you add a field to the schema, TypeScript enforces its use everywhere. If a user provides invalid config, Zod produces a structured error with the exact path and expected type.
+All config types throughout the codebase are inferred from the Zod schema. This means there's a single source of truth - if you add a field to the schema, TypeScript enforces its use everywhere. If a user provides invalid config, Zod produces a structured error with the exact path and expected type.
 
 Config lives at `~/.config/tinyclaw/config.json5` (JSON5 allows comments and trailing commas). Environment variables override file config for deployment flexibility:
 
@@ -557,7 +557,7 @@ const LOCAL_PROVIDERS: Record<string, { baseUrl: string }> = {
 };
 ```
 
-Set `"provider": "ollama"` in config and it just works — no base URL configuration needed. Model aliases let users type `sonnet` instead of `anthropic/claude-sonnet-4-5-20250929`. Fallback chains define what happens when the primary model fails:
+Set `"provider": "ollama"` in config and it just works - no base URL configuration needed. Model aliases let users type `sonnet` instead of `anthropic/claude-sonnet-4-5-20250929`. Fallback chains define what happens when the primary model fails:
 
 ```json
 {
@@ -631,32 +631,32 @@ Hooks execute sequentially by priority. Each hook sees transforms from previous 
 
 The system prompt is assembled from 18 sections based on what's enabled in config:
 
-1. **Identity** — agent name, emoji, agent ID
-2. **Available tools** — dynamically generated from registered tools
-3. **Tool usage guidelines** — read-before-write, prefer edits over creates
-4. **Safety constraints** — no self-preservation, no power-seeking
-5. **Workspace** — working directory path
-6. **Runtime** — OS, arch, Node version, model, thinking level
-7. **Security policy** — tool policy mode, exec approval, SSRF status
-8. **Memory instructions** — if memory is enabled
-9. **Browser instructions** — if browser is enabled
-10. **Cron instructions** — if cron is enabled
-11. **TTS instructions** — if TTS is enabled
-12. **Channel context** — connected messaging channels
-13. **Multi-agent info** — if multiple agents configured
-14. **Skills summary** — available slash commands
-15. **Directives** — `++think`, `++model`, `++exec`
-16. **Commands** — `/new`, `/compact`, `/model`
-17. **Group chat context** — if responding in a group
-18. **Bootstrap content** — SOUL.md, AGENTS.md, or other project files
+1. **Identity** - agent name, emoji, agent ID
+2. **Available tools** - dynamically generated from registered tools
+3. **Tool usage guidelines** - read-before-write, prefer edits over creates
+4. **Safety constraints** - no self-preservation, no power-seeking
+5. **Workspace** - working directory path
+6. **Runtime** - OS, arch, Node version, model, thinking level
+7. **Security policy** - tool policy mode, exec approval, SSRF status
+8. **Memory instructions** - if memory is enabled
+9. **Browser instructions** - if browser is enabled
+10. **Cron instructions** - if cron is enabled
+11. **TTS instructions** - if TTS is enabled
+12. **Channel context** - connected messaging channels
+13. **Multi-agent info** - if multiple agents configured
+14. **Skills summary** - available slash commands
+15. **Directives** - `++think`, `++model`, `++exec`
+16. **Commands** - `/new`, `/compact`, `/model`
+17. **Group chat context** - if responding in a group
+18. **Bootstrap content** - SOUL.md, AGENTS.md, or other project files
 
-Bootstrap files are loaded from the workspace root in priority order: `SOUL.md` → `IDENTITY.md` → `USER.md` → `TOOLS.md` → `TINYCLAW.md` → `CLAUDE.md` → `AGENTS.md` → `BOOTSTRAP.md`. SOUL.md gets special treatment — it's prepended with "Embody the persona and tone described below" to establish personality.
+Bootstrap files are loaded from the workspace root in priority order: `SOUL.md` → `IDENTITY.md` → `USER.md` → `TOOLS.md` → `TINYCLAW.md` → `CLAUDE.md` → `AGENTS.md` → `BOOTSTRAP.md`. SOUL.md gets special treatment - it's prepended with "Embody the persona and tone described below" to establish personality.
 
 ## Design Patterns
 
 A few patterns that emerged across the codebase:
 
-**Monolithic files.** Each subsystem is self-contained in one file — types, implementation, and exports together. The pipeline is one file. The security engine is one file. The hook system is one file. This makes it easy to understand a subsystem by reading one file top-to-bottom, at the cost of larger files.
+**Monolithic files.** Each subsystem is self-contained in one file - types, implementation, and exports together. The pipeline is one file. The security engine is one file. The hook system is one file. This makes it easy to understand a subsystem by reading one file top-to-bottom, at the cost of larger files.
 
 **Lazy imports.** Heavy dependencies (gateway, channels, TUI, plugins) use `await import()` so the CLI stays fast. If you just run `tinyclaw "Hello"`, it doesn't load discord.js or grammY.
 
@@ -666,7 +666,7 @@ A few patterns that emerged across the codebase:
 
 ## Key Takeaways
 
-**The pipeline pattern is central.** A single dispatch function that every message passes through — regardless of source — ensures consistent security, dedup, and processing. If you build nothing else, build a unified pipeline.
+**The pipeline pattern is central.** A single dispatch function that every message passes through - regardless of source - ensures consistent security, dedup, and processing. If you build nothing else, build a unified pipeline.
 
 **Error classification determines recovery strategy.** Not all errors are equal. Rate limits need backoff. Auth failures need key rotation. Context overflow needs compaction. Timeouts need a simple retry. Classifying errors precisely enables targeted recovery instead of blanket retries.
 
