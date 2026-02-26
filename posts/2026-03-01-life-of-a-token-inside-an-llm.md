@@ -11,7 +11,7 @@ draft: false
 
 When I was building [nanollama](/blog/how-llm-inference-engines-work/), I kept running into bugs where the tensor shapes were wrong at some layer and I had to trace the entire forward pass by hand to find the problem. That process - tracking exact dimensions through every operation - turned out to be the best way to understand what a transformer actually does.
 
-So here's that trace, written out as a post. We'll follow the prompt "The capital of France is" through every single operation inside a decoder-only transformer, using concrete dimensions from a real 1.5B parameter model. No hand-waving, no "and then magic happens." Every layer, every reshape, every multiply, with the exact tensor shapes at each step.
+So here's that trace, written out as a post. We'll follow the prompt "The capital of France is" through every single operation inside a decoder-only transformer, using concrete dimensions from a real 1.1B parameter model. No hand-waving, no "and then magic happens." Every layer, every reshape, every multiply, with the exact tensor shapes at each step.
 
 Here's the full journey:
 
@@ -52,7 +52,7 @@ For concrete numbers, we'll use this architecture:
 | `max_position_embeddings` | 2,048 |
 | `rope_theta` | 10,000.0 |
 
-This is a ~1.5B parameter model. Every dimension in this post is real and follows from these numbers.
+This is a ~1.1B parameter model (similar to TinyLlama). Every dimension in this post is real and follows from these numbers.
 
 ## Step 1: Tokenization
 
@@ -557,7 +557,7 @@ next_token                                → scalar (e.g., 8756)
 
 ## Parameter Count
 
-Where do the 1.5 billion parameters live?
+Where do the ~1.1 billion parameters live?
 
 | Component | Shape | Params | Count |
 |-----------|-------|--------|-------|

@@ -60,15 +60,13 @@ config = {
 
 These numbers aren't arbitrary. They follow scaling laws.
 
-**Chinchilla scaling laws** (Hoffmann et al., 2022) showed that for a fixed compute budget, you should scale model size and training tokens roughly equally. A 7B parameter model should train on ~150B tokens. A 70B model should train on ~1.5T tokens. Training a large model on too little data wastes compute; training a small model on too much data also wastes compute.
-
-The relationship is approximately:
+**Chinchilla scaling laws** (Hoffmann et al., 2022) showed that for a fixed compute budget, you should scale model size and training tokens roughly equally. The relationship is approximately:
 
 ```
 Optimal tokens ~ 20 * model_parameters
 ```
 
-So a 7B model wants ~140B tokens, a 70B model wants ~1.4T tokens. In practice, teams now overtrain beyond Chinchilla-optimal because inference cost (which scales with model size) matters more than training cost for widely deployed models. LLaMA 3 trained a 8B model on 15T tokens - roughly 100x the Chinchilla-optimal ratio.
+So a 7B model wants ~140B tokens, a 70B model wants ~1.4T tokens. Training a large model on too little data wastes compute; training a small model on too much data also wastes compute. In practice, teams now overtrain beyond Chinchilla-optimal because inference cost (which scales with model size) matters more than training cost for widely deployed models. LLaMA 3 trained a 8B model on 15T tokens - roughly 100x the Chinchilla-optimal ratio.
 
 ### Normalization: RMSNorm Over LayerNorm
 

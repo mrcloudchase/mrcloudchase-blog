@@ -91,12 +91,17 @@ def precompute_rope(dim: int, max_seq: int, theta: float = 10000.0):
     return angles.cos(), angles.sin()
 
 def apply_rope(q, k, cos, sin, pos):
-    cos = cos[pos:pos + seq].unsqueeze(0).unsqueeze(2)
+    seq = q.shape[1]
+    cos = cos[pos:pos + seq].unsqueeze(0).unsqueeze(2)  # [1, seq, 1, dim//2]
     sin = sin[pos:pos + seq].unsqueeze(0).unsqueeze(2)
-    half = x.shape[-1] // 2
-    x1, x2 = x[..., :half], x[..., half:]
-    rotated = torch.cat([x1 * cos - x2 * sin, x2 * cos + x1 * sin], dim=-1)
-    return rotated
+
+    def rotate(x):
+        x = x.float()
+        half = x.shape[-1] // 2
+        x1, x2 = x[..., :half], x[..., half:]
+        return torch.cat([x1 * cos - x2 * sin, x2 * cos + x1 * sin], dim=-1)
+
+    return rotate(q), rotate(k)
 ```
 
 Each dimension pair gets a different frequency (like the hands of a clock moving at different speeds). Lower-frequency pairs encode coarse position, higher-frequency pairs encode fine position. The `theta` parameter (typically 10,000) controls the frequency spread.
