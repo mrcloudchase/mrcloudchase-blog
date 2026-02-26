@@ -9,11 +9,11 @@ draft: false
 
 ## Introduction
 
-When you send a message to ChatGPT, Claude, or a local model through Ollama, an **inference engine** turns your text into tokens, runs them through a neural network, and streams back a response. That engine handles weight loading, memory management, sampling strategies, KV caching, and often an HTTP API layer - all behind a simple chat interface.
+I spent a lot of time using tools like Ollama and vLLM before I realized I didn't actually understand what they were doing. I knew the transformer architecture in theory, but I couldn't explain how a model file on disk becomes a streaming chat response. The gap between "I've read the attention paper" and "I can build an inference engine" turned out to be enormous.
 
-Most people treat this as a black box. I wanted to understand every layer of it, so I built [nanollama](https://github.com/mrcloudchase/nanollama) - a single-file LLM inference engine in ~1400 lines of PyTorch. It loads real models from HuggingFace, runs the full transformer forward pass, and serves an OpenAI-compatible API. Not for production - for understanding.
+So I built one. [nanollama](https://github.com/mrcloudchase/nanollama) is a single-file LLM inference engine in ~1400 lines of PyTorch. It loads real models from HuggingFace, runs the full transformer forward pass, and serves an OpenAI-compatible API. Building it taught me more about how LLMs actually work than months of reading papers.
 
-This post walks through how inference engines are built, using nanollama's code as the reference implementation. By the end, you'll understand the complete path from raw model weights to streamed HTTP responses.
+This post distills what I learned. I'll walk through every layer of an inference engine using nanollama's code, from raw model weights to streamed HTTP responses. If you've used LLMs but haven't looked under the hood, this is that look.
 
 ## Architecture Overview
 
@@ -40,7 +40,7 @@ Every inference engine implements this loop. The differences between engines (Ol
 
 ## The Transformer: What the Model Actually Is
 
-An LLM is a stack of identical transformer blocks. Each block applies attention (so the model can look at previous tokens) and a feed-forward network (so it can reason about what it saw). That's it. Everything else is normalization, positional encoding, and clever memory management.
+Here's the thing that clicked for me when building nanollama: an LLM is simpler than it looks. It's a stack of identical transformer blocks. Each block does two things - attention (look at previous tokens) and a feed-forward network (reason about what you saw). Everything else - normalization, positional encoding, KV caching - is infrastructure to make those two operations work well at scale.
 
 ### Configuration
 
@@ -139,7 +139,7 @@ class Attention(nn.Module):
         return self.o_proj((attn @ v).transpose(1, 2).reshape(B, S, -1))
 ```
 
-Notice the `.float()` on the score computation. On Apple Silicon (MPS), float16 matmuls accumulate in half-precision, unlike CUDA which uses float32 accumulators. Without this upcast, attention scores overflow and produce garbage. This is the kind of subtle platform-specific bug that you only discover by building the engine yourself.
+Notice the `.float()` on the score computation. This one cost me hours. On Apple Silicon (MPS), float16 matmuls accumulate in half-precision, unlike CUDA which uses float32 accumulators. Without this upcast, attention scores silently overflow and the model produces complete garbage - coherent-looking tokens that are actually random. The output *looked* like language but made no sense, and the bug only appeared in float16 mode on MPS. You don't find this kind of thing in papers. You find it by running the code and staring at wrong outputs.
 
 ### SwiGLU Feed-Forward Network
 
@@ -209,9 +209,9 @@ def load_model(model_id, device="cpu", dtype=torch.float32):
     return model, AutoTokenizer.from_pretrained(str(path))
 ```
 
-Weight name mapping is a consistent pain point. Different model families use different naming conventions. HuggingFace prefixes everything with `model.`, GGUF files use names like `blk.0.attn_q.weight` instead of `layers.0.self_attn.q_proj.weight`. Every inference engine needs a translation layer.
+Weight name mapping was one of the most tedious parts of building nanollama. Every model family uses different naming conventions. HuggingFace prefixes everything with `model.`, GGUF files use names like `blk.0.attn_q.weight` instead of `layers.0.self_attn.q_proj.weight`. There's no standard, so every inference engine carries a translation layer. It's unglamorous work, but if you get a single name wrong, the model silently loads wrong weights into wrong layers and produces nonsense.
 
-**Tied embeddings** are another common pattern - models like Qwen share the same weight matrix between the input embedding layer and the output LM head. If you don't handle this, the model loads with a zero LM head and outputs uniform random logits.
+**Tied embeddings** caught me off guard. Models like Qwen share the same weight matrix between the input embedding layer and the output LM head. If you don't handle this, the LM head initializes to zeros and the model outputs uniform random logits. The fix is one line, but debugging it took much longer - the model *ran* fine, it just picked random tokens.
 
 ## Text Generation: The Prefill/Decode Loop
 
@@ -388,7 +388,7 @@ for i, pl in enumerate(pad_lengths):
     pad_mask[i, :max_len - pl] = True
 ```
 
-The padding mask is critical - without it, the model attends to padding tokens and produces incoherent output. A subtle gotcha: you need to use `torch.where` instead of multiplication when combining the padding mask with the causal mask, because `0.0 * -inf = NaN` under IEEE 754 floating-point rules.
+The padding mask is critical - without it, the model attends to padding tokens and produces incoherent output. I hit another subtle bug here: you need to use `torch.where` instead of multiplication when combining the padding mask with the causal mask. The reason is `0.0 * -inf = NaN` under IEEE 754 floating-point rules. The NaN propagates through softmax and silently corrupts all attention weights. Again, the model *runs* - it just produces subtly wrong output that's hard to distinguish from a model quality issue. These are the kinds of bugs that make you appreciate what production inference engines handle.
 
 ## Serving: The API Layer
 

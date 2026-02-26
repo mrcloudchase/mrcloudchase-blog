@@ -9,11 +9,11 @@ draft: false
 
 ## Introduction
 
-AI coding agents like Claude Code, Cursor, and Windsurf feel magical, but underneath they're software systems with concrete architecture: a message pipeline, a session manager, a tool executor, a retry loop, and an API layer. The same patterns that power a CLI coding agent also power a multi-channel assistant that responds on WhatsApp, Discord, and Slack.
+After spending months working with AI coding agents like Claude Code and Cursor, I wanted to understand what was actually happening behind the interfaces. Not the LLM part - I'd built [nanollama](/blog/how-llm-inference-engines-work/) for that. I wanted to understand the *platform* layer: how does a message from WhatsApp end up as an AI response with tool calls, session memory, and security checks?
 
-I built [TinyClaw](https://github.com/mrcloudchase/tinyclaw) to understand these patterns from the inside. It's a full-featured AI agent platform in ~11K lines of TypeScript - extracted from [OpenClaw's](https://github.com/nicepkg/openclaw) core and rebuilt to be readable. It includes a CLI agent, a gateway server with WebSocket + HTTP API, messaging channels, a plugin system, Docker sandboxing, persistent memory, and a 10-layer security engine.
+So I built [TinyClaw](https://github.com/mrcloudchase/tinyclaw) - a full-featured AI agent platform in ~11K lines of TypeScript, extracted from [OpenClaw's](https://github.com/nicepkg/openclaw) core and rebuilt to be readable. It includes a CLI agent, a gateway server, messaging channels (WhatsApp, Telegram, Discord, Slack), a plugin system, Docker sandboxing, persistent memory, and a 10-layer security engine.
 
-This post walks through the architecture of TinyClaw to explain how AI agent platforms are built - from the moment a message arrives to the moment a response is delivered.
+What surprised me most was how much of the engineering is *not* about the AI model. The model is one function call. The other 10,000 lines handle everything that can go wrong around it - retries, auth failures, session corruption, message dedup, injection attacks, rate limits, and delivery across platforms with different constraints. This post breaks down all of it.
 
 ## The Big Picture
 
@@ -147,7 +147,7 @@ When injection is detected, the message is wrapped in `<<<EXTERNAL_UNTRUSTED_CON
 
 ## The Agent Runner: Retry and Recovery
 
-The agent runner is the retry loop that wraps the AI provider call. It handles five categories of failure, each with a different recovery strategy:
+This is where I learned that calling an AI model is the easy part. The hard part is handling the dozen ways that call can fail. The agent runner wraps the model call in a retry loop that classifies errors and applies the right recovery strategy for each:
 
 ```mermaid
 graph TD
@@ -246,7 +246,7 @@ Cooldown state persists to disk. If the process restarts, it remembers which key
 
 ## Session Management
 
-Sessions are how the agent maintains conversation history across turns. Each session maps to a JSONL file on disk managed by `SessionManager`.
+Sessions seem simple until your agent runs for weeks and you discover all the ways file I/O can go wrong. Sessions maintain conversation history across turns, stored as JSONL files on disk.
 
 ### File Locking
 

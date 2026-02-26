@@ -9,9 +9,9 @@ draft: false
 
 ## Introduction
 
-A foundation model is a large neural network trained on broad data at scale, then adapted for specific tasks. GPT-4, Claude, LLaMA, Gemini, and DeepSeek are all foundation models. They share a common recipe: choose an architecture, collect and clean massive datasets, pretrain with self-supervised learning, then align with human preferences.
+After building an [inference engine](/blog/how-llm-inference-engines-work/) and tracing [every operation inside a transformer](/blog/life-of-a-token-inside-an-llm/), the next question was obvious: how are these models actually *made*? Not the forward pass - I understood that. But the entire pipeline: how do you go from an empty `nn.Module` and a pile of internet text to a model that can reason about code, answer questions about history, and write poetry?
 
-This post walks through every stage of that recipe with technical details - the actual decisions, math, and code patterns involved in building a model from nothing to a working chatbot.
+I spent weeks reading training papers (LLaMA, Chinchilla, InstructGPT), studying open-source training codebases, and putting together a complete picture of the process. This post is that picture - every stage from architecture selection to RLHF alignment, with the technical details that papers often gloss over.
 
 ```mermaid
 graph LR
@@ -28,7 +28,7 @@ graph LR
 
 ### Why Decoder-Only Transformers Won
 
-The original 2017 Transformer had an encoder and a decoder. Since then, three variants emerged:
+This was the first thing I wanted to understand - why did the entire industry converge on decoder-only? The original 2017 Transformer had an encoder and a decoder. Since then, three variants emerged:
 
 | Architecture | Examples | Use Case |
 |-------------|----------|----------|
@@ -133,6 +133,8 @@ def swiglu_ffn(x, W_gate, W_up, W_down):
 SwiGLU uses three weight matrices instead of two (gate, up, down vs. just up, down), but the gating mechanism makes it more expressive per parameter. The `intermediate_size` is typically ~3.5x the `hidden_size` to keep the total parameter count comparable to a standard 4x FFN.
 
 ## Stage 2: Dataset Curation
+
+This stage surprised me. I expected the training loop to be the most complex part of building a foundation model. It's not. Data curation is. The preprocessing pipeline - filtering, deduplication, quality scoring - is often more engineering effort than the model training itself.
 
 ### Data Sources
 
@@ -520,7 +522,7 @@ A checkpoint includes model weights, optimizer state (momentum buffers - which a
 
 ### What Pretraining Learns
 
-After seeing trillions of tokens, the model has learned to predict the next token in any context. This implicitly requires learning:
+This is the part I find most remarkable. The model's only objective is "predict the next token." There's no explicit knowledge injection, no reasoning curriculum, no labeled examples. But to predict the next token well, the model implicitly has to learn:
 
 - **Syntax and grammar** - it must predict grammatically correct continuations
 - **World knowledge** - "The capital of France is" requires knowing the answer
@@ -532,7 +534,7 @@ But a pretrained model is not yet useful as an assistant. It's a text completer,
 
 ## Stage 5: Supervised Fine-Tuning (SFT)
 
-SFT teaches the model the **format** of being an assistant - respond to questions, follow instructions, use appropriate tone. The training data is human-written conversation examples:
+After pretraining, you have a powerful text completer that has no idea it's supposed to be an assistant. Ask it "What is 2+2?" and it might continue with "What is 3+3? What is 4+4?" because that pattern exists in its training data. SFT is what turns a text completer into a chatbot. It teaches the model the **format** of being an assistant - how to respond to questions, follow instructions, and use appropriate tone. The training data is human-written conversation examples:
 
 ```json
 [

@@ -9,7 +9,9 @@ draft: false
 
 ## What Is Prompt Injection?
 
-Prompt injection is an attack where user-supplied input overrides or manipulates the instructions given to a large language model. It's the LLM equivalent of SQL injection - untrusted input escapes its intended context and becomes part of the control plane.
+When I built [TinyClaw's](/blog/building-an-ai-agent-platform-from-scratch/) security engine, prompt injection was the threat I spent the most time thinking about - and the one I felt least confident defending against. The reason is simple: there is no complete fix.
+
+Prompt injection is an attack where user-supplied input overrides or manipulates the instructions given to a large language model. Think of it as the LLM equivalent of SQL injection - untrusted input escapes its intended context and becomes part of the control plane. But unlike SQL injection, which was solved decades ago with parameterized queries, prompt injection has no equivalent structural fix.
 
 Every LLM application has the same basic structure:
 
@@ -18,7 +20,7 @@ Every LLM application has the same basic structure:
 [User Input - untrusted content]
 ```
 
-The model sees both as a single stream of text. It has no architectural mechanism to distinguish "instructions from the developer" from "instructions embedded in user input." This is the fundamental problem. The boundary between instructions and data is a social convention, not an enforced one.
+The model sees both as a single stream of text. It has no architectural mechanism to enforce a hierarchy - it can't tell "instructions from the developer" apart from "instructions embedded in user input." The boundary between code and data is a social convention, not an enforced one. That's what makes this problem fundamentally different from every injection vulnerability that came before it.
 
 ## Direct Prompt Injection
 
@@ -172,7 +174,7 @@ The agent reads the search results, encounters the injected instruction, and mig
 
 ## Why This Is Hard to Defend Against
 
-Prompt injection is fundamentally different from traditional injection attacks. SQL injection has a clean fix - parameterized queries separate code from data at the protocol level. There is no equivalent for LLMs because:
+This is the part that keeps me up at night when building agent platforms. Prompt injection is fundamentally different from every injection attack that came before it. SQL injection has a clean, permanent fix - parameterized queries separate code from data at the protocol level. There is no equivalent for LLMs, and the reasons are structural:
 
 **1. There's no separation between code and data.** The model processes everything - system prompts, user input, tool outputs - as a single token stream. There's no "parameterized prompt" that structurally prevents user content from being interpreted as instructions.
 
@@ -188,7 +190,7 @@ There's no silver bullet, but layered defenses significantly raise the bar.
 
 ### 1. Input Pattern Detection
 
-Scan user input for common injection patterns before it reaches the model:
+This is what I implemented in TinyClaw's security layer. Scan user input for common injection patterns before it reaches the model:
 
 ```typescript
 const INJECTION_PATTERNS = [
