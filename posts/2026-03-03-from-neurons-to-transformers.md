@@ -1,6 +1,6 @@
 ---
 title: "From Neurons to Transformers"
-date: "2026-02-26"
+date: "2026-03-03"
 excerpt: "The complete mathematical lineage from a single artificial neuron to the modern decoder-only transformer. Every concept and equation that connects the perceptron to GPT."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]

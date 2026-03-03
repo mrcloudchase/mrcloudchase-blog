@@ -1,6 +1,6 @@
 ---
 title: "Hello World"
-date: "2026-02-06"
+date: "2026-03-02"
 excerpt: "Welcome to my blog. A quick intro on what I'll be writing about - cloud architecture, AI engineering, and building things that scale."
 author: "Chase Dovey"
 tags: ["General", "Cloud", "AI"]
@@ -9,14 +9,16 @@ draft: false
 
 ## Welcome
 
-Hey, I'm Chase - a cloud architect and AI engineer. This blog is where I'll share what I'm learning, building, and thinking about.
+Hey, I'm Chase - an AI and Cloud engineer. This blog is where I share what I'm learning, building, and thinking about.
 
 ## What to Expect
 
-I'll be writing about:
+I'm writing about:
 
-- **Cloud Architecture** - designing scalable infrastructure on Azure, AWS, and beyond
-- **AI Engineering** - building intelligent systems, from LLM integrations to agent frameworks
+- **Model Development** - building LLMs from scratch and fine-tuning them for specific tasks
+- **Agentic Primitives Development** - building primitive components for agentic systems (frameworks, memory, reasoning, tool calling)
+- **AI Engineering** - building agentic systems, from LLM integrations to agentic frameworks
+- **Cloud Architecture** - designing scalable infrastructure on Azure, AWS, and GCP
 - **DevOps & Automation** - CI/CD pipelines, infrastructure as code, and developer experience
 - **Projects** - deep dives into things I'm building
 

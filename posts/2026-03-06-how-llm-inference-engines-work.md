@@ -1,6 +1,6 @@
 ---
 title: "How LLM Inference Engines Work"
-date: "2026-03-01"
+date: "2026-03-06"
 excerpt: "A deep dive into building a complete LLM inference engine - from transformer math to OpenAI-compatible API - using nanollama, an educational implementation in ~1400 lines of Python."
 author: "Chase Dovey"
 tags: ["AI", "Python"]
