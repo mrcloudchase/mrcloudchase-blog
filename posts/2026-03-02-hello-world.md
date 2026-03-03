@@ -13,14 +13,9 @@ Hey, I'm Chase - an AI and Cloud engineer. This blog is where I share what I'm l
 
 ## What to Expect
 
-I'm writing about:
+Here's what I'm writing about:
 
-- **Model Development** - building LLMs from scratch and fine-tuning them for specific tasks
-- **Agentic Primitives Development** - building primitive components for agentic systems (frameworks, memory, reasoning, tool calling)
-- **AI Engineering** - building agentic systems, from LLM integrations to agentic frameworks
-- **Cloud Architecture** - designing scalable infrastructure on Azure, AWS, and GCP
-- **DevOps & Automation** - CI/CD pipelines, infrastructure as code, and developer experience
-- **Projects** - deep dives into things I'm building
+<!-- TAG_CATALOG -->
 
 ## The Stack
 

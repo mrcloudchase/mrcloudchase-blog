@@ -39,7 +39,7 @@ draft: false
 | `date` | Yes | Publication date in `YYYY-MM-DD` format |
 | `excerpt` | Yes | Short description for blog cards and SEO meta descriptions |
 | `author` | Yes | Author name |
-| `tags` | Yes | Array of tag strings for categorization and filtering |
+| `tags` | Yes | Array of tag strings — must use tags defined in `tags.json` |
 | `draft` | No | Set to `true` to hide in production builds (visible in dev) |
 
 ### Markdown Features
@@ -66,6 +66,19 @@ Posts support:
 `.github/workflows/trigger-site-rebuild.yml` runs on every push to `main`. It uses `peter-evans/repository-dispatch@v3` to send a `blog-content-updated` event to the `mrcloudchase/mrcloudchase.github.io` repository, which triggers the website's deploy workflow.
 
 **Required secret:** `WEBSITE_REPO_TOKEN` — a GitHub Personal Access Token with `repo` scope, used to dispatch the rebuild event.
+
+## Tag Definitions
+
+Valid tags are defined in `tags.json` at the repo root. Each entry has a `name` and `description`:
+
+```json
+{ "name": "AI", "description": "AI engineering, LLM integrations, and agentic systems" }
+```
+
+**Rules:**
+- Posts must only use tags defined in `tags.json` — the website validates tags at build time and warns on undefined tags
+- To add a new tag, add an entry to `tags.json` before using it in a post
+- The hello-world post dynamically renders all tag definitions via a `<!-- TAG_CATALOG -->` marker — no manual updates needed when tags change
 
 ## Things to Avoid
 
