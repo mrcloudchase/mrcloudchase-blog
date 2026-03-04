@@ -80,53 +80,15 @@ At build time, the website clones the content repo into a gitignored `content/bl
 
 The Markdown processing uses the [unified](https://unifiedjs.com/) ecosystem, a pipeline of parsers and transformers that convert Markdown to an abstract syntax tree, transform it, and serialize it to HTML:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Markdown Processing                       │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  raw .md file                                               │
-│       │                                                     │
-│       ▼                                                     │
-│  ┌──────────┐   Parse Markdown into AST                     │
-│  │  remark   │                                              │
-│  │  -parse   │                                              │
-│  └────┬─────┘                                               │
-│       │                                                     │
-│       ▼                                                     │
-│  ┌──────────┐   Add tables, strikethrough, task lists,      │
-│  │  remark   │   autolinks (GitHub Flavored Markdown)       │
-│  │  -gfm     │                                              │
-│  └────┬─────┘                                               │
-│       │                                                     │
-│       ▼                                                     │
-│  ┌──────────┐   Convert Markdown AST → HTML AST             │
-│  │  remark   │   (preserves raw HTML via                    │
-│  │  -rehype  │    allowDangerousHtml: true)                 │
-│  └────┬─────┘                                               │
-│       │                                                     │
-│       ▼                                                     │
-│  ┌──────────┐   Process raw HTML fragments                  │
-│  │  rehype   │   into proper HTML AST nodes                 │
-│  │  -raw     │                                              │
-│  └────┬─────┘                                               │
-│       │                                                     │
-│       ▼                                                     │
-│  ┌──────────┐   Render Mermaid code blocks into             │
-│  │  rehype   │   inline SVGs using Playwright               │
-│  │  -mermaid │   (headless Chromium at build time)          │
-│  └────┬─────┘                                               │
-│       │                                                     │
-│       ▼                                                     │
-│  ┌──────────┐   Serialize HTML AST back to                  │
-│  │  rehype   │   an HTML string                             │
-│  │  -stringify│                                             │
-│  └────┬─────┘                                               │
-│       │                                                     │
-│       ▼                                                     │
-│  contentHtml string → dangerouslySetInnerHTML               │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    A["raw .md file"] --> B["remark-parse<br/>Parse Markdown into AST"]
+    B --> C["remark-gfm<br/>Add tables, strikethrough, task lists, autolinks"]
+    C --> D["remark-rehype<br/>Convert Markdown AST to HTML AST<br/>(preserves raw HTML)"]
+    D --> E["rehype-raw<br/>Process raw HTML fragments into proper AST nodes"]
+    E --> F["rehype-mermaid<br/>Render Mermaid blocks to inline SVGs<br/>(headless Chromium via Playwright)"]
+    F --> G["rehype-stringify<br/>Serialize HTML AST to string"]
+    G --> H["contentHtml via dangerouslySetInnerHTML"]
 ```
 
 Each plugin in the chain does one thing. `remark-parse` tokenizes Markdown into an AST. `remark-gfm` extends it with GitHub Flavored Markdown features. `remark-rehype` bridges the Markdown AST to an HTML AST. `rehype-raw` handles inline HTML that was passed through. `rehype-mermaid` finds fenced code blocks tagged as `mermaid` and renders them to inline SVGs using a headless Chromium instance via Playwright, so diagrams are baked into the HTML at build time, not rendered client-side. `rehype-stringify` serializes the final AST to an HTML string.
