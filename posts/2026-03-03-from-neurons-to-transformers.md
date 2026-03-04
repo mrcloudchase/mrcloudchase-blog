@@ -58,6 +58,58 @@ graph LR
 
 The perceptron computes `f(w1*x1 + w2*x2 + ... + wn*xn + b)` and adjusts weights when it gets the answer wrong. Simple, but powerful enough to learn linear decision boundaries.
 
+Geometrically, the learned weights define a line (or hyperplane in higher dimensions) that separates two classes. Everything on one side maps to class 1, the other side to class 0:
+
+<svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg" style="max-width:460px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <!-- background -->
+  <rect width="400" height="320" rx="8" fill="#181818"/>
+  <!-- axes -->
+  <line x1="60" y1="270" x2="370" y2="270" stroke="#555" stroke-width="1.5"/>
+  <line x1="60" y1="270" x2="60" y2="30" stroke="#555" stroke-width="1.5"/>
+  <!-- axis labels -->
+  <text x="370" y="290" fill="#999" font-family="monospace" font-size="13" text-anchor="end">x₁</text>
+  <text x="40" y="35" fill="#999" font-family="monospace" font-size="13" text-anchor="end">x₂</text>
+  <!-- grid lines -->
+  <line x1="60" y1="210" x2="370" y2="210" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
+  <line x1="60" y1="150" x2="370" y2="150" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
+  <line x1="60" y1="90" x2="370" y2="90" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
+  <line x1="140" y1="270" x2="140" y2="30" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
+  <line x1="220" y1="270" x2="220" y2="30" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
+  <line x1="300" y1="270" x2="300" y2="30" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
+  <!-- decision boundary: w1*x1 + w2*x2 + b = 0 -->
+  <line x1="60" y1="240" x2="340" y2="50" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="8,4"/>
+  <!-- region labels -->
+  <text x="120" y="260" fill="#22d3ee" font-family="monospace" font-size="11" opacity="0.7">Class 0</text>
+  <text x="260" y="70" fill="#22d3ee" font-family="monospace" font-size="11" opacity="0.7">Class 1</text>
+  <!-- class 0 points (below/right of boundary) -->
+  <circle cx="100" cy="250" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="160" cy="230" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="130" cy="220" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="200" cy="210" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="170" cy="195" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="240" cy="190" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="210" cy="170" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="280" cy="175" r="7" fill="#ef4444" opacity="0.9"/>
+  <!-- class 1 points (above/left of boundary) -->
+  <circle cx="100" cy="140" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="130" cy="120" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="160" cy="100" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="200" cy="110" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="180" cy="80" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="230" cy="90" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="140" cy="60" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="250" cy="120" r="7" fill="#4ade80" opacity="0.9"/>
+  <!-- boundary label -->
+  <text x="345" y="48" fill="#22d3ee" font-family="monospace" font-size="10" text-anchor="start">w₁x₁ + w₂x₂ + b = 0</text>
+  <!-- legend -->
+  <circle cx="80" cy="305" r="5" fill="#4ade80"/>
+  <text x="92" y="309" fill="#ccc" font-family="monospace" font-size="11">Class 1 (y=1)</text>
+  <circle cx="220" cy="305" r="5" fill="#ef4444"/>
+  <text x="232" y="309" fill="#ccc" font-family="monospace" font-size="11">Class 0 (y=0)</text>
+</svg>
+
+The decision boundary is the line `w1*x1 + w2*x2 + b = 0`. The perceptron learning rule shifts this line after each misclassification until all points are correctly separated (if the data is linearly separable).
+
 ### The XOR Problem
 
 Minsky and Papert (1969) proved that a single perceptron **cannot** learn XOR:
