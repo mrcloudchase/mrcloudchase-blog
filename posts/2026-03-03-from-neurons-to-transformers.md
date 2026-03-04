@@ -40,7 +40,12 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
   <path d="M55,145 Q40,152 25,155" fill="none" stroke="#888" stroke-width="1"/>
   <!-- === SOMA (cell body) === -->
   <ellipse cx="170" cy="90" rx="35" ry="28" fill="#333" stroke="#888" stroke-width="1.5">
-    <animate attributeName="stroke" values="#888;#888;#4ade80;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.19;0.22;0.32;0.38;0.42;1" dur="5s" repeatCount="indefinite"/>
+    <!-- stroke: resting -> dim green (1st signal) -> green (2nd) -> bright green (3rd) -> yellow FIRE -> resting -->
+    <animate attributeName="stroke" values="#888;#888;#3a7a4a;#4ade80;#6bf098;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.17;0.19;0.21;0.26;0.32;0.38;0.42;1" dur="5s" repeatCount="indefinite"/>
+    <!-- fill: dark resting -> progressively brighter as signals accumulate -> bright flash at fire -> resting -->
+    <animate attributeName="fill" values="#333;#333;#3a3a3a;#404040;#4a4a3a;#6b5a20;#fbbf24;#6b5a20;#333;#333" keyTimes="0;0.17;0.19;0.21;0.26;0.30;0.34;0.38;0.42;1" dur="5s" repeatCount="indefinite"/>
+    <!-- stroke-width: subtle pulse at threshold fire -->
+    <animate attributeName="stroke-width" values="1.5;1.5;1.5;1.5;2;2.5;3;2.5;1.5;1.5" keyTimes="0;0.17;0.21;0.26;0.30;0.32;0.34;0.38;0.42;1" dur="5s" repeatCount="indefinite"/>
   </ellipse>
   <text x="170" y="94" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">soma</text>
   <!-- === AXON === -->
@@ -58,10 +63,10 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
     <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.69;0.71;0.8;0.82;1" dur="5s" repeatCount="indefinite"/>
   </circle>
   <circle cx="445" cy="90" r="5" fill="#333" stroke="#888" stroke-width="1.5">
-    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.72;0.74;0.82;0.84;1" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.69;0.71;0.8;0.82;1" dur="5s" repeatCount="indefinite"/>
   </circle>
   <circle cx="440" cy="120" r="5" fill="#333" stroke="#888" stroke-width="1.5">
-    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.75;0.77;0.84;0.86;1" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.69;0.71;0.8;0.82;1" dur="5s" repeatCount="indefinite"/>
   </circle>
   <!-- === LABELS === -->
   <text x="55" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Dendrites</text>
