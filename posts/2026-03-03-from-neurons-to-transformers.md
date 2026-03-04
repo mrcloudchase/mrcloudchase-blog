@@ -77,10 +77,12 @@ Geometrically, the learned weights define a line (or hyperplane in higher dimens
   <line x1="220" y1="270" x2="220" y2="30" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
   <line x1="300" y1="270" x2="300" y2="30" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
   <!-- decision boundary: w1*x1 + w2*x2 + b = 0 -->
-  <line x1="60" y1="240" x2="340" y2="50" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="8,4"/>
+  <line x1="60" y1="240" x2="320" y2="64" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="8,4"/>
+  <!-- boundary label -->
+  <text x="310" y="56" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="end">w₁x₁ + w₂x₂ + b = 0</text>
   <!-- region labels -->
   <text x="120" y="260" fill="#22d3ee" font-family="monospace" font-size="11" opacity="0.7">Class 0</text>
-  <text x="260" y="70" fill="#22d3ee" font-family="monospace" font-size="11" opacity="0.7">Class 1</text>
+  <text x="240" y="80" fill="#22d3ee" font-family="monospace" font-size="11" opacity="0.7">Class 1</text>
   <!-- class 0 points (below/right of boundary) -->
   <circle cx="100" cy="250" r="7" fill="#ef4444" opacity="0.9"/>
   <circle cx="160" cy="230" r="7" fill="#ef4444" opacity="0.9"/>
@@ -99,8 +101,6 @@ Geometrically, the learned weights define a line (or hyperplane in higher dimens
   <circle cx="230" cy="90" r="7" fill="#4ade80" opacity="0.9"/>
   <circle cx="140" cy="60" r="7" fill="#4ade80" opacity="0.9"/>
   <circle cx="250" cy="120" r="7" fill="#4ade80" opacity="0.9"/>
-  <!-- boundary label -->
-  <text x="345" y="48" fill="#22d3ee" font-family="monospace" font-size="10" text-anchor="start">w₁x₁ + w₂x₂ + b = 0</text>
   <!-- legend -->
   <circle cx="80" cy="305" r="5" fill="#4ade80"/>
   <text x="92" y="309" fill="#ccc" font-family="monospace" font-size="11">Class 1 (y=1)</text>
