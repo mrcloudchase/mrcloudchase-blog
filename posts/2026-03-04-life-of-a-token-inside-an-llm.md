@@ -4,7 +4,7 @@ date: "2026-03-04"
 excerpt: "Follow a single prompt through every layer of a decoder-only transformer - from raw text to tokenization to embedding, through 22 transformer blocks, to autoregressive next-token prediction and EOS."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]
-draft: false
+draft: true
 ---
 
 ## Introduction

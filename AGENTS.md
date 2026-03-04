@@ -82,6 +82,7 @@ Valid tags are defined in `tags.json` at the repo root. Each entry has a `name` 
 
 ## Writing Style
 
+- Deep technical depth. Punchy and succinct. No fluff.
 - Do not use em-dashes. Use commas, periods, or hyphens instead.
 - Do not use emojis in blog posts or documentation.
 
