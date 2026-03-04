@@ -30,6 +30,15 @@ Where:
 
 A weighted sum followed by a nonlinear function. That is it. Everything in deep learning, every layer of every transformer, is a variation of this equation.
 
+```mermaid
+graph LR
+    x1["x₁"] -->|"w₁"| S["Σ + b"]
+    x2["x₂"] -->|"w₂"| S
+    xn["xₙ"] -->|"wₙ"| S
+    S --> F["f(·)"]
+    F --> Y["y"]
+```
+
 The original McCulloch-Pitts neuron used a step function for `f`: output 1 if the sum exceeds the threshold, 0 otherwise. This models the all-or-nothing firing of biological neurons, but creates a problem: the step function is not differentiable, which makes calculus-based learning impossible.
 
 ## The Perceptron (1958)
@@ -46,17 +55,6 @@ Where `α` is the learning rate. The logic:
 - If the prediction is too high, decrease weights for active inputs
 
 A single perceptron can learn any **linearly separable** function: AND, OR, NOT. It finds a hyperplane that separates two classes.
-
-```mermaid
-graph LR
-    x1["x₁"] -->|"w₁"| S["Σ + b"]
-    x2["x₂"] -->|"w₂"| S
-    xn["xₙ"] -->|"wₙ"| S
-    S --> F["f(·)"]
-    F --> Y["ŷ"]
-```
-
-The perceptron computes `f(w1*x1 + w2*x2 + ... + wn*xn + b)` and adjusts weights when it gets the answer wrong. Simple, but powerful enough to learn linear decision boundaries.
 
 Geometrically, the learned weights define a line (or hyperplane in higher dimensions) that separates two classes. Everything on one side maps to class 1, the other side to class 0:
 
