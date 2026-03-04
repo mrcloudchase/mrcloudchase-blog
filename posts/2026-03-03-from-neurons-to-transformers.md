@@ -299,6 +299,73 @@ Where `σ` is the activation function and `W1`, `W2` are weight matrices. The hi
 
 For XOR specifically, one hidden neuron computes `x1 AND x2` and another computes `x1 OR x2`. The output layer computes `OR AND NOT AND`, which is XOR.
 
+<svg viewBox="0 0 420 160" xmlns="http://www.w3.org/2000/svg" style="max-width:460px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="420" height="160" rx="8" fill="#181818"/>
+  <!-- input layer x=50 -->
+  <circle cx="50" cy="55" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="50" y="59" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">x₁</text>
+  <circle cx="50" cy="110" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="50" y="114" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">x₂</text>
+  <!-- hidden layer x=190 -->
+  <circle cx="190" cy="40" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.24;0.26;0.4;0.42;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <text x="190" y="44" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">AND</text>
+  <circle cx="190" cy="80" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.24;0.26;0.4;0.42;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <text x="190" y="84" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">OR</text>
+  <circle cx="190" cy="120" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.24;0.26;0.4;0.42;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <text x="190" y="124" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">f(x)</text>
+  <!-- output layer x=340 -->
+  <circle cx="340" cy="80" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.6;0.62;0.72;0.74;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <text x="340" y="84" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">y</text>
+  <!-- edges: input to hidden -->
+  <line x1="64" y1="55" x2="176" y2="40" stroke="#555" stroke-width="1.2"/>
+  <line x1="64" y1="55" x2="176" y2="80" stroke="#555" stroke-width="1.2"/>
+  <line x1="64" y1="55" x2="176" y2="120" stroke="#555" stroke-width="1.2"/>
+  <line x1="64" y1="110" x2="176" y2="40" stroke="#555" stroke-width="1.2"/>
+  <line x1="64" y1="110" x2="176" y2="80" stroke="#555" stroke-width="1.2"/>
+  <line x1="64" y1="110" x2="176" y2="120" stroke="#555" stroke-width="1.2"/>
+  <!-- edges: hidden to output -->
+  <line x1="204" y1="40" x2="326" y2="80" stroke="#555" stroke-width="1.2"/>
+  <line x1="204" y1="80" x2="326" y2="80" stroke="#555" stroke-width="1.2"/>
+  <line x1="204" y1="120" x2="326" y2="80" stroke="#555" stroke-width="1.2"/>
+  <!-- forward pulses: input to hidden -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M64,55 L176,80" dur="5s" repeatCount="indefinite" keyTimes="0;0.02;0.22;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.2;0.22;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M64,110 L176,80" dur="5s" repeatCount="indefinite" keyTimes="0;0.02;0.22;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.2;0.22;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- forward pulses: hidden to output -->
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M204,40 L326,80" dur="5s" repeatCount="indefinite" keyTimes="0;0.4;0.58;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.39;0.4;0.57;0.58;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M204,80 L326,80" dur="5s" repeatCount="indefinite" keyTimes="0;0.4;0.58;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.39;0.4;0.57;0.58;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M204,120 L326,80" dur="5s" repeatCount="indefinite" keyTimes="0;0.4;0.58;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.39;0.4;0.57;0.58;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- layer labels -->
+  <text x="50" y="145" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Input</text>
+  <text x="190" y="148" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Hidden</text>
+  <text x="340" y="110" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Output</text>
+  <!-- W1 and W2 labels -->
+  <text x="120" y="45" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">W₁</text>
+  <text x="270" y="65" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">W₂</text>
+</svg>
+
 ### Why Activation Functions Matter
 
 Without a nonlinear activation function, stacking layers is pointless. If every layer is just `Wx + b`, then composing N layers is still a single linear transformation:
@@ -627,6 +694,69 @@ Backpropagation computes the gradients. **Gradient descent** uses them:
 ```
 
 Move each parameter in the direction that decreases the loss, scaled by the learning rate `α`.
+
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="max-width:440px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="400" height="300" rx="8" fill="#181818"/>
+  <!-- title -->
+  <text x="200" y="22" text-anchor="middle" fill="#999" font-family="monospace" font-size="11">gradient descent on loss landscape</text>
+  <!-- loss contours (ellipses) -->
+  <ellipse cx="200" cy="170" rx="170" ry="120" fill="none" stroke="#333" stroke-width="1"/>
+  <ellipse cx="200" cy="170" rx="140" ry="98" fill="none" stroke="#444" stroke-width="1"/>
+  <ellipse cx="200" cy="170" rx="110" ry="76" fill="none" stroke="#555" stroke-width="1"/>
+  <ellipse cx="200" cy="170" rx="80" ry="54" fill="none" stroke="#666" stroke-width="1"/>
+  <ellipse cx="200" cy="170" rx="50" ry="34" fill="none" stroke="#777" stroke-width="1"/>
+  <ellipse cx="200" cy="170" rx="22" ry="14" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- contour labels -->
+  <text x="375" y="168" fill="#555" font-family="monospace" font-size="8">L=6</text>
+  <text x="344" y="168" fill="#666" font-family="monospace" font-size="8">5</text>
+  <text x="314" y="168" fill="#777" font-family="monospace" font-size="8">4</text>
+  <text x="284" y="168" fill="#888" font-family="monospace" font-size="8">3</text>
+  <text x="254" y="168" fill="#999" font-family="monospace" font-size="8">2</text>
+  <!-- minimum marker -->
+  <circle cx="200" cy="170" r="3" fill="#ef4444" opacity="0.6"/>
+  <text x="200" y="195" text-anchor="middle" fill="#ef4444" font-family="monospace" font-size="9" opacity="0.7">minimum</text>
+  <!-- SGD zigzag path -->
+  <polyline points="80,62 120,100 95,130 140,148 118,162 155,168 175,158 192,170 200,170" fill="none" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,2" opacity="0.4"/>
+  <!-- trail dots (faded history) -->
+  <circle cx="80" cy="62" r="3" fill="#fbbf24" opacity="0.15"/>
+  <circle cx="120" cy="100" r="3" fill="#fbbf24" opacity="0.2"/>
+  <circle cx="95" cy="130" r="3" fill="#fbbf24" opacity="0.25"/>
+  <circle cx="140" cy="148" r="3" fill="#fbbf24" opacity="0.3"/>
+  <circle cx="118" cy="162" r="3" fill="#fbbf24" opacity="0.35"/>
+  <circle cx="155" cy="168" r="3" fill="#fbbf24" opacity="0.4"/>
+  <circle cx="175" cy="158" r="3" fill="#fbbf24" opacity="0.45"/>
+  <circle cx="192" cy="170" r="3" fill="#fbbf24" opacity="0.5"/>
+  <!-- animated dot following the path -->
+  <circle r="5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M80,62 L120,100 L95,130 L140,148 L118,162 L155,168 L175,158 L192,170 L200,170" dur="7s" repeatCount="indefinite" keyTimes="0;0.12;0.24;0.36;0.48;0.6;0.72;0.88;1" keyPoints="0;0.14;0.28;0.42;0.56;0.7;0.82;0.94;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0.9;0.9;0.9;0.9;0.9;0.9;0.9;0.9;0.5;0;0.9" keyTimes="0;0.1;0.2;0.3;0.5;0.6;0.7;0.85;0.92;0.96;1" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  <!-- gradient arrow at start position -->
+  <line x1="80" y1="62" x2="108" y2="88" stroke="#4ade80" stroke-width="1.5" opacity="0">
+    <animate attributeName="opacity" values="0;0.8;0.8;0;0" keyTimes="0;0.02;0.1;0.14;1" dur="7s" repeatCount="indefinite"/>
+  </line>
+  <polygon points="108,88 102,82 112,84" fill="#4ade80" opacity="0">
+    <animate attributeName="opacity" values="0;0.8;0.8;0;0" keyTimes="0;0.02;0.1;0.14;1" dur="7s" repeatCount="indefinite"/>
+  </polygon>
+  <!-- step label -->
+  <text x="58" y="58" fill="#fbbf24" font-family="monospace" font-size="9" opacity="0">
+    start
+    <animate attributeName="opacity" values="0;0.7;0.7;0;0" keyTimes="0;0.01;0.08;0.12;1" dur="7s" repeatCount="indefinite"/>
+  </text>
+  <!-- convergence flash at minimum -->
+  <circle cx="200" cy="170" r="8" fill="none" stroke="#fbbf24" stroke-width="1.5" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.85;0.9;0.95;1" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="8;8;14;14;8" keyTimes="0;0.85;0.9;0.95;1" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  <!-- axis labels -->
+  <text x="200" y="292" text-anchor="middle" fill="#666" font-family="monospace" font-size="9">θ₁</text>
+  <text x="18" y="170" text-anchor="middle" fill="#666" font-family="monospace" font-size="9">θ₂</text>
+  <!-- legend -->
+  <line x1="30" y1="40" x2="50" y2="40" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="55" y="43" fill="#999" font-family="monospace" font-size="8">SGD path</text>
+  <line x1="130" y1="40" x2="150" y2="40" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="155" y="43" fill="#999" font-family="monospace" font-size="8">-∇L (gradient)</text>
+</svg>
 
 ### Stochastic Gradient Descent (SGD)
 
@@ -1301,29 +1431,116 @@ Where `h_q > h_kv`. This reduces KV cache size (which dominates memory during ge
 
 Putting every piece together:
 
-```mermaid
-graph TD
-    T["Token IDs [B, S]"] --> E["Embedding Lookup"]
-    E --> X["[B, S, d_model]"]
-    X --> B1["Block 1"]
-    B1 --> B2["Block 2"]
-    B2 --> BN["..."]
-    BN --> BL["Block L"]
-    BL --> N["RMSNorm"]
-    N --> LM["Linear (d_model -> vocab_size)"]
-    LM --> LOG["Logits [B, S, vocab_size]"]
-    LOG --> SM["Softmax + Sample"]
-    SM --> TOK["Next Token"]
-
-    subgraph "Each Block"
-        IN["Input x"] --> N1["RMSNorm"]
-        N1 --> ATT["Causal Multi-Head Attention (RoPE + GQA)"]
-        ATT --> R1["+ x (residual)"]
-        R1 --> N2["RMSNorm"]
-        N2 --> FFN["SwiGLU FFN"]
-        FFN --> R2["+ (residual)"]
-    end
-```
+<svg viewBox="0 0 480 420" xmlns="http://www.w3.org/2000/svg" style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="480" height="420" rx="8" fill="#181818"/>
+  <!-- title -->
+  <text x="240" y="20" text-anchor="middle" fill="#999" font-family="monospace" font-size="11">decoder-only transformer (full pipeline)</text>
+  <!-- main pipeline boxes -->
+  <!-- Token IDs -->
+  <rect x="170" y="32" width="140" height="24" rx="4" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#4ade80;#888;#888;#888;#888;#888;#888;#888;#888;#888" keyTimes="0;0.04;0.08;0.15;0.2;0.3;0.4;0.5;0.6;0.8;1" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="240" y="48" text-anchor="middle" fill="#ccc" font-family="monospace" font-size="9">Token IDs [B, S]</text>
+  <!-- arrow -->
+  <line x1="240" y1="56" x2="240" y2="68" stroke="#666" stroke-width="1"/>
+  <!-- Embedding -->
+  <rect x="170" y="68" width="140" height="24" rx="4" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#888;#888;#888;#888;#888;#888;#888;#888" keyTimes="0;0.06;0.1;0.14;0.2;0.3;0.4;0.5;0.6;0.8;1" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="240" y="84" text-anchor="middle" fill="#ccc" font-family="monospace" font-size="9">Embedding + PosEnc</text>
+  <!-- arrow -->
+  <line x1="240" y1="92" x2="240" y2="104" stroke="#666" stroke-width="1"/>
+  <!-- Block region -->
+  <rect x="100" y="104" width="280" height="200" rx="6" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="115" y="118" fill="#777" font-family="monospace" font-size="8">Transformer Block (x L)</text>
+  <!-- RMSNorm 1 -->
+  <rect x="175" y="126" width="130" height="20" rx="3" fill="#2a2a2a" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#22d3ee;#888;#888;#888;#888;#888;#888" keyTimes="0;0.12;0.16;0.2;0.24;0.28;0.35;0.45;0.55;0.8;1" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="240" y="140" text-anchor="middle" fill="#ccc" font-family="monospace" font-size="8">RMSNorm</text>
+  <!-- arrow -->
+  <line x1="240" y1="146" x2="240" y2="158" stroke="#666" stroke-width="1"/>
+  <!-- Attention -->
+  <rect x="155" y="158" width="170" height="24" rx="3" fill="#2a2a2a" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#888;#22d3ee;#22d3ee;#888;#888;#888;#888" keyTimes="0;0.15;0.2;0.24;0.28;0.32;0.38;0.42;0.5;0.8;1" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="240" y="174" text-anchor="middle" fill="#ccc" font-family="monospace" font-size="8">Causal Attn (RoPE + GQA)</text>
+  <!-- residual fork: bypass line from before Norm1 to after Attn -->
+  <line x1="160" y1="126" x2="120" y2="126" stroke="#4ade80" stroke-width="1" opacity="0.3"/>
+  <line x1="120" y1="126" x2="120" y2="195" stroke="#4ade80" stroke-width="1" opacity="0.3"/>
+  <line x1="120" y1="195" x2="155" y2="195" stroke="#4ade80" stroke-width="1" opacity="0.3"/>
+  <!-- + residual 1 -->
+  <circle cx="165" cy="195" r="8" fill="#2a2a2a" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#888;#888;#888;#4ade80;#888;#888;#888" keyTimes="0;0.2;0.25;0.3;0.35;0.38;0.4;0.44;0.48;0.8;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="165" y="199" text-anchor="middle" fill="#4ade80" font-family="monospace" font-size="10">+</text>
+  <!-- arrow from attention to + -->
+  <line x1="240" y1="182" x2="240" y2="195" stroke="#666" stroke-width="1"/>
+  <line x1="240" y1="195" x2="173" y2="195" stroke="#666" stroke-width="1"/>
+  <!-- arrow from + to Norm2 -->
+  <line x1="165" y1="203" x2="165" y2="212" stroke="#666" stroke-width="1"/>
+  <line x1="165" y1="212" x2="240" y2="212" stroke="#666" stroke-width="1"/>
+  <line x1="240" y1="212" x2="240" y2="218" stroke="#666" stroke-width="1"/>
+  <!-- RMSNorm 2 -->
+  <rect x="175" y="218" width="130" height="20" rx="3" fill="#2a2a2a" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#888;#888;#888;#888;#22d3ee;#888;#888" keyTimes="0;0.3;0.35;0.38;0.42;0.46;0.48;0.5;0.54;0.58;1" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="240" y="232" text-anchor="middle" fill="#ccc" font-family="monospace" font-size="8">RMSNorm</text>
+  <!-- arrow -->
+  <line x1="240" y1="238" x2="240" y2="250" stroke="#666" stroke-width="1"/>
+  <!-- FFN -->
+  <rect x="170" y="250" width="140" height="24" rx="3" fill="#2a2a2a" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#888;#888;#888;#888;#888;#22d3ee;#888" keyTimes="0;0.35;0.4;0.44;0.48;0.52;0.56;0.58;0.6;0.64;0.68" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="240" y="266" text-anchor="middle" fill="#ccc" font-family="monospace" font-size="8">SwiGLU FFN</text>
+  <!-- residual fork: bypass line from before Norm2 to after FFN -->
+  <line x1="160" y1="218" x2="120" y2="218" stroke="#4ade80" stroke-width="1" opacity="0.3"/>
+  <line x1="120" y1="218" x2="120" y2="287" stroke="#4ade80" stroke-width="1" opacity="0.3"/>
+  <line x1="120" y1="287" x2="155" y2="287" stroke="#4ade80" stroke-width="1" opacity="0.3"/>
+  <!-- + residual 2 -->
+  <circle cx="165" cy="287" r="8" fill="#2a2a2a" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#888;#888;#888;#888;#888;#888;#4ade80" keyTimes="0;0.4;0.45;0.5;0.55;0.6;0.64;0.66;0.68;0.7;0.74" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="165" y="291" text-anchor="middle" fill="#4ade80" font-family="monospace" font-size="10">+</text>
+  <!-- arrow from FFN to + -->
+  <line x1="240" y1="274" x2="240" y2="287" stroke="#666" stroke-width="1"/>
+  <line x1="240" y1="287" x2="173" y2="287" stroke="#666" stroke-width="1"/>
+  <!-- arrow out of block region -->
+  <line x1="165" y1="295" x2="165" y2="310" stroke="#666" stroke-width="1"/>
+  <line x1="165" y1="310" x2="240" y2="310" stroke="#666" stroke-width="1"/>
+  <line x1="240" y1="310" x2="240" y2="316" stroke="#666" stroke-width="1"/>
+  <!-- Final RMSNorm -->
+  <rect x="175" y="316" width="130" height="20" rx="4" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#888;#888;#888;#888;#888;#888;#888;#22d3ee;#888" keyTimes="0;0.1;0.2;0.3;0.4;0.5;0.55;0.6;0.65;0.7;0.74;0.78;0.82" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="240" y="330" text-anchor="middle" fill="#ccc" font-family="monospace" font-size="8">RMSNorm</text>
+  <!-- arrow -->
+  <line x1="240" y1="336" x2="240" y2="348" stroke="#666" stroke-width="1"/>
+  <!-- Linear projection -->
+  <rect x="155" y="348" width="170" height="20" rx="4" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#888;#888;#888;#888;#888;#888;#888;#888;#22d3ee" keyTimes="0;0.1;0.2;0.3;0.4;0.5;0.6;0.65;0.7;0.75;0.8;0.82;0.86" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="240" y="362" text-anchor="middle" fill="#ccc" font-family="monospace" font-size="8">Linear (d_model -> vocab)</text>
+  <!-- arrow -->
+  <line x1="240" y1="368" x2="240" y2="378" stroke="#666" stroke-width="1"/>
+  <!-- Softmax + Next Token -->
+  <rect x="170" y="378" width="140" height="24" rx="4" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#888;#888;#888;#888;#888;#888;#888;#888;#fbbf24" keyTimes="0;0.1;0.2;0.3;0.4;0.5;0.6;0.7;0.75;0.8;0.85;0.88;0.92" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="240" y="394" text-anchor="middle" fill="#ccc" font-family="monospace" font-size="9">Softmax -> Next Token</text>
+  <!-- signal pulse flowing top to bottom -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M240,44 L240,80 L240,136 L240,170 L240,195 L240,228 L240,262 L240,287 L240,326 L240,358 L240,390" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.2;0.32;0.42;0.52;0.6;0.7;0.78;0.86;1" keyPoints="0;0.1;0.2;0.3;0.4;0.5;0.6;0.7;0.8;0.9;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0.9;0.9;0.9;0.9;0.9;0.9;0.9;0.9;0.9;0.9;0" keyTimes="0;0.1;0.2;0.3;0.4;0.5;0.6;0.7;0.8;0.92;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- autoregressive return arrow -->
+  <path d="M310,390 L420,390 L420,44 L310,44" fill="none" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4,3" opacity="0.3"/>
+  <polygon points="310,44 316,40 316,48" fill="#fbbf24" opacity="0.3"/>
+  <text x="430" y="220" fill="#fbbf24" font-family="monospace" font-size="8" opacity="0.4" transform="rotate(90,430,220)">autoregressive loop</text>
+  <!-- residual labels -->
+  <text x="108" y="162" fill="#4ade80" font-family="monospace" font-size="7" text-anchor="end" opacity="0.5">residual</text>
+  <text x="108" y="254" fill="#4ade80" font-family="monospace" font-size="7" text-anchor="end" opacity="0.5">residual</text>
+</svg>
 
 **One forward pass through the full model:**
 
