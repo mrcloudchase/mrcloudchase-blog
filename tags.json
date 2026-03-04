@@ -2,7 +2,6 @@
   "tags": [
     { "name": "AI", "description": "AI engineering, LLM integrations, and agentic systems" },
     { "name": "Architecture", "description": "System design, platform engineering, and scalable infrastructure patterns" },
-    { "name": "Cloud", "description": "Cloud platforms, infrastructure as code, and cloud-native services" },
     { "name": "Deep Learning", "description": "Neural network internals, model training, and the math behind modern ML" },
     { "name": "General", "description": "Meta posts, announcements, and topics that span multiple categories" },
     { "name": "Python", "description": "Python development, libraries, and tooling" },

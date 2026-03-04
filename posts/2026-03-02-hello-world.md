@@ -3,7 +3,7 @@ title: "Hello World"
 date: "2026-03-02"
 excerpt: "Welcome to my blog. A quick intro on who I am, what I'll be writing about, and how this site is built."
 author: "Chase Dovey"
-tags: ["General", "Cloud", "AI"]
+tags: ["General", "AI"]
 draft: false
 ---
 
