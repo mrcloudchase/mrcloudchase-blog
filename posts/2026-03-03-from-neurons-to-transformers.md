@@ -23,116 +23,160 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
 
 <svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="max-width:560px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <rect width="520" height="180" rx="8" fill="#181818"/>
-  <!-- title -->
   <text x="260" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">biological neuron signal flow</text>
-  <!-- === DENDRITES (3 main paths with sub-branches fanning outward) === -->
-  <!-- top dendrite -->
-  <path d="M55,35 Q90,40 110,55 Q125,68 135,82" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M55,35 Q40,28 25,25" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M55,35 Q48,45 38,50" fill="none" stroke="#888" stroke-width="1"/>
-  <!-- middle dendrite -->
-  <path d="M45,90 Q80,90 110,88 Q125,87 135,88" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M45,90 Q32,80 22,72" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M45,90 Q32,100 22,108" fill="none" stroke="#888" stroke-width="1"/>
-  <!-- bottom dendrite -->
-  <path d="M55,145 Q90,140 110,125 Q125,110 135,95" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M55,145 Q48,135 38,130" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M55,145 Q40,152 25,155" fill="none" stroke="#888" stroke-width="1"/>
-  <!-- === SOMA (cell body) === -->
-  <ellipse cx="170" cy="90" rx="35" ry="28" fill="#333" stroke="#888" stroke-width="1.5">
-    <!-- stroke: resting -> dim green (1st signal) -> green (2nd) -> bright green (3rd) -> yellow FIRE -> resting -->
-    <animate attributeName="stroke" values="#888;#888;#3a7a4a;#4ade80;#6bf098;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.17;0.19;0.21;0.26;0.32;0.38;0.42;1" dur="5s" repeatCount="indefinite"/>
-    <!-- fill: dark resting -> progressively brighter as signals accumulate -> bright flash at fire -> resting -->
-    <animate attributeName="fill" values="#333;#333;#3a3a3a;#404040;#4a4a3a;#6b5a20;#fbbf24;#6b5a20;#333;#333" keyTimes="0;0.17;0.19;0.21;0.26;0.30;0.34;0.38;0.42;1" dur="5s" repeatCount="indefinite"/>
-    <!-- stroke-width: subtle pulse at threshold fire -->
-    <animate attributeName="stroke-width" values="1.5;1.5;1.5;1.5;2;2.5;3;2.5;1.5;1.5" keyTimes="0;0.17;0.21;0.26;0.30;0.32;0.34;0.38;0.42;1" dur="5s" repeatCount="indefinite"/>
+
+  <!--
+    TIMELINE (6s loop):
+    0.00-0.03  rest
+    0.03-0.20  dendrite signals travel inward to soma (staggered: top 0.03, mid 0.06, bot 0.09)
+    0.20-0.22  1st signal arrives at soma, stroke dims green
+    0.22-0.24  2nd signal arrives, stroke brightens
+    0.24-0.28  3rd signal arrives, stroke bright green, fill warming
+    0.28-0.35  integration buildup, fill shifts amber, stroke-width grows
+    0.35-0.40  THRESHOLD: soma flashes bright yellow, peak stroke-width
+    0.40-0.44  soma begins to settle
+    0.44-0.65  action potential (cyan) travels down axon
+    0.65-0.76  yellow pulses travel along 3 terminal branches simultaneously
+    0.76-0.82  all 6 synaptic boutons flash yellow (neurotransmitter release)
+    0.82-1.00  everything resets to resting state
+  -->
+
+  <!-- === STRUCTURE: DENDRITES === -->
+  <!-- top dendrite: main path + 2 outward sub-branches -->
+  <path d="M55,35 Q90,42 112,58 Q128,70 138,82" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M55,35 Q38,26 22,22" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M55,35 Q46,48 35,55" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- middle dendrite: main path + 2 outward sub-branches -->
+  <path d="M48,90 Q82,90 112,89 Q128,88 138,89" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M48,90 Q34,78 22,68" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M48,90 Q34,102 22,112" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- bottom dendrite: main path + 2 outward sub-branches -->
+  <path d="M55,145 Q90,138 112,122 Q128,110 138,97" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M55,145 Q46,132 35,125" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M55,145 Q38,154 22,158" fill="none" stroke="#888" stroke-width="1"/>
+
+  <!-- === STRUCTURE: SOMA === -->
+  <ellipse cx="170" cy="90" rx="32" ry="26" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke"
+      values="#888;#888;#3a7a4a;#4ade80;#6bf098;#8bf8a8;#fbbf24;#fbbf24;#888;#888"
+      keyTimes="0;0.20;0.22;0.24;0.28;0.32;0.35;0.40;0.44;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="fill"
+      values="#333;#333;#363636;#3c3c3c;#454538;#5a5028;#fbbf24;#5a5028;#333;#333"
+      keyTimes="0;0.20;0.22;0.24;0.28;0.32;0.36;0.40;0.44;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-width"
+      values="1.5;1.5;1.5;1.5;1.8;2.2;3;3;2;1.5"
+      keyTimes="0;0.20;0.24;0.28;0.32;0.34;0.36;0.38;0.42;1" dur="6s" repeatCount="indefinite"/>
   </ellipse>
   <text x="170" y="94" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">soma</text>
-  <!-- === AXON === -->
-  <line x1="205" y1="90" x2="400" y2="90" stroke="#888" stroke-width="2"/>
-  <!-- myelin sheath segments (5 segments spanning soma to terminals with small gaps) -->
-  <rect x="208" y="80" width="35" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
-  <rect x="247" y="80" width="35" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
-  <rect x="286" y="80" width="35" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
-  <rect x="325" y="80" width="35" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
+
+  <!-- === STRUCTURE: AXON === -->
+  <line x1="202" y1="90" x2="400" y2="90" stroke="#888" stroke-width="2"/>
+  <!-- myelin sheath (Nodes of Ranvier = gaps between segments) -->
+  <rect x="206" y="80" width="35" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
+  <rect x="245" y="80" width="35" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
+  <rect x="284" y="80" width="35" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
+  <rect x="323" y="80" width="35" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
   <rect x="362" y="80" width="35" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
-  <!-- === AXON TERMINALS (organic branching with sub-forks) === -->
-  <!-- top branch with two sub-branches -->
-  <path d="M400,90 Q415,72 435,55" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M435,55 Q442,45 450,38" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M435,55 Q448,52 460,48" fill="none" stroke="#888" stroke-width="1"/>
-  <!-- middle branch with two sub-branches -->
-  <path d="M400,90 Q425,90 448,88" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M448,88 Q462,82 472,76" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M448,88 Q462,95 472,102" fill="none" stroke="#888" stroke-width="1"/>
-  <!-- bottom branch with two sub-branches -->
-  <path d="M400,90 Q415,108 435,125" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M435,125 Q442,135 450,142" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M435,125 Q448,128 460,132" fill="none" stroke="#888" stroke-width="1"/>
-  <!-- synaptic boutons (small bulbs at branch tips) -->
-  <circle cx="450" cy="38" r="3" fill="#333" stroke="#888" stroke-width="1">
-    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.78;0.82;0.86;1" dur="5s" repeatCount="indefinite"/>
+
+  <!-- === STRUCTURE: AXON TERMINALS === -->
+  <!-- top branch + 2 sub-branches -->
+  <path d="M400,90 Q418,70 438,52" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M438,52 Q445,42 452,34" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M438,52 Q450,48 462,44" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- middle branch + 2 sub-branches -->
+  <path d="M400,90 Q425,90 450,88" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M450,88 Q462,80 474,72" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M450,88 Q462,96 474,104" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- bottom branch + 2 sub-branches -->
+  <path d="M400,90 Q418,110 438,128" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M438,128 Q445,138 452,146" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M438,128 Q450,132 462,136" fill="none" stroke="#888" stroke-width="1"/>
+
+  <!-- === STRUCTURE: SYNAPTIC BOUTONS === -->
+  <circle cx="452" cy="34" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#fbbf24;#333;#333" keyTimes="0;0.76;0.78;0.82;0.84;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <circle cx="460" cy="48" r="3" fill="#333" stroke="#888" stroke-width="1">
-    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.78;0.82;0.86;1" dur="5s" repeatCount="indefinite"/>
+  <circle cx="462" cy="44" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#fbbf24;#333;#333" keyTimes="0;0.76;0.78;0.82;0.84;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <circle cx="472" cy="76" r="3" fill="#333" stroke="#888" stroke-width="1">
-    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.78;0.82;0.86;1" dur="5s" repeatCount="indefinite"/>
+  <circle cx="474" cy="72" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#fbbf24;#333;#333" keyTimes="0;0.76;0.78;0.82;0.84;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <circle cx="472" cy="102" r="3" fill="#333" stroke="#888" stroke-width="1">
-    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.78;0.82;0.86;1" dur="5s" repeatCount="indefinite"/>
+  <circle cx="474" cy="104" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#fbbf24;#333;#333" keyTimes="0;0.76;0.78;0.82;0.84;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <circle cx="450" cy="142" r="3" fill="#333" stroke="#888" stroke-width="1">
-    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.78;0.82;0.86;1" dur="5s" repeatCount="indefinite"/>
+  <circle cx="452" cy="146" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#fbbf24;#333;#333" keyTimes="0;0.76;0.78;0.82;0.84;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <circle cx="460" cy="132" r="3" fill="#333" stroke="#888" stroke-width="1">
-    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.78;0.82;0.86;1" dur="5s" repeatCount="indefinite"/>
+  <circle cx="462" cy="136" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#fbbf24;#333;#333" keyTimes="0;0.76;0.78;0.82;0.84;1" dur="6s" repeatCount="indefinite"/>
   </circle>
+
   <!-- === LABELS === -->
-  <text x="55" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Dendrites</text>
-  <text x="170" y="135" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Soma</text>
-  <text x="310" y="78" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Axon</text>
-  <text x="455" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Terminals</text>
-  <!-- === ANIMATIONS === -->
-  <!-- Dendrite signal 1 (green, top branch) -->
+  <text x="50" y="172" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Dendrites</text>
+  <text x="170" y="130" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Soma</text>
+  <text x="305" y="76" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Axon</text>
+  <text x="470" y="172" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Synapses</text>
+
+  <!-- === ANIMATION: DENDRITE SIGNALS (green, from upstream neurons inward) === -->
+  <!-- top dendrite signal -->
   <circle r="4" fill="#4ade80" opacity="0">
-    <animateMotion path="M55,35 Q90,40 110,55 Q125,68 135,82" dur="5s" repeatCount="indefinite" keyTimes="0;0.02;0.18;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.16;0.18;1" dur="5s" repeatCount="indefinite"/>
+    <animateMotion path="M55,35 Q90,42 112,58 Q128,70 138,82" dur="6s" repeatCount="indefinite"
+      keyTimes="0;0.03;0.20;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0"
+      keyTimes="0;0.03;0.18;0.20;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <!-- Dendrite signal 2 (green, middle branch) -->
+  <!-- middle dendrite signal (slightly staggered) -->
   <circle r="4" fill="#4ade80" opacity="0">
-    <animateMotion path="M45,90 Q80,90 110,88 Q125,87 135,88" dur="5s" repeatCount="indefinite" keyTimes="0;0.04;0.19;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.03;0.04;0.17;0.19;1" dur="5s" repeatCount="indefinite"/>
+    <animateMotion path="M48,90 Q82,90 112,89 Q128,88 138,89" dur="6s" repeatCount="indefinite"
+      keyTimes="0;0.06;0.22;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0"
+      keyTimes="0;0.05;0.06;0.20;0.22;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <!-- Dendrite signal 3 (green, bottom branch) -->
+  <!-- bottom dendrite signal (slightly staggered) -->
   <circle r="4" fill="#4ade80" opacity="0">
-    <animateMotion path="M55,145 Q90,140 110,125 Q125,110 135,95" dur="5s" repeatCount="indefinite" keyTimes="0;0.06;0.20;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.05;0.06;0.18;0.20;1" dur="5s" repeatCount="indefinite"/>
+    <animateMotion path="M55,145 Q90,138 112,122 Q128,110 138,97" dur="6s" repeatCount="indefinite"
+      keyTimes="0;0.09;0.24;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0"
+      keyTimes="0;0.08;0.09;0.22;0.24;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <!-- "threshold" label appears at firing moment -->
-  <text x="170" y="55" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle" opacity="0">
+
+  <!-- === ANIMATION: THRESHOLD LABEL === -->
+  <text x="170" y="56" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle" opacity="0">
     threshold
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.31;0.33;0.4;0.42;1" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0"
+      keyTimes="0;0.34;0.36;0.42;0.44;1" dur="6s" repeatCount="indefinite"/>
   </text>
-  <!-- Action potential along axon (cyan pulse) -->
+
+  <!-- === ANIMATION: ACTION POTENTIAL (cyan, down the axon) === -->
   <circle r="5" fill="#22d3ee" opacity="0">
-    <animateMotion path="M205,90 L400,90" dur="5s" repeatCount="indefinite" keyTimes="0;0.38;0.68;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.37;0.38;0.66;0.68;1" dur="5s" repeatCount="indefinite"/>
+    <animateMotion path="M202,90 L400,90" dur="6s" repeatCount="indefinite"
+      keyTimes="0;0.44;0.65;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0"
+      keyTimes="0;0.43;0.44;0.63;0.65;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <!-- Terminal signal 1 (yellow, top branch) -->
+
+  <!-- === ANIMATION: TERMINAL BRANCH SIGNALS (yellow, outward to synapses) === -->
+  <!-- top terminal signal -->
   <circle r="3" fill="#fbbf24" opacity="0">
-    <animateMotion path="M400,90 Q415,72 435,55" dur="5s" repeatCount="indefinite" keyTimes="0;0.68;0.78;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.67;0.68;0.76;0.78;1" dur="5s" repeatCount="indefinite"/>
+    <animateMotion path="M400,90 Q418,70 438,52" dur="6s" repeatCount="indefinite"
+      keyTimes="0;0.65;0.76;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0"
+      keyTimes="0;0.64;0.65;0.74;0.76;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <!-- Terminal signal 2 (yellow, middle branch) -->
+  <!-- middle terminal signal -->
   <circle r="3" fill="#fbbf24" opacity="0">
-    <animateMotion path="M400,90 Q425,90 448,88" dur="5s" repeatCount="indefinite" keyTimes="0;0.68;0.78;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.67;0.68;0.76;0.78;1" dur="5s" repeatCount="indefinite"/>
+    <animateMotion path="M400,90 Q425,90 450,88" dur="6s" repeatCount="indefinite"
+      keyTimes="0;0.65;0.76;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0"
+      keyTimes="0;0.64;0.65;0.74;0.76;1" dur="6s" repeatCount="indefinite"/>
   </circle>
-  <!-- Terminal signal 3 (yellow, bottom branch) -->
+  <!-- bottom terminal signal -->
   <circle r="3" fill="#fbbf24" opacity="0">
-    <animateMotion path="M400,90 Q415,108 435,125" dur="5s" repeatCount="indefinite" keyTimes="0;0.68;0.78;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.67;0.68;0.76;0.78;1" dur="5s" repeatCount="indefinite"/>
+    <animateMotion path="M400,90 Q418,110 438,128" dur="6s" repeatCount="indefinite"
+      keyTimes="0;0.65;0.76;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0"
+      keyTimes="0;0.64;0.65;0.74;0.76;1" dur="6s" repeatCount="indefinite"/>
   </circle>
 </svg>
 
