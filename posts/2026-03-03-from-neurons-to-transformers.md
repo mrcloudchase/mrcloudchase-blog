@@ -214,6 +214,74 @@ Minsky and Papert (1969) proved that a single perceptron **cannot** learn XOR:
 
 No single hyperplane separates the 1s from the 0s. The positive cases (0,1) and (1,0) sit on opposite corners of the unit square. You need a curve, or two lines, which a single perceptron cannot produce.
 
+<svg viewBox="0 0 300 270" xmlns="http://www.w3.org/2000/svg" style="max-width:360px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="300" height="270" rx="8" fill="#181818"/>
+  <!-- axes -->
+  <line x1="60" y1="210" x2="250" y2="210" stroke="#555" stroke-width="1.5"/>
+  <line x1="60" y1="210" x2="60" y2="30" stroke="#555" stroke-width="1.5"/>
+  <text x="250" y="228" fill="#999" font-family="monospace" font-size="11" text-anchor="end">x₁</text>
+  <text x="45" y="35" fill="#999" font-family="monospace" font-size="11" text-anchor="end">x₂</text>
+  <!-- grid lines at 0 and 1 -->
+  <line x1="60" y1="70" x2="250" y2="70" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
+  <line x1="200" y1="210" x2="200" y2="30" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
+  <!-- four XOR data points -->
+  <!-- (0,0)=0 red -->
+  <circle cx="80" cy="195" r="10" fill="#ef4444" opacity="0.9"/>
+  <text x="80" y="199" fill="#181818" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">0</text>
+  <!-- (1,0)=1 green -->
+  <circle cx="200" cy="195" r="10" fill="#4ade80" opacity="0.9"/>
+  <text x="200" y="199" fill="#181818" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">1</text>
+  <!-- (0,1)=1 green -->
+  <circle cx="80" cy="70" r="10" fill="#4ade80" opacity="0.9"/>
+  <text x="80" y="74" fill="#181818" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">1</text>
+  <!-- (1,1)=0 red -->
+  <circle cx="200" cy="70" r="10" fill="#ef4444" opacity="0.9"/>
+  <text x="200" y="74" fill="#181818" font-family="monospace" font-size="9" text-anchor="middle" font-weight="bold">0</text>
+  <!--
+    Animated line rotating through 6 positions (6s loop):
+    Each position always has at least 1 misclassification.
+    Line endpoints: (x1,y1)-(x2,y2), animated via y1/y2/x1/x2
+    Pos 0: horizontal low  (60,160)-(250,160) - misses (1,1)
+    Pos 1: diagonal /      (60,220)-(250,40)  - misses (0,0)+(1,1)
+    Pos 2: vertical right  (170,210)-(170,30)  - misses (1,0)
+    Pos 3: horizontal high (60,110)-(250,110) - misses (0,0)
+    Pos 4: diagonal \      (60,40)-(250,220)  - misses (0,0)+(1,1)
+    Pos 5: vertical left   (110,210)-(110,30)  - misses (0,1)
+  -->
+  <line stroke="#22d3ee" stroke-width="2" stroke-dasharray="6,4">
+    <animate attributeName="x1" values="60;60;60;60;170;170;60;60;60;60;110;110;60" keyTimes="0;0.13;0.167;0.3;0.333;0.46;0.5;0.63;0.667;0.8;0.833;0.96;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="y1" values="160;160;220;220;210;210;110;110;40;40;210;210;160" keyTimes="0;0.13;0.167;0.3;0.333;0.46;0.5;0.63;0.667;0.8;0.833;0.96;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="x2" values="250;250;250;250;170;170;250;250;250;250;110;110;250" keyTimes="0;0.13;0.167;0.3;0.333;0.46;0.5;0.63;0.667;0.8;0.833;0.96;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="160;160;40;40;30;30;110;110;220;220;30;30;160" keyTimes="0;0.13;0.167;0.3;0.333;0.46;0.5;0.63;0.667;0.8;0.833;0.96;1" dur="6s" repeatCount="indefinite"/>
+  </line>
+  <!-- misclassification rings (yellow) -->
+  <!-- (1,1)=red at (200,70) - wrong in pos 0,1 -->
+  <circle cx="200" cy="70" r="16" fill="none" stroke="#fbbf24" stroke-width="2">
+    <animate attributeName="opacity" values="0.9;0.9;0.9;0.9;0;0;0;0;0.9;0.9;0;0;0.9" keyTimes="0;0.13;0.167;0.3;0.333;0.46;0.5;0.63;0.667;0.8;0.833;0.96;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <!-- (0,0)=red at (80,195) - wrong in pos 1,3,4 -->
+  <circle cx="80" cy="195" r="16" fill="none" stroke="#fbbf24" stroke-width="2">
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0;0.9;0.9;0.9;0.9;0;0;0" keyTimes="0;0.13;0.167;0.3;0.333;0.46;0.5;0.63;0.667;0.8;0.833;0.96;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <!-- (1,0)=green at (200,195) - wrong in pos 2 -->
+  <circle cx="200" cy="195" r="16" fill="none" stroke="#fbbf24" stroke-width="2">
+    <animate attributeName="opacity" values="0;0;0;0;0.9;0.9;0;0;0;0;0;0;0" keyTimes="0;0.13;0.167;0.3;0.333;0.46;0.5;0.63;0.667;0.8;0.833;0.96;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <!-- (0,1)=green at (80,70) - wrong in pos 5 -->
+  <circle cx="80" cy="70" r="16" fill="none" stroke="#fbbf24" stroke-width="2">
+    <animate attributeName="opacity" values="0;0;0;0;0;0;0;0;0;0;0.9;0.9;0" keyTimes="0;0.13;0.167;0.3;0.333;0.46;0.5;0.63;0.667;0.8;0.833;0.96;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <!-- "No solution" label -->
+  <text x="150" y="255" fill="#ef4444" font-family="monospace" font-size="10" text-anchor="middle" opacity="0.8">No single line separates XOR</text>
+  <!-- legend -->
+  <circle cx="65" cy="240" r="4" fill="#4ade80"/>
+  <text x="75" y="244" fill="#ccc" font-family="monospace" font-size="9">XOR=1</text>
+  <circle cx="140" cy="240" r="4" fill="#ef4444"/>
+  <text x="150" y="244" fill="#ccc" font-family="monospace" font-size="9">XOR=0</text>
+  <circle cx="210" cy="240" r="4" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="220" y="244" fill="#ccc" font-family="monospace" font-size="9">Wrong</text>
+</svg>
+
 This result nearly killed neural network research for a decade. The fix: stack neurons into layers.
 
 ## The Multilayer Perceptron (MLP)
@@ -904,6 +972,76 @@ h   = x + Attention(Norm(x))
 out = h + FFN(Norm(h))
 ```
 
+<svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg" style="max-width:360px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="300" height="340" rx="8" fill="#181818"/>
+  <!-- main vertical path: x=150, boxes are 100 wide centered -->
+  <!-- Input -->
+  <text x="150" y="22" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">Input x</text>
+  <!-- fork point 1 at y=32 -->
+  <line x1="150" y1="28" x2="150" y2="48" stroke="#555" stroke-width="1.5"/>
+  <!-- RMSNorm 1 -->
+  <rect x="105" y="48" width="90" height="24" rx="5" fill="#333" stroke="#888" stroke-width="1.2">
+    <animate attributeName="stroke" values="#888;#888;#4ade80;#888;#888" keyTimes="0;0.1;0.12;0.18;1" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <text x="150" y="64" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">RMSNorm</text>
+  <line x1="150" y1="72" x2="150" y2="92" stroke="#555" stroke-width="1.5"/>
+  <!-- Attention -->
+  <rect x="100" y="92" width="100" height="28" rx="5" fill="#333" stroke="#22d3ee" stroke-width="1.5" opacity="0.7">
+    <animate attributeName="stroke" values="#22d3ee;#22d3ee;#22d3ee;#22d3ee;#22d3ee" keyTimes="0;0.2;0.22;0.32;1" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.7;1;1;0.7;0.7" keyTimes="0;0.19;0.2;0.32;0.34;1" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <text x="150" y="110" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="middle">Attention</text>
+  <line x1="150" y1="120" x2="150" y2="140" stroke="#555" stroke-width="1.5"/>
+  <!-- Add 1 -->
+  <circle cx="150" cy="150" r="12" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#4ade80;#4ade80;#888;#888" keyTimes="0;0.34;0.36;0.4;0.42;1" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  <text x="150" y="154" fill="#ccc" font-family="monospace" font-size="12" text-anchor="middle">+</text>
+  <line x1="150" y1="162" x2="150" y2="182" stroke="#555" stroke-width="1.5"/>
+  <!-- Residual bypass 1: from input to Add 1 -->
+  <path d="M150,28 L60,28 L60,150 L138,150" fill="none" stroke="#ccc" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.4"/>
+  <!-- RMSNorm 2 -->
+  <rect x="105" y="182" width="90" height="24" rx="5" fill="#333" stroke="#888" stroke-width="1.2">
+    <animate attributeName="stroke" values="#888;#888;#4ade80;#888;#888" keyTimes="0;0.44;0.46;0.52;1" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <text x="150" y="198" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">RMSNorm</text>
+  <line x1="150" y1="206" x2="150" y2="226" stroke="#555" stroke-width="1.5"/>
+  <!-- FFN -->
+  <rect x="100" y="226" width="100" height="28" rx="5" fill="#333" stroke="#fbbf24" stroke-width="1.5" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;0.7;1;1;0.7;0.7" keyTimes="0;0.53;0.54;0.64;0.66;1" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <text x="150" y="244" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">SwiGLU FFN</text>
+  <line x1="150" y1="254" x2="150" y2="274" stroke="#555" stroke-width="1.5"/>
+  <!-- Add 2 -->
+  <circle cx="150" cy="284" r="12" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#4ade80;#4ade80;#888;#888" keyTimes="0;0.68;0.7;0.74;0.76;1" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  <text x="150" y="288" fill="#ccc" font-family="monospace" font-size="12" text-anchor="middle">+</text>
+  <!-- Residual bypass 2: from after Add 1 to Add 2 -->
+  <path d="M150,162 L60,162 L60,284 L138,284" fill="none" stroke="#ccc" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.4"/>
+  <!-- Output -->
+  <line x1="150" y1="296" x2="150" y2="310" stroke="#555" stroke-width="1.5"/>
+  <text x="150" y="324" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">Output</text>
+  <!-- residual label -->
+  <text x="42" y="92" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle" opacity="0.5">residual</text>
+  <text x="42" y="225" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle" opacity="0.5">residual</text>
+  <!-- MAIN signal pulse: green through center path -->
+  <circle r="5" fill="#4ade80" opacity="0">
+    <animateMotion path="M150,28 L150,48 L150,72 L150,92 L150,120 L150,140 L150,162 L150,182 L150,206 L150,226 L150,254 L150,274 L150,296 L150,310" dur="7s" repeatCount="indefinite" keyTimes="0;0.08;0.1;0.14;0.2;0.33;0.35;0.42;0.44;0.48;0.54;0.66;0.68;0.78" keyPoints="0;0.07;0.1;0.14;0.2;0.33;0.35;0.42;0.44;0.48;0.54;0.66;0.68;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.76;0.78;1" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  <!-- BYPASS pulse 1: white dashed path from input fork to Add 1 -->
+  <circle r="4" fill="#ccc" opacity="0">
+    <animateMotion path="M150,28 L60,28 L60,150 L138,150" dur="7s" repeatCount="indefinite" keyTimes="0;0.08;0.1;0.34;0.36" keyPoints="0;0;0.1;0.9;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.7;0.7;0;0" keyTimes="0;0.07;0.08;0.35;0.36;1" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  <!-- BYPASS pulse 2: white dashed path from Add 1 to Add 2 -->
+  <circle r="4" fill="#ccc" opacity="0">
+    <animateMotion path="M150,162 L60,162 L60,284 L138,284" dur="7s" repeatCount="indefinite" keyTimes="0;0.42;0.44;0.68;0.7" keyPoints="0;0;0.1;0.9;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.7;0.7;0;0" keyTimes="0;0.41;0.42;0.69;0.7;1" dur="7s" repeatCount="indefinite"/>
+  </circle>
+</svg>
+
 ### Residual Connections
 
 The `+ x` (adding the input back to the output) is a **residual connection** (He et al., 2015). Without residuals, very deep networks perform *worse* than shallow ones because gradients degrade over many layers.
@@ -986,6 +1124,130 @@ At each generation step, the decoder attends to the full encoder representation,
 ### Why It Mattered
 
 The encoder-decoder transformer was the first fully parallel sequence model. It replaced RNNs entirely for machine translation, summarization, and other seq2seq tasks. Training parallelized across all positions (no sequential dependency). And the attention mechanism allowed direct connections between any two positions, solving the long-range dependency problem that plagued RNNs.
+
+<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="480" height="240" rx="8" fill="#181818"/>
+  <!-- ENCODER (left side) -->
+  <text x="120" y="18" fill="#4ade80" font-family="monospace" font-size="10" text-anchor="middle">Encoder (parallel)</text>
+  <!-- encoder input tokens -->
+  <rect x="30" y="195" width="40" height="20" rx="4" fill="#333" stroke="#888" stroke-width="1"/>
+  <text x="50" y="209" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle">Le</text>
+  <rect x="75" y="195" width="40" height="20" rx="4" fill="#333" stroke="#888" stroke-width="1"/>
+  <text x="95" y="209" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle">chat</text>
+  <rect x="120" y="195" width="40" height="20" rx="4" fill="#333" stroke="#888" stroke-width="1"/>
+  <text x="140" y="209" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle">est</text>
+  <rect x="165" y="195" width="40" height="20" rx="4" fill="#333" stroke="#888" stroke-width="1"/>
+  <text x="185" y="209" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle">assis</text>
+  <!-- encoder blocks (stacked) -->
+  <rect x="35" y="140" width="170" height="30" rx="6" fill="#333" stroke="#4ade80" stroke-width="1.2" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.6;1;1;0.6;0.6" keyTimes="0;0.04;0.06;0.12;0.14;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="120" y="159" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">Encoder Block 1</text>
+  <rect x="35" y="95" width="170" height="30" rx="6" fill="#333" stroke="#4ade80" stroke-width="1.2" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.6;1;1;0.6;0.6" keyTimes="0;0.12;0.14;0.2;0.22;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="120" y="114" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">Encoder Block 2</text>
+  <rect x="35" y="50" width="170" height="30" rx="6" fill="#333" stroke="#4ade80" stroke-width="1.2" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.6;1;1;0.6;0.6" keyTimes="0;0.2;0.22;0.28;0.3;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="120" y="69" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">Encoder Block 3</text>
+  <!-- encoder output indicator -->
+  <rect x="35" y="28" width="170" height="16" rx="4" fill="#4ade80" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.3;0.3;0;0" keyTimes="0;0.28;0.3;0.85;0.87;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="120" y="40" fill="#181818" font-family="monospace" font-size="7" text-anchor="middle" opacity="0">
+    encoder output
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.28;0.3;0.85;0.87;1" dur="9s" repeatCount="indefinite"/>
+  </text>
+  <!-- vertical edges in encoder -->
+  <line x1="50" y1="195" x2="50" y2="170" stroke="#555" stroke-width="1"/>
+  <line x1="95" y1="195" x2="95" y2="170" stroke="#555" stroke-width="1"/>
+  <line x1="140" y1="195" x2="140" y2="170" stroke="#555" stroke-width="1"/>
+  <line x1="185" y1="195" x2="185" y2="170" stroke="#555" stroke-width="1"/>
+  <line x1="120" y1="140" x2="120" y2="125" stroke="#555" stroke-width="1"/>
+  <line x1="120" y1="95" x2="120" y2="80" stroke="#555" stroke-width="1"/>
+  <!-- encoder forward pulses (all simultaneously = parallel) -->
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M50,195 L50,170" dur="9s" repeatCount="indefinite" keyTimes="0;0.02;0.06;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.05;0.06;1" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M95,195 L95,170" dur="9s" repeatCount="indefinite" keyTimes="0;0.02;0.06;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.05;0.06;1" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M140,195 L140,170" dur="9s" repeatCount="indefinite" keyTimes="0;0.02;0.06;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.05;0.06;1" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M185,195 L185,170" dur="9s" repeatCount="indefinite" keyTimes="0;0.02;0.06;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.05;0.06;1" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <!-- DECODER (right side) -->
+  <text x="360" y="18" fill="#fbbf24" font-family="monospace" font-size="10" text-anchor="middle">Decoder (causal)</text>
+  <!-- decoder blocks -->
+  <rect x="275" y="140" width="170" height="30" rx="6" fill="#333" stroke="#fbbf24" stroke-width="1.2" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.6;1;1;0.6;0.6;1;1;0.6;0.6;1;1;0.6;0.6" keyTimes="0;0.3;0.32;0.38;0.4;0.48;0.5;0.56;0.58;0.66;0.68;0.74;0.76;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="360" y="159" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">Decoder Block 1</text>
+  <rect x="275" y="95" width="170" height="30" rx="6" fill="#333" stroke="#fbbf24" stroke-width="1.2" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.6;1;1;0.6;0.6;1;1;0.6;0.6;1;1;0.6;0.6" keyTimes="0;0.34;0.36;0.42;0.44;0.52;0.54;0.6;0.62;0.7;0.72;0.78;0.8;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="360" y="114" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">Decoder Block 2</text>
+  <rect x="275" y="50" width="170" height="30" rx="6" fill="#333" stroke="#fbbf24" stroke-width="1.2" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.6;1;1;0.6;0.6;1;1;0.6;0.6;1;1;0.6;0.6" keyTimes="0;0.38;0.4;0.46;0.48;0.56;0.58;0.64;0.66;0.74;0.76;0.82;0.84;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="360" y="69" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">Decoder Block 3</text>
+  <!-- decoder vertical edges -->
+  <line x1="360" y1="140" x2="360" y2="125" stroke="#555" stroke-width="1"/>
+  <line x1="360" y1="95" x2="360" y2="80" stroke="#555" stroke-width="1"/>
+  <!-- decoder output tokens (appearing one at a time) -->
+  <rect x="295" y="28" width="40" height="18" rx="4" fill="#333" stroke="#fbbf24" stroke-width="1" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.42;0.44;0.85;0.87;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="315" y="41" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle" opacity="0">
+    The
+    <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.42;0.44;0.85;0.87;1" dur="9s" repeatCount="indefinite"/>
+  </text>
+  <rect x="340" y="28" width="40" height="18" rx="4" fill="#333" stroke="#fbbf24" stroke-width="1" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.6;0.62;0.85;0.87;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="360" y="41" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle" opacity="0">
+    cat
+    <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.6;0.62;0.85;0.87;1" dur="9s" repeatCount="indefinite"/>
+  </text>
+  <rect x="385" y="28" width="40" height="18" rx="4" fill="#333" stroke="#fbbf24" stroke-width="1" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.78;0.8;0.85;0.87;1" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <text x="405" y="41" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle" opacity="0">
+    sat
+    <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.78;0.8;0.85;0.87;1" dur="9s" repeatCount="indefinite"/>
+  </text>
+  <!-- CROSS-ATTENTION bridges (encoder output to decoder blocks) -->
+  <!-- Bridge lines: from encoder output area to decoder block 2 (mid-level cross-attention) -->
+  <line x1="205" y1="36" x2="275" y2="107" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="4,3" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.7;0.7;0;0;0.7;0.7;0;0;0.7;0.7;0;0" keyTimes="0;0.34;0.36;0.4;0.42;0.52;0.54;0.58;0.6;0.7;0.72;0.76;0.78;1" dur="9s" repeatCount="indefinite"/>
+  </line>
+  <!-- cross-attention pulses -->
+  <circle r="3" fill="#22d3ee" opacity="0">
+    <animateMotion path="M205,36 L275,107" dur="9s" repeatCount="indefinite" keyTimes="0;0.36;0.4;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.35;0.36;0.39;0.4;1" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#22d3ee" opacity="0">
+    <animateMotion path="M205,36 L275,107" dur="9s" repeatCount="indefinite" keyTimes="0;0.54;0.58;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.53;0.54;0.57;0.58;1" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#22d3ee" opacity="0">
+    <animateMotion path="M205,36 L275,107" dur="9s" repeatCount="indefinite" keyTimes="0;0.72;0.76;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.71;0.72;0.75;0.76;1" dur="9s" repeatCount="indefinite"/>
+  </circle>
+  <!-- cross-attention label -->
+  <text x="240" y="82" fill="#22d3ee" font-family="monospace" font-size="7" text-anchor="middle" transform="rotate(-35,240,82)" opacity="0.6">cross-attention</text>
+  <!-- decoder input indicator -->
+  <rect x="330" y="195" width="60" height="20" rx="4" fill="#333" stroke="#888" stroke-width="1"/>
+  <text x="360" y="209" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">&lt;start&gt;</text>
+  <line x1="360" y1="195" x2="360" y2="170" stroke="#555" stroke-width="1"/>
+</svg>
 
 ## The Decoder-Only Transformer
 
