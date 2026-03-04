@@ -322,6 +322,167 @@ This is the mathematical foundation of backpropagation.
 
 Rumelhart, Hinton, and Williams popularized backpropagation in 1986. (The idea existed earlier, but they demonstrated it worked for training MLPs.) It is the chain rule applied systematically to a computational graph.
 
+<svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="500" height="200" rx="8" fill="#181818"/>
+  <!-- nodes: input(2), hidden1(2), hidden2(2), output(1), loss -->
+  <!-- input layer x=55 -->
+  <circle cx="55" cy="65" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="55" y="70" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">x₁</text>
+  <circle cx="55" cy="130" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="55" y="135" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">x₂</text>
+  <!-- hidden1 x=165 -->
+  <circle cx="165" cy="50" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#4ade80;#888;#888;#888;#888;#ef4444;#888;#888" keyTimes="0;0.11;0.12;0.18;0.4;0.55;0.59;0.6;0.66;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="165" y="55" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">h₁</text>
+  <circle cx="165" cy="100" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#4ade80;#888;#888;#888;#888;#ef4444;#888;#888" keyTimes="0;0.11;0.12;0.18;0.4;0.55;0.59;0.6;0.66;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="165" y="105" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">h₂</text>
+  <circle cx="165" cy="150" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#4ade80;#888;#888;#888;#888;#ef4444;#888;#888" keyTimes="0;0.11;0.12;0.18;0.4;0.55;0.59;0.6;0.66;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="165" y="155" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">h₃</text>
+  <!-- hidden2 x=275 -->
+  <circle cx="275" cy="50" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#4ade80;#888;#888;#ef4444;#888;#888" keyTimes="0;0.11;0.18;0.23;0.24;0.3;0.47;0.48;0.54;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="275" y="55" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">h₄</text>
+  <circle cx="275" cy="100" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#4ade80;#888;#888;#ef4444;#888;#888" keyTimes="0;0.11;0.18;0.23;0.24;0.3;0.47;0.48;0.54;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="275" y="105" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">h₅</text>
+  <circle cx="275" cy="150" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#4ade80;#888;#888;#ef4444;#888;#888" keyTimes="0;0.11;0.18;0.23;0.24;0.3;0.47;0.48;0.54;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="275" y="155" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">h₆</text>
+  <!-- output x=375 -->
+  <circle cx="375" cy="100" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#888;#888;#888;#888;#4ade80;#888;#ef4444;#888" keyTimes="0;0.23;0.3;0.33;0.34;0.35;0.36;0.42;0.43;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="375" y="105" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">y</text>
+  <!-- loss x=440 -->
+  <rect x="420" y="86" width="50" height="28" rx="6" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.38;0.39;0.43;0.44;1" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="445" y="105" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">Loss</text>
+  <!-- edges: input to hidden1 (6 lines) -->
+  <line x1="69" y1="65" x2="151" y2="50" stroke="#555" stroke-width="1"/>
+  <line x1="69" y1="65" x2="151" y2="100" stroke="#555" stroke-width="1"/>
+  <line x1="69" y1="65" x2="151" y2="150" stroke="#555" stroke-width="1"/>
+  <line x1="69" y1="130" x2="151" y2="50" stroke="#555" stroke-width="1"/>
+  <line x1="69" y1="130" x2="151" y2="100" stroke="#555" stroke-width="1"/>
+  <line x1="69" y1="130" x2="151" y2="150" stroke="#555" stroke-width="1"/>
+  <!-- edges: hidden1 to hidden2 (9 lines) -->
+  <line x1="179" y1="50" x2="261" y2="50" stroke="#555" stroke-width="1"/>
+  <line x1="179" y1="50" x2="261" y2="100" stroke="#555" stroke-width="1"/>
+  <line x1="179" y1="50" x2="261" y2="150" stroke="#555" stroke-width="1"/>
+  <line x1="179" y1="100" x2="261" y2="50" stroke="#555" stroke-width="1"/>
+  <line x1="179" y1="100" x2="261" y2="100" stroke="#555" stroke-width="1"/>
+  <line x1="179" y1="100" x2="261" y2="150" stroke="#555" stroke-width="1"/>
+  <line x1="179" y1="150" x2="261" y2="50" stroke="#555" stroke-width="1"/>
+  <line x1="179" y1="150" x2="261" y2="100" stroke="#555" stroke-width="1"/>
+  <line x1="179" y1="150" x2="261" y2="150" stroke="#555" stroke-width="1"/>
+  <!-- edges: hidden2 to output (3 lines) -->
+  <line x1="289" y1="50" x2="361" y2="100" stroke="#555" stroke-width="1"/>
+  <line x1="289" y1="100" x2="361" y2="100" stroke="#555" stroke-width="1"/>
+  <line x1="289" y1="150" x2="361" y2="100" stroke="#555" stroke-width="1"/>
+  <!-- edge: output to loss -->
+  <line x1="389" y1="100" x2="420" y2="100" stroke="#555" stroke-width="1"/>
+  <!-- FORWARD PASS: green pulses left to right -->
+  <!-- input to hidden1 (representative pulses on middle edges) -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M69,65 L151,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.01;0.11;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.1;0.11;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M69,130 L151,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.01;0.11;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.1;0.11;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- hidden1 to hidden2 -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M179,50 L261,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.13;0.23;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.12;0.13;0.22;0.23;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M179,100 L261,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.13;0.23;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.12;0.13;0.22;0.23;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M179,150 L261,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.13;0.23;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.12;0.13;0.22;0.23;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- hidden2 to output -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M289,100 L361,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.25;0.35;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.24;0.25;0.34;0.35;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- output to loss -->
+  <circle r="4" fill="#fbbf24" opacity="0">
+    <animateMotion path="M389,100 L420,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.36;0.39;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.35;0.36;0.38;0.39;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- BACKWARD PASS: red pulses right to left -->
+  <!-- loss to output -->
+  <circle r="4" fill="#ef4444" opacity="0">
+    <animateMotion path="M420,100 L389,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.43;0.46;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.42;0.43;0.45;0.46;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- output to hidden2 -->
+  <circle r="4" fill="#ef4444" opacity="0">
+    <animateMotion path="M361,100 L289,50" dur="8s" repeatCount="indefinite" keyTimes="0;0.47;0.55;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.46;0.47;0.54;0.55;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#ef4444" opacity="0">
+    <animateMotion path="M361,100 L289,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.47;0.55;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.46;0.47;0.54;0.55;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#ef4444" opacity="0">
+    <animateMotion path="M361,100 L289,150" dur="8s" repeatCount="indefinite" keyTimes="0;0.47;0.55;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.46;0.47;0.54;0.55;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- hidden2 to hidden1 -->
+  <circle r="4" fill="#ef4444" opacity="0">
+    <animateMotion path="M261,100 L179,50" dur="8s" repeatCount="indefinite" keyTimes="0;0.58;0.66;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.57;0.58;0.65;0.66;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#ef4444" opacity="0">
+    <animateMotion path="M261,100 L179,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.58;0.66;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.57;0.58;0.65;0.66;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#ef4444" opacity="0">
+    <animateMotion path="M261,100 L179,150" dur="8s" repeatCount="indefinite" keyTimes="0;0.58;0.66;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.57;0.58;0.65;0.66;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- chain rule labels: flash at hidden layers during backward pass -->
+  <text x="165" y="38" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle" opacity="0">
+    x f'(z)
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.59;0.6;0.68;0.69;1" dur="8s" repeatCount="indefinite"/>
+  </text>
+  <text x="275" y="38" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle" opacity="0">
+    x f'(z)
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.47;0.48;0.56;0.57;1" dur="8s" repeatCount="indefinite"/>
+  </text>
+  <!-- phase labels -->
+  <text x="250" y="18" fill="#4ade80" font-family="monospace" font-size="11" text-anchor="middle" opacity="0">
+    Forward Pass
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.38;0.4;1" dur="8s" repeatCount="indefinite"/>
+  </text>
+  <text x="250" y="18" fill="#ef4444" font-family="monospace" font-size="11" text-anchor="middle" opacity="0">
+    Backward Pass
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.42;0.43;0.72;0.73;1" dur="8s" repeatCount="indefinite"/>
+  </text>
+  <text x="250" y="18" fill="#22d3ee" font-family="monospace" font-size="11" text-anchor="middle" opacity="0">
+    Weight Update
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.74;0.75;0.85;0.86;1" dur="8s" repeatCount="indefinite"/>
+  </text>
+  <!-- layer labels -->
+  <text x="55" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Input</text>
+  <text x="165" y="180" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Hidden 1</text>
+  <text x="275" y="180" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Hidden 2</text>
+  <text x="375" y="130" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Output</text>
+</svg>
+
 ### Forward Pass
 
 Compute the output layer by layer:
@@ -445,6 +606,108 @@ h_t = f(W_h * h_(t-1) + W_x * x_t + b)
 
 At each time step `t`, the hidden state `h_t` is a function of the previous state `h_(t-1)` and the current input `x_t`. This gives the network memory of past inputs.
 
+<svg viewBox="0 0 480 155" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="480" height="155" rx="8" fill="#181818"/>
+  <!-- 5 time steps: x=60,150,240,330,420 -->
+  <!-- input nodes (bottom row, y=120) -->
+  <circle cx="60" cy="120" r="12" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="60" y="124" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">The</text>
+  <circle cx="150" cy="120" r="12" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="150" y="124" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">river</text>
+  <circle cx="240" cy="120" r="12" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="240" y="124" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">bank</text>
+  <circle cx="330" cy="120" r="12" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="330" y="124" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">was</text>
+  <circle cx="420" cy="120" r="12" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="420" y="124" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">steep</text>
+  <!-- hidden state nodes (middle row, y=60) -->
+  <circle cx="60" cy="60" r="15" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.1;0.12;0.18;0.19;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <text x="60" y="64" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">h₁</text>
+  <circle cx="150" cy="60" r="15" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.24;0.26;0.32;0.33;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <text x="150" y="64" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">h₂</text>
+  <circle cx="240" cy="60" r="15" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.38;0.4;0.46;0.47;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <text x="240" y="64" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">h₃</text>
+  <circle cx="330" cy="60" r="15" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.52;0.54;0.6;0.61;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <text x="330" y="64" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">h₄</text>
+  <circle cx="420" cy="60" r="15" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.66;0.68;0.74;0.75;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <text x="420" y="64" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">h₅</text>
+  <!-- vertical edges: input to hidden -->
+  <line x1="60" y1="108" x2="60" y2="75" stroke="#555" stroke-width="1.5"/>
+  <line x1="150" y1="108" x2="150" y2="75" stroke="#555" stroke-width="1.5"/>
+  <line x1="240" y1="108" x2="240" y2="75" stroke="#555" stroke-width="1.5"/>
+  <line x1="330" y1="108" x2="330" y2="75" stroke="#555" stroke-width="1.5"/>
+  <line x1="420" y1="108" x2="420" y2="75" stroke="#555" stroke-width="1.5"/>
+  <!-- horizontal edges: h to h (recurrent) -->
+  <line x1="75" y1="60" x2="135" y2="60" stroke="#555" stroke-width="1.5"/>
+  <line x1="165" y1="60" x2="225" y2="60" stroke="#555" stroke-width="1.5"/>
+  <line x1="255" y1="60" x2="315" y2="60" stroke="#555" stroke-width="1.5"/>
+  <line x1="345" y1="60" x2="405" y2="60" stroke="#555" stroke-width="1.5"/>
+  <!-- arrows on recurrent edges -->
+  <polygon points="135,55 135,65 143,60" fill="#555"/>
+  <polygon points="225,55 225,65 233,60" fill="#555"/>
+  <polygon points="315,55 315,65 323,60" fill="#555"/>
+  <polygon points="405,55 405,65 413,60" fill="#555"/>
+  <!-- input signal pulses (green, sequential) -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M60,108 L60,75" dur="6s" repeatCount="indefinite" keyTimes="0;0.02;0.1;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.09;0.1;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M150,108 L150,75" dur="6s" repeatCount="indefinite" keyTimes="0;0.16;0.24;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.15;0.16;0.23;0.24;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M240,108 L240,75" dur="6s" repeatCount="indefinite" keyTimes="0;0.3;0.38;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.29;0.3;0.37;0.38;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M330,108 L330,75" dur="6s" repeatCount="indefinite" keyTimes="0;0.44;0.52;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.43;0.44;0.51;0.52;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M420,108 L420,75" dur="6s" repeatCount="indefinite" keyTimes="0;0.58;0.66;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.57;0.58;0.65;0.66;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <!-- recurrent state pulses (cyan, getting dimmer = vanishing info) -->
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M75,60 L135,60" dur="6s" repeatCount="indefinite" keyTimes="0;0.14;0.24;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.13;0.14;0.23;0.24;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M165,60 L225,60" dur="6s" repeatCount="indefinite" keyTimes="0;0.28;0.38;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.7;0.7;0;0" keyTimes="0;0.27;0.28;0.37;0.38;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M255,60 L315,60" dur="6s" repeatCount="indefinite" keyTimes="0;0.42;0.52;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.45;0.45;0;0" keyTimes="0;0.41;0.42;0.51;0.52;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M345,60 L405,60" dur="6s" repeatCount="indefinite" keyTimes="0;0.56;0.66;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.2;0.2;0;0" keyTimes="0;0.55;0.56;0.65;0.66;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <!-- "signal fading" label -->
+  <text x="240" y="20" fill="#ef4444" font-family="monospace" font-size="9" text-anchor="middle" opacity="0">
+    Information fades over distance
+    <animate attributeName="opacity" values="0;0;0.7;0.7;0;0" keyTimes="0;0.5;0.55;0.75;0.78;1" dur="6s" repeatCount="indefinite"/>
+  </text>
+  <!-- time step labels -->
+  <text x="60" y="148" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">t=1</text>
+  <text x="150" y="148" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">t=2</text>
+  <text x="240" y="148" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">t=3</text>
+  <text x="330" y="148" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">t=4</text>
+  <text x="420" y="148" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">t=5</text>
+</svg>
+
 The problem: the chain rule strikes again. During backpropagation through time (BPTT), gradients are multiplied by `W_h` at every step. Over 100+ steps, the gradient either vanishes (largest eigenvalue of `W_h` < 1) or explodes (> 1). Long-range dependencies, like connecting "bank" at position 100 to "river" at position 3, become nearly impossible to learn.
 
 **LSTMs** and **GRUs** partially solved this with gating mechanisms that control information flow. But they are still fundamentally sequential: you cannot process position 100 until you have processed positions 1 through 99. This makes them slow and impossible to parallelize.
@@ -464,6 +727,158 @@ Attention(Q, K, V) = softmax(Q * Kᵀ / √d_k) * V
 Think of a library. The **query** is what you are looking for ("information about France"). The **keys** are the labels on each book. The **values** are the contents. Attention computes how well each key matches your query (dot product), normalizes the scores (softmax), and returns a weighted blend of the contents.
 
 The `√d_k` scaling prevents dot products from growing too large as dimension increases. Without it, the softmax saturates: one position gets all the weight and the gradient vanishes. For two vectors of dimension `d_k`, the expected dot product is `d_k` (assuming unit variance). Dividing by `√d_k` normalizes variance back to 1, keeping softmax in its sensitive region.
+
+<svg viewBox="0 0 460 250" xmlns="http://www.w3.org/2000/svg" style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="460" height="250" rx="8" fill="#181818"/>
+  <!-- 4 tokens across the top: x=70,160,250,370 -->
+  <!-- token boxes -->
+  <rect x="42" y="22" width="56" height="24" rx="5" fill="#333" stroke="#888" stroke-width="1.2"/>
+  <text x="70" y="39" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">The</text>
+  <rect x="132" y="22" width="56" height="24" rx="5" fill="#333" stroke="#888" stroke-width="1.2"/>
+  <text x="160" y="39" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">cat</text>
+  <rect x="222" y="22" width="56" height="24" rx="5" fill="#333" stroke="#888" stroke-width="1.2">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.14;0.16;0.28;0.3;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <text x="250" y="39" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">sat</text>
+  <rect x="342" y="22" width="56" height="24" rx="5" fill="#333" stroke="#888" stroke-width="1.2"/>
+  <text x="370" y="39" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">down</text>
+  <!-- Q/K/V bars below each token (small colored rectangles) -->
+  <!-- Q bars (cyan) -->
+  <rect x="49" y="52" width="14" height="8" rx="2" fill="#22d3ee" opacity="0.3">
+    <animate attributeName="opacity" values="0;0;0.3;0.3;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="139" y="52" width="14" height="8" rx="2" fill="#22d3ee" opacity="0.3">
+    <animate attributeName="opacity" values="0;0;0.3;0.3;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="229" y="52" width="14" height="8" rx="2" fill="#22d3ee" opacity="0.9">
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="349" y="52" width="14" height="8" rx="2" fill="#22d3ee" opacity="0.3">
+    <animate attributeName="opacity" values="0;0;0.3;0.3;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- K bars (green) -->
+  <rect x="66" y="52" width="14" height="8" rx="2" fill="#4ade80" opacity="0.5">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="156" y="52" width="14" height="8" rx="2" fill="#4ade80" opacity="0.5">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="246" y="52" width="14" height="8" rx="2" fill="#4ade80" opacity="0.5">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="366" y="52" width="14" height="8" rx="2" fill="#4ade80" opacity="0.5">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- V bars (yellow) -->
+  <rect x="83" y="52" width="14" height="8" rx="2" fill="#fbbf24" opacity="0.5">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="173" y="52" width="14" height="8" rx="2" fill="#fbbf24" opacity="0.5">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="263" y="52" width="14" height="8" rx="2" fill="#fbbf24" opacity="0.5">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="383" y="52" width="14" height="8" rx="2" fill="#fbbf24" opacity="0.5">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.06;0.08;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- Q/K/V legend (tiny) -->
+  <rect x="49" y="63" width="8" height="4" rx="1" fill="#22d3ee" opacity="0.6"/>
+  <text x="60" y="67" fill="#999" font-family="monospace" font-size="7">Q</text>
+  <rect x="72" y="63" width="8" height="4" rx="1" fill="#4ade80" opacity="0.6"/>
+  <text x="83" y="67" fill="#999" font-family="monospace" font-size="7">K</text>
+  <rect x="95" y="63" width="8" height="4" rx="1" fill="#fbbf24" opacity="0.6"/>
+  <text x="106" y="67" fill="#999" font-family="monospace" font-size="7">V</text>
+  <!-- Phase 2: attention score lines from sat's Q to each K -->
+  <!-- sat Q to The K -->
+  <line x1="236" y1="56" x2="73" y2="56" stroke="#22d3ee" stroke-width="1" stroke-dasharray="3,3" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.18;0.2;0.45;0.47;1" dur="10s" repeatCount="indefinite"/>
+  </line>
+  <!-- sat Q to cat K -->
+  <line x1="236" y1="56" x2="163" y2="56" stroke="#22d3ee" stroke-width="2" stroke-dasharray="3,3" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.22;0.24;0.45;0.47;1" dur="10s" repeatCount="indefinite"/>
+  </line>
+  <!-- sat Q to sat K -->
+  <line x1="240" y1="60" x2="253" y2="56" stroke="#22d3ee" stroke-width="1" stroke-dasharray="3,3" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.6;0.6;0;0" keyTimes="0;0.26;0.28;0.45;0.47;1" dur="10s" repeatCount="indefinite"/>
+  </line>
+  <!-- sat Q to down K -->
+  <line x1="264" y1="56" x2="373" y2="56" stroke="#22d3ee" stroke-width="1" stroke-dasharray="3,3" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.4;0.4;0;0" keyTimes="0;0.3;0.32;0.45;0.47;1" dur="10s" repeatCount="indefinite"/>
+  </line>
+  <!-- attention scores appearing -->
+  <text x="70" y="90" fill="#999" font-family="monospace" font-size="10" text-anchor="middle" opacity="0">
+    .08
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.32;0.34;0.58;0.6;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <text x="160" y="90" fill="#4ade80" font-family="monospace" font-size="11" text-anchor="middle" font-weight="bold" opacity="0">
+    .52
+    <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.34;0.36;0.58;0.6;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <text x="250" y="90" fill="#999" font-family="monospace" font-size="10" text-anchor="middle" opacity="0">
+    .22
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.36;0.38;0.58;0.6;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <text x="370" y="90" fill="#999" font-family="monospace" font-size="10" text-anchor="middle" opacity="0">
+    .18
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.38;0.4;0.58;0.6;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <!-- softmax label -->
+  <text x="230" y="108" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="middle" opacity="0">
+    softmax scores
+    <animate attributeName="opacity" values="0;0;0.7;0.7;0;0" keyTimes="0;0.39;0.42;0.55;0.58;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <!-- Phase 3: V weighted contributions flowing to output -->
+  <!-- Weight bars under scores (height = weight) -->
+  <rect x="62" y="114" width="16" height="4" rx="2" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.4;0.4;0;0" keyTimes="0;0.58;0.6;0.78;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="152" y="114" width="16" height="20" rx="2" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.58;0.6;0.78;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="242" y="114" width="16" height="10" rx="2" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.6;0.6;0;0" keyTimes="0;0.58;0.6;0.78;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="362" y="114" width="16" height="7" rx="2" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.58;0.6;0.78;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <!-- V pulses converging to output position for "sat" -->
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M70,130 L250,175" dur="10s" repeatCount="indefinite" keyTimes="0;0.65;0.75;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.3;0.3;0;0" keyTimes="0;0.64;0.65;0.74;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M160,130 L250,175" dur="10s" repeatCount="indefinite" keyTimes="0;0.65;0.75;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.64;0.65;0.74;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M250,130 L250,175" dur="10s" repeatCount="indefinite" keyTimes="0;0.65;0.75;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.5;0.5;0;0" keyTimes="0;0.64;0.65;0.74;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M370,130 L250,175" dur="10s" repeatCount="indefinite" keyTimes="0;0.65;0.75;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.4;0.4;0;0" keyTimes="0;0.64;0.65;0.74;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- output node for "sat" -->
+  <rect x="222" y="180" width="56" height="24" rx="5" fill="#333" stroke="#888" stroke-width="1.2">
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.76;0.78;0.85;0.87;1" dur="10s" repeatCount="indefinite"/>
+  </rect>
+  <text x="250" y="196" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">sat'</text>
+  <!-- output label -->
+  <text x="250" y="220" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle" opacity="0">
+    sat now knows about cat
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.78;0.8;0.88;0.9;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <!-- phase labels -->
+  <text x="420" y="15" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="end" opacity="0">
+    Q*K scores
+    <animate attributeName="opacity" values="0;0;0.7;0.7;0;0" keyTimes="0;0.18;0.2;0.47;0.5;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <text x="420" y="15" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="end" opacity="0">
+    Weighted V sum
+    <animate attributeName="opacity" values="0;0;0.7;0.7;0;0" keyTimes="0;0.58;0.6;0.8;0.82;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+</svg>
 
 ### Multi-Head Attention
 
