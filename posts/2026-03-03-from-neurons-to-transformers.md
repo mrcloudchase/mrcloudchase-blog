@@ -25,16 +25,19 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
   <rect width="520" height="180" rx="8" fill="#181818"/>
   <!-- title -->
   <text x="260" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">biological neuron signal flow</text>
-  <!-- === DENDRITES (3 branching input paths) === -->
-  <path d="M30,40 Q70,40 100,60 Q120,72 135,82" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M20,90 Q60,90 100,88 Q120,87 135,88" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M30,140 Q70,140 100,120 Q120,108 135,95" fill="none" stroke="#888" stroke-width="1.5"/>
-  <!-- small branch stubs for organic realism -->
-  <path d="M50,38 Q55,28 65,25" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M70,42 Q75,50 85,53" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M40,88 Q45,78 55,75" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M50,142 Q55,150 65,155" fill="none" stroke="#888" stroke-width="1"/>
-  <path d="M70,138 Q75,130 85,127" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- === DENDRITES (3 main paths with sub-branches fanning outward) === -->
+  <!-- top dendrite -->
+  <path d="M55,35 Q90,40 110,55 Q125,68 135,82" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M55,35 Q40,28 25,25" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M55,35 Q48,45 38,50" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- middle dendrite -->
+  <path d="M45,90 Q80,90 110,88 Q125,87 135,88" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M45,90 Q32,80 22,72" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M45,90 Q32,100 22,108" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- bottom dendrite -->
+  <path d="M55,145 Q90,140 110,125 Q125,110 135,95" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M55,145 Q48,135 38,130" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M55,145 Q40,152 25,155" fill="none" stroke="#888" stroke-width="1"/>
   <!-- === SOMA (cell body) === -->
   <ellipse cx="170" cy="90" rx="35" ry="28" fill="#333" stroke="#888" stroke-width="1.5">
     <animate attributeName="stroke" values="#888;#888;#4ade80;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.19;0.22;0.32;0.38;0.42;1" dur="5s" repeatCount="indefinite"/>
@@ -68,17 +71,17 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
   <!-- === ANIMATIONS === -->
   <!-- Dendrite signal 1 (green, top branch) -->
   <circle r="4" fill="#4ade80" opacity="0">
-    <animateMotion path="M30,40 Q70,40 100,60 Q120,72 135,82" dur="5s" repeatCount="indefinite" keyTimes="0;0.02;0.18;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animateMotion path="M55,35 Q90,40 110,55 Q125,68 135,82" dur="5s" repeatCount="indefinite" keyTimes="0;0.02;0.18;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.16;0.18;1" dur="5s" repeatCount="indefinite"/>
   </circle>
   <!-- Dendrite signal 2 (green, middle branch) -->
   <circle r="4" fill="#4ade80" opacity="0">
-    <animateMotion path="M20,90 Q60,90 100,88 Q120,87 135,88" dur="5s" repeatCount="indefinite" keyTimes="0;0.04;0.19;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animateMotion path="M45,90 Q80,90 110,88 Q125,87 135,88" dur="5s" repeatCount="indefinite" keyTimes="0;0.04;0.19;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.03;0.04;0.17;0.19;1" dur="5s" repeatCount="indefinite"/>
   </circle>
   <!-- Dendrite signal 3 (green, bottom branch) -->
   <circle r="4" fill="#4ade80" opacity="0">
-    <animateMotion path="M30,140 Q70,140 100,120 Q120,108 135,95" dur="5s" repeatCount="indefinite" keyTimes="0;0.06;0.20;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animateMotion path="M55,145 Q90,140 110,125 Q125,110 135,95" dur="5s" repeatCount="indefinite" keyTimes="0;0.06;0.20;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.05;0.06;0.18;0.20;1" dur="5s" repeatCount="indefinite"/>
   </circle>
   <!-- "threshold" label appears at firing moment -->
