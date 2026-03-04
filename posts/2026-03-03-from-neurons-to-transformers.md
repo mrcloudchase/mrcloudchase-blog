@@ -56,19 +56,37 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
   <rect x="286" y="80" width="35" height="20" rx="10" fill="#2a2a2a" stroke="#888" stroke-width="1"/>
   <rect x="325" y="80" width="35" height="20" rx="10" fill="#2a2a2a" stroke="#888" stroke-width="1"/>
   <rect x="362" y="80" width="35" height="20" rx="10" fill="#2a2a2a" stroke="#888" stroke-width="1"/>
-  <!-- === AXON TERMINALS === -->
-  <path d="M400,90 Q420,75 440,60" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M400,90 Q420,90 445,90" fill="none" stroke="#888" stroke-width="1.5"/>
-  <path d="M400,90 Q420,105 440,120" fill="none" stroke="#888" stroke-width="1.5"/>
-  <!-- synaptic knobs -->
-  <circle cx="440" cy="60" r="5" fill="#333" stroke="#888" stroke-width="1.5">
-    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.69;0.71;0.8;0.82;1" dur="5s" repeatCount="indefinite"/>
+  <!-- === AXON TERMINALS (organic branching with sub-forks) === -->
+  <!-- top branch with two sub-branches -->
+  <path d="M400,90 Q415,72 435,55" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M435,55 Q442,45 450,38" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M435,55 Q448,52 460,48" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- middle branch with two sub-branches -->
+  <path d="M400,90 Q425,90 448,88" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M448,88 Q462,82 472,76" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M448,88 Q462,95 472,102" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- bottom branch with two sub-branches -->
+  <path d="M400,90 Q415,108 435,125" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M435,125 Q442,135 450,142" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M435,125 Q448,128 460,132" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- synaptic boutons (small bulbs at branch tips) -->
+  <circle cx="450" cy="38" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.69;0.73;0.8;1" dur="5s" repeatCount="indefinite"/>
   </circle>
-  <circle cx="445" cy="90" r="5" fill="#333" stroke="#888" stroke-width="1.5">
-    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.69;0.71;0.8;0.82;1" dur="5s" repeatCount="indefinite"/>
+  <circle cx="460" cy="48" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.69;0.73;0.8;1" dur="5s" repeatCount="indefinite"/>
   </circle>
-  <circle cx="440" cy="120" r="5" fill="#333" stroke="#888" stroke-width="1.5">
-    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.69;0.71;0.8;0.82;1" dur="5s" repeatCount="indefinite"/>
+  <circle cx="472" cy="76" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.69;0.73;0.8;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="472" cy="102" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.69;0.73;0.8;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="450" cy="142" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.69;0.73;0.8;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="460" cy="132" r="3" fill="#333" stroke="#888" stroke-width="1">
+    <animate attributeName="fill" values="#333;#333;#fbbf24;#333;#333" keyTimes="0;0.69;0.73;0.8;1" dur="5s" repeatCount="indefinite"/>
   </circle>
   <!-- === LABELS === -->
   <text x="55" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Dendrites</text>
