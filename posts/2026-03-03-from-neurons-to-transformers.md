@@ -50,10 +50,12 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
   <text x="170" y="94" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">soma</text>
   <!-- === AXON === -->
   <line x1="205" y1="90" x2="400" y2="90" stroke="#888" stroke-width="2"/>
-  <!-- myelin sheath segments -->
-  <rect x="230" y="83" width="30" height="14" rx="7" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
-  <rect x="280" y="83" width="30" height="14" rx="7" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
-  <rect x="340" y="83" width="30" height="14" rx="7" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
+  <!-- myelin sheath segments (5 segments spanning soma to terminals with small gaps) -->
+  <rect x="208" y="80" width="35" height="20" rx="10" fill="#2a2a2a" stroke="#888" stroke-width="1"/>
+  <rect x="247" y="80" width="35" height="20" rx="10" fill="#2a2a2a" stroke="#888" stroke-width="1"/>
+  <rect x="286" y="80" width="35" height="20" rx="10" fill="#2a2a2a" stroke="#888" stroke-width="1"/>
+  <rect x="325" y="80" width="35" height="20" rx="10" fill="#2a2a2a" stroke="#888" stroke-width="1"/>
+  <rect x="362" y="80" width="35" height="20" rx="10" fill="#2a2a2a" stroke="#888" stroke-width="1"/>
   <!-- === AXON TERMINALS === -->
   <path d="M400,90 Q420,75 440,60" fill="none" stroke="#888" stroke-width="1.5"/>
   <path d="M400,90 Q420,90 445,90" fill="none" stroke="#888" stroke-width="1.5"/>
