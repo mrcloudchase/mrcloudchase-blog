@@ -76,14 +76,7 @@ Geometrically, the learned weights define a line (or hyperplane in higher dimens
   <line x1="140" y1="270" x2="140" y2="30" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
   <line x1="220" y1="270" x2="220" y2="30" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
   <line x1="300" y1="270" x2="300" y2="30" stroke="#333" stroke-width="0.5" stroke-dasharray="4"/>
-  <!-- decision boundary: w1*x1 + w2*x2 + b = 0 -->
-  <line x1="60" y1="240" x2="320" y2="64" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="8,4"/>
-  <!-- boundary label -->
-  <text x="310" y="56" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="end">w₁x₁ + w₂x₂ + b = 0</text>
-  <!-- region labels -->
-  <text x="120" y="260" fill="#22d3ee" font-family="monospace" font-size="11" opacity="0.7">Class 0</text>
-  <text x="240" y="80" fill="#22d3ee" font-family="monospace" font-size="11" opacity="0.7">Class 1</text>
-  <!-- class 0 points (below boundary, cy > boundary_y + 20) -->
+  <!-- class 0 points (red) -->
   <circle cx="90" cy="250" r="7" fill="#ef4444" opacity="0.9"/>
   <circle cx="110" cy="240" r="7" fill="#ef4444" opacity="0.9"/>
   <circle cx="130" cy="230" r="7" fill="#ef4444" opacity="0.9"/>
@@ -92,7 +85,7 @@ Geometrically, the learned weights define a line (or hyperplane in higher dimens
   <circle cx="220" cy="195" r="7" fill="#ef4444" opacity="0.9"/>
   <circle cx="250" cy="180" r="7" fill="#ef4444" opacity="0.9"/>
   <circle cx="280" cy="160" r="7" fill="#ef4444" opacity="0.9"/>
-  <!-- class 1 points (above boundary, cy < boundary_y - 20) -->
+  <!-- class 1 points (green) -->
   <circle cx="90" cy="160" r="7" fill="#4ade80" opacity="0.9"/>
   <circle cx="110" cy="100" r="7" fill="#4ade80" opacity="0.9"/>
   <circle cx="120" cy="140" r="7" fill="#4ade80" opacity="0.9"/>
@@ -101,11 +94,59 @@ Geometrically, the learned weights define a line (or hyperplane in higher dimens
   <circle cx="140" cy="60" r="7" fill="#4ade80" opacity="0.9"/>
   <circle cx="200" cy="70" r="7" fill="#4ade80" opacity="0.9"/>
   <circle cx="230" cy="55" r="7" fill="#4ade80" opacity="0.9"/>
+  <!--
+    Animated decision boundary: 4 steps over 10s
+    Step 0 (0-20%):   y1=110, y2=190  - wrong tilt, 3 misclassified
+    Step 1 (25-45%):  y1=155, y2=155  - flat, 1 misclassified
+    Step 2 (50-70%):  y1=200, y2=110  - close, 0 misclassified
+    Step 3 (75-100%): y1=240, y2=64   - converged
+  -->
+  <line x1="60" x2="320" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="8,4">
+    <animate attributeName="y1" values="110;110;155;155;200;200;240;240" keyTimes="0;0.2;0.25;0.45;0.5;0.7;0.75;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="190;190;155;155;110;110;64;64" keyTimes="0;0.2;0.25;0.45;0.5;0.7;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </line>
+  <!-- misclassification rings: yellow highlight on wrong-side points -->
+  <!-- green (90,160): misclassified in steps 0 and 1 -->
+  <circle cx="90" cy="160" r="13" fill="none" stroke="#fbbf24" stroke-width="2">
+    <animate attributeName="opacity" values="0.9;0.9;0.9;0.9;0;0;0;0" keyTimes="0;0.2;0.25;0.45;0.5;0.7;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- green (120,140): misclassified in step 0 only -->
+  <circle cx="120" cy="140" r="13" fill="none" stroke="#fbbf24" stroke-width="2">
+    <animate attributeName="opacity" values="0.9;0.9;0;0;0;0;0;0" keyTimes="0;0.2;0.25;0.45;0.5;0.7;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- red (280,160): misclassified in step 0 only -->
+  <circle cx="280" cy="160" r="13" fill="none" stroke="#fbbf24" stroke-width="2">
+    <animate attributeName="opacity" values="0.9;0.9;0;0;0;0;0;0" keyTimes="0;0.2;0.25;0.45;0.5;0.7;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- step counter: cycles through Update 1/2/3 then equation at convergence -->
+  <text x="385" y="48" fill="#fbbf24" font-family="monospace" font-size="10" text-anchor="end">
+    Update 1
+    <animate attributeName="opacity" values="1;1;0;0;0;0;0;0" keyTimes="0;0.2;0.25;0.45;0.5;0.7;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <text x="385" y="48" fill="#fbbf24" font-family="monospace" font-size="10" text-anchor="end">
+    Update 2
+    <animate attributeName="opacity" values="0;0;0;1;1;0;0;0" keyTimes="0;0.19;0.25;0.26;0.45;0.5;0.7;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <text x="385" y="48" fill="#fbbf24" font-family="monospace" font-size="10" text-anchor="end">
+    Update 3
+    <animate attributeName="opacity" values="0;0;0;0;0;1;1;0" keyTimes="0;0.2;0.25;0.45;0.5;0.51;0.7;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <text x="385" y="48" fill="#4ade80" font-family="monospace" font-size="10" text-anchor="end">
+    Converged
+    <animate attributeName="opacity" values="0;0;0;0;0;0;0;1" keyTimes="0;0.2;0.25;0.45;0.5;0.7;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <!-- equation label: appears only at convergence -->
+  <text x="310" y="56" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="end">
+    w₁x₁ + w₂x₂ + b = 0
+    <animate attributeName="opacity" values="0;0;0;0;0;0;0;1" keyTimes="0;0.2;0.25;0.45;0.5;0.7;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </text>
   <!-- legend -->
-  <circle cx="80" cy="305" r="5" fill="#4ade80"/>
-  <text x="92" y="309" fill="#ccc" font-family="monospace" font-size="11">Class 1 (y=1)</text>
-  <circle cx="220" cy="305" r="5" fill="#ef4444"/>
-  <text x="232" y="309" fill="#ccc" font-family="monospace" font-size="11">Class 0 (y=0)</text>
+  <circle cx="60" cy="305" r="5" fill="#4ade80"/>
+  <text x="72" y="309" fill="#ccc" font-family="monospace" font-size="11">Class 1</text>
+  <circle cx="150" cy="305" r="5" fill="#ef4444"/>
+  <text x="162" y="309" fill="#ccc" font-family="monospace" font-size="11">Class 0</text>
+  <circle cx="240" cy="305" r="5" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="252" y="309" fill="#ccc" font-family="monospace" font-size="11">Misclassified</text>
 </svg>
 
 The decision boundary is the line `w1*x1 + w2*x2 + b = 0`. The perceptron learning rule shifts this line after each misclassification until all points are correctly separated (if the data is linearly separable).
