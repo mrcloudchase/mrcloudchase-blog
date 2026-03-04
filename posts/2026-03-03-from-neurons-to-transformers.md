@@ -13,6 +13,88 @@ Every modern LLM (GPT, Claude, LLaMA) traces back to a single equation from 1943
 
 This post walks that path. Start with a single neuron. Build through perceptrons, multilayer networks, and backpropagation. Arrive at the transformer. The goal: show that a transformer is not a magical black box. It is the logical endpoint of solving one problem at a time, for 80 years.
 
+## The Biological Neuron
+
+Before the math, there was biology. The artificial neuron is a deliberate simplification of a real cell found in every animal nervous system. Understanding what that cell does, and what the early researchers chose to keep and discard, makes the entire lineage clearer.
+
+A biological neuron has four functional parts. **Dendrites** are branching input structures that receive electrochemical signals from other neurons, sometimes thousands of them. The **soma** (cell body) integrates those inputs. If the combined signal is strong enough, the soma triggers an **action potential**, an electrical spike that travels down the **axon**, a long fiber extending from the cell body. At the far end, **axon terminals** pass the signal to the dendrites of the next neuron across a gap called a **synapse**.
+
+The critical behavior is **all-or-nothing firing**. If the integrated signal at the soma exceeds a threshold, the neuron fires a full-strength action potential. Below threshold, nothing happens. There is no partial fire. Synaptic connections vary in strength: some are **excitatory** (pushing the soma toward firing), others are **inhibitory** (pushing away). The pattern of which connections are strong and which are weak determines what the neuron responds to.
+
+<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="max-width:560px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="520" height="180" rx="8" fill="#181818"/>
+  <!-- title -->
+  <text x="260" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">biological neuron signal flow</text>
+  <!-- === DENDRITES (3 branching input paths) === -->
+  <path d="M30,40 Q70,40 100,60 Q120,72 135,82" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M20,90 Q60,90 100,88 Q120,87 135,88" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M30,140 Q70,140 100,120 Q120,108 135,95" fill="none" stroke="#888" stroke-width="1.5"/>
+  <!-- small branch stubs for organic realism -->
+  <path d="M50,38 Q55,28 65,25" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M70,42 Q75,50 85,53" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M40,88 Q45,78 55,75" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M50,142 Q55,150 65,155" fill="none" stroke="#888" stroke-width="1"/>
+  <path d="M70,138 Q75,130 85,127" fill="none" stroke="#888" stroke-width="1"/>
+  <!-- === SOMA (cell body) === -->
+  <ellipse cx="170" cy="90" rx="35" ry="28" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#4ade80;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.19;0.22;0.32;0.38;0.42;1" dur="5s" repeatCount="indefinite"/>
+  </ellipse>
+  <text x="170" y="94" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">soma</text>
+  <!-- === AXON === -->
+  <line x1="205" y1="90" x2="400" y2="90" stroke="#888" stroke-width="2"/>
+  <!-- myelin sheath segments -->
+  <rect x="230" y="83" width="30" height="14" rx="7" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
+  <rect x="280" y="83" width="30" height="14" rx="7" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
+  <rect x="340" y="83" width="30" height="14" rx="7" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
+  <!-- === AXON TERMINALS === -->
+  <path d="M400,90 Q420,75 440,60" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M400,90 Q420,90 445,90" fill="none" stroke="#888" stroke-width="1.5"/>
+  <path d="M400,90 Q420,105 440,120" fill="none" stroke="#888" stroke-width="1.5"/>
+  <!-- synaptic knobs -->
+  <circle cx="440" cy="60" r="5" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.69;0.71;0.8;0.82;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="445" cy="90" r="5" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.72;0.74;0.82;0.84;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="440" cy="120" r="5" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.75;0.77;0.84;0.86;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- === LABELS === -->
+  <text x="55" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Dendrites</text>
+  <text x="170" y="135" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Soma</text>
+  <text x="310" y="78" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Axon</text>
+  <text x="455" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Terminals</text>
+  <!-- === ANIMATIONS === -->
+  <!-- Dendrite signal 1 (green, top branch) -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M30,40 Q70,40 100,60 Q120,72 135,82" dur="5s" repeatCount="indefinite" keyTimes="0;0.02;0.18;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.02;0.16;0.18;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- Dendrite signal 2 (green, middle branch) -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M20,90 Q60,90 100,88 Q120,87 135,88" dur="5s" repeatCount="indefinite" keyTimes="0;0.04;0.19;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.03;0.04;0.17;0.19;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- Dendrite signal 3 (green, bottom branch) -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M30,140 Q70,140 100,120 Q120,108 135,95" dur="5s" repeatCount="indefinite" keyTimes="0;0.06;0.20;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.05;0.06;0.18;0.20;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- "threshold" label appears at firing moment -->
+  <text x="170" y="55" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle" opacity="0">
+    threshold
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.31;0.33;0.4;0.42;1" dur="5s" repeatCount="indefinite"/>
+  </text>
+  <!-- Action potential along axon (cyan pulse) -->
+  <circle r="5" fill="#22d3ee" opacity="0">
+    <animateMotion path="M205,90 L400,90" dur="5s" repeatCount="indefinite" keyTimes="0;0.38;0.68;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.37;0.38;0.66;0.68;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+</svg>
+
+This is the system McCulloch and Pitts looked at in 1943 and asked: what is the minimum mathematical model that captures this behavior? Their answer stripped away the electrochemistry, the timing, the spatial structure. What remained was the essence: weighted inputs, a sum, a threshold, and a binary output.
+
 ## The Calculus of Neural Activity (1943)
 
 McCulloch and Pitts published "A Logical Calculus of the Ideas Immanent in Nervous Activity" in 1943, proposing the first mathematical model of a neuron. The idea: a neuron receives inputs, weights them, sums the result, and fires if the sum exceeds a threshold:
