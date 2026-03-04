@@ -83,24 +83,24 @@ Geometrically, the learned weights define a line (or hyperplane in higher dimens
   <!-- region labels -->
   <text x="120" y="260" fill="#22d3ee" font-family="monospace" font-size="11" opacity="0.7">Class 0</text>
   <text x="240" y="80" fill="#22d3ee" font-family="monospace" font-size="11" opacity="0.7">Class 1</text>
-  <!-- class 0 points (below/right of boundary) -->
-  <circle cx="100" cy="250" r="7" fill="#ef4444" opacity="0.9"/>
-  <circle cx="160" cy="230" r="7" fill="#ef4444" opacity="0.9"/>
-  <circle cx="130" cy="220" r="7" fill="#ef4444" opacity="0.9"/>
-  <circle cx="200" cy="210" r="7" fill="#ef4444" opacity="0.9"/>
-  <circle cx="170" cy="195" r="7" fill="#ef4444" opacity="0.9"/>
-  <circle cx="240" cy="190" r="7" fill="#ef4444" opacity="0.9"/>
-  <circle cx="210" cy="170" r="7" fill="#ef4444" opacity="0.9"/>
-  <circle cx="280" cy="175" r="7" fill="#ef4444" opacity="0.9"/>
-  <!-- class 1 points (above/left of boundary) -->
-  <circle cx="100" cy="140" r="7" fill="#4ade80" opacity="0.9"/>
-  <circle cx="130" cy="120" r="7" fill="#4ade80" opacity="0.9"/>
-  <circle cx="160" cy="100" r="7" fill="#4ade80" opacity="0.9"/>
-  <circle cx="200" cy="110" r="7" fill="#4ade80" opacity="0.9"/>
-  <circle cx="180" cy="80" r="7" fill="#4ade80" opacity="0.9"/>
-  <circle cx="230" cy="90" r="7" fill="#4ade80" opacity="0.9"/>
+  <!-- class 0 points (below boundary, cy > boundary_y + 20) -->
+  <circle cx="90" cy="250" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="110" cy="240" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="130" cy="230" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="160" cy="215" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="190" cy="200" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="220" cy="195" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="250" cy="180" r="7" fill="#ef4444" opacity="0.9"/>
+  <circle cx="280" cy="160" r="7" fill="#ef4444" opacity="0.9"/>
+  <!-- class 1 points (above boundary, cy < boundary_y - 20) -->
+  <circle cx="90" cy="160" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="110" cy="100" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="120" cy="140" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="150" cy="110" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="170" cy="80" r="7" fill="#4ade80" opacity="0.9"/>
   <circle cx="140" cy="60" r="7" fill="#4ade80" opacity="0.9"/>
-  <circle cx="250" cy="120" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="200" cy="70" r="7" fill="#4ade80" opacity="0.9"/>
+  <circle cx="230" cy="55" r="7" fill="#4ade80" opacity="0.9"/>
   <!-- legend -->
   <circle cx="80" cy="305" r="5" fill="#4ade80"/>
   <text x="92" y="309" fill="#ccc" font-family="monospace" font-size="11">Class 1 (y=1)</text>
