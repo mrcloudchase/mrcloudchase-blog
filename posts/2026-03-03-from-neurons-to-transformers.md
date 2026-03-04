@@ -13,9 +13,9 @@ Every modern LLM (GPT, Claude, LLaMA) traces back to a single equation from 1943
 
 This post walks that path. Start with a single neuron. Build through perceptrons, multilayer networks, and backpropagation. Arrive at the transformer. The goal: show that a transformer is not a magical black box. It is the logical endpoint of solving one problem at a time, for 80 years.
 
-## The Artificial Neuron (1943)
+## The Calculus of Neural Activity (1943)
 
-McCulloch and Pitts proposed the first mathematical model of a neuron in 1943. A neuron receives inputs, weights them, sums the result, and fires if the sum exceeds a threshold:
+McCulloch and Pitts published "A Logical Calculus of the Ideas Immanent in Nervous Activity" in 1943, proposing the first mathematical model of a neuron. The idea: a neuron receives inputs, weights them, sums the result, and fires if the sum exceeds a threshold:
 
 ```
 y = f(w1*x1 + w2*x2 + ... + wn*xn + b)
@@ -30,20 +30,72 @@ Where:
 
 A weighted sum followed by a nonlinear function. That is it. Everything in deep learning, every layer of every transformer, is a variation of this equation.
 
-```mermaid
-graph LR
-    x1["x₁"] -->|"w₁"| S["Σ + b"]
-    x2["x₂"] -->|"w₂"| S
-    xn["xₙ"] -->|"wₙ"| S
-    S --> F["f(·)"]
-    F --> Y["y"]
-```
+<svg viewBox="0 0 440 140" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="440" height="140" rx="8" fill="#181818"/>
+  <!-- input nodes -->
+  <circle cx="40" cy="30" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="40" y="35" fill="#ccc" font-family="monospace" font-size="12" text-anchor="middle">x₁</text>
+  <circle cx="40" cy="70" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="40" y="75" fill="#ccc" font-family="monospace" font-size="12" text-anchor="middle">x₂</text>
+  <circle cx="40" cy="110" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="40" y="115" fill="#ccc" font-family="monospace" font-size="12" text-anchor="middle">xₙ</text>
+  <!-- weight labels -->
+  <text x="105" y="24" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">w₁</text>
+  <text x="105" y="68" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">w₂</text>
+  <text x="105" y="108" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">wₙ</text>
+  <!-- edges: inputs to sum -->
+  <line x1="54" y1="30" x2="156" y2="65" stroke="#555" stroke-width="1.5"/>
+  <line x1="54" y1="70" x2="156" y2="70" stroke="#555" stroke-width="1.5"/>
+  <line x1="54" y1="110" x2="156" y2="75" stroke="#555" stroke-width="1.5"/>
+  <!-- signal pulses on edges -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M54,30 L156,65" dur="3s" repeatCount="indefinite" keyTimes="0;0.3;1" keyPoints="0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M54,70 L156,70" dur="3s" repeatCount="indefinite" keyTimes="0;0.3;1" keyPoints="0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M54,110 L156,75" dur="3s" repeatCount="indefinite" keyTimes="0;0.3;1" keyPoints="0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- sum node -->
+  <circle cx="170" cy="70" r="18" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#4ade80;#4ade80;#888;#888" keyTimes="0;0.29;0.31;0.5;0.52;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text x="170" y="75" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">E + b</text>
+  <!-- edge: sum to activation -->
+  <line x1="188" y1="70" x2="256" y2="70" stroke="#555" stroke-width="1.5"/>
+  <!-- signal pulse: sum to activation -->
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M188,70 L256,70" dur="3s" repeatCount="indefinite" keyTimes="0;0.5;0.7;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.49;0.5;0.68;0.7;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- activation node -->
+  <circle cx="270" cy="70" r="18" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.69;0.71;0.82;0.84;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text x="270" y="75" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">f(x)</text>
+  <!-- edge: activation to output -->
+  <line x1="288" y1="70" x2="366" y2="70" stroke="#555" stroke-width="1.5"/>
+  <!-- signal pulse: activation to output -->
+  <circle r="4" fill="#fbbf24" opacity="0">
+    <animateMotion path="M288,70 L366,70" dur="3s" repeatCount="indefinite" keyTimes="0;0.82;0.97;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0" keyTimes="0;0.81;0.82;0.96;0.97" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- output node -->
+  <circle cx="380" cy="70" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888" keyTimes="0;0.96;0.97;0.99;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text x="380" y="75" fill="#ccc" font-family="monospace" font-size="12" text-anchor="middle">y</text>
+</svg>
 
-The original McCulloch-Pitts neuron used a step function for `f`: output 1 if the sum exceeds the threshold, 0 otherwise. This models the all-or-nothing firing of biological neurons, but creates a problem: the step function is not differentiable, which makes calculus-based learning impossible.
+The McCulloch-Pitts neuron used a step function for `f`: output 1 if the sum exceeds the threshold, 0 otherwise. This models the all-or-nothing firing of biological neurons. The weights were **hand-set**, not learned. There was no training algorithm, no automatic way to find the right weights. That limitation would take 15 years to solve.
 
 ## The Perceptron (1958)
 
-Rosenblatt's perceptron took the artificial neuron and added a **learning rule**. Instead of manually choosing weights, the perceptron adjusts them based on errors:
+Rosenblatt took the McCulloch-Pitts model, called it the **perceptron**, and added the missing piece: a **learning rule**. Instead of hand-setting weights, the perceptron adjusts them automatically based on errors:
 
 ```
 wi ← wi + α * (y_true - y_pred) * xi
