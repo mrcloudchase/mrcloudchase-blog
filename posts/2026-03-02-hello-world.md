@@ -9,7 +9,7 @@ draft: false
 
 ## Who I Am
 
-I'm Chase Dovey, a cloud architect and AI engineer based in Houston, Texas. I came up through systems administration, moved into cloud engineering, and now spend most of my time designing scalable infrastructure and building intelligent systems. My work sits at the intersection of cloud platforms and artificial intelligence. I like building things that are powerful, maintainable, and well-documented.
+I'm Chase Dovey, an AI and cloud engineer based in Houston, Texas. I came up through systems administration, moved into cloud engineering, and now spend most of my time designing scalable infrastructure and building intelligent systems. My work sits at the intersection of cloud platforms and artificial intelligence. I like building things that are powerful, maintainable, and well-documented.
 
 This blog is where I write about what I'm learning, building, and thinking about. No fluff, no listicles. Just technical depth on the things I actually work with.
 
