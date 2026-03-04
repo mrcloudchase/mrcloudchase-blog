@@ -9,13 +9,13 @@ draft: false
 
 ## Who I Am
 
-I'm Chase Dovey, an AI and cloud engineer based in Houston, Texas. I came up through systems administration, moved into cloud engineering, and now spend most of my time designing scalable infrastructure and building intelligent systems. My work sits at the intersection of cloud platforms and artificial intelligence. I like building things that are powerful, maintainable, and well-documented.
+I'm Chase Dovey, an AI and cloud engineer based in Houston, Texas. I came up through systems administration, moved into cloud engineering, and now spend most of my time building/securing scalable infrastructure and intelligent systems. My work sits at the intersection of cloud platforms and artificial intelligence. I like building things that are modular, maintainable, and well-documented.
 
-This blog is where I write about what I'm learning, building, and thinking about. No fluff, no listicles. Just technical depth on the things I actually work with.
+This blog is where I write about what I'm learning, building, and thinking about.
 
 ## What I Write About
 
-Every post on this blog is tagged with one or more of the following categories. This list is the canonical set of topics I cover, and it updates automatically as I expand into new areas:
+Every post on this blog is tagged with one or more of the following categories, which align with the set of topics I cover, and it updates automatically as I expand into new areas:
 
 <!-- TAG_CATALOG -->
 
@@ -23,7 +23,7 @@ If you're here for a specific topic, the [blog index](/blog/) lets you filter by
 
 ## How This Site Is Built
 
-I built this site as a two-repo architecture, and it's a good example of the kind of engineering I write about. Let me walk through it in detail.
+I built this site/blog using a two-repo architecture, and it's a good example of the kind of engineering I write about. Let me walk through it in detail.
 
 ### Architecture Overview
 
@@ -91,9 +91,9 @@ graph TD
     G --> H["contentHtml via dangerouslySetInnerHTML"]
 ```
 
-Each plugin in the chain does one thing. `remark-parse` tokenizes Markdown into an AST. `remark-gfm` extends it with GitHub Flavored Markdown features. `remark-rehype` bridges the Markdown AST to an HTML AST. `rehype-raw` handles inline HTML that was passed through. `rehype-mermaid` finds fenced code blocks tagged as `mermaid` and renders them to inline SVGs using a headless Chromium instance via Playwright, so diagrams are baked into the HTML at build time, not rendered client-side. `rehype-stringify` serializes the final AST to an HTML string.
+Each plugin in the chain does one thing. `remark-parse` tokenizes Markdown into an AST (Abstract Syntax Tree). `remark-gfm` extends it with GitHub Flavored Markdown features. `remark-rehype` bridges the Markdown AST to an HTML AST. `rehype-raw` handles inline HTML that was passed through. `rehype-mermaid` finds fenced code blocks tagged as `mermaid` and renders them to inline SVGs using a headless Chromium instance via Playwright, so diagrams are baked into the HTML at build time, not rendered client-side. `rehype-stringify` serializes the final AST to an HTML string.
 
-The resulting HTML is injected into the page component via `dangerouslySetInnerHTML` and styled by a `.prose-blog` CSS class that applies the site's terminal aesthetic to all standard HTML elements.
+The resulting HTML is injected into the page component via `dangerouslySetInnerHTML` (a React anti-pattern that's necessary here because the HTML is generated from trusted Markdown content) and styled by a `.prose-blog` CSS class that applies the site's terminal aesthetic to all standard HTML elements.
 
 ### The CI/CD Pipeline
 
