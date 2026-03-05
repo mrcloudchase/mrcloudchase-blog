@@ -1,0 +1,441 @@
+---
+title: "The Biological Neuron and Its Mathematical Model"
+date: "2026-03-11"
+excerpt: "From dendrites to equations. How researchers looked at a real brain cell and distilled it into the mathematical model that launched artificial intelligence."
+author: "Chase Dovey"
+tags: ["AI", "Deep Learning"]
+draft: true
+---
+
+## Introduction
+
+Every neural network, every transformer, every LLM traces back to a single biological structure: the neuron. In 1943, Warren McCulloch and Walter Pitts looked at this cell and asked a question that launched an entire field: what is the simplest mathematical model that captures what a neuron does?
+
+Their answer was remarkably sparse. They threw away almost everything about the biology and kept only the essence: weighted inputs, a sum, a threshold, a binary output. That reductive choice turned out to be one of the most consequential abstractions in the history of computing.
+
+This post covers both sides: the biology they started with and the mathematics they extracted from it. Understanding what they kept and what they discarded makes every subsequent development in deep learning clearer.
+
+## The Neuron: Basic Anatomy
+
+The human brain contains roughly 86 billion neurons. Each one is a specialized cell optimized for one job: receive signals, decide whether to fire, and transmit the result. Despite enormous variation in shape and size across the nervous system, every neuron shares the same four functional components.
+
+<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="max-width:560px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="520" height="200" rx="8" fill="#181818"/>
+  <text x="260" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">neuron anatomy</text>
+  <!-- dendrite tree -->
+  <path d="M60,40 Q90,50 110,65 Q125,75 140,85" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+  <path d="M60,40 Q45,30 30,22" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <path d="M60,40 Q50,52 38,60" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <path d="M55,100 Q85,98 110,94 Q130,90 140,90" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+  <path d="M55,100 Q40,88 28,78" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <path d="M55,100 Q40,112 28,122" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <path d="M60,155 Q90,148 110,130 Q125,115 140,100" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+  <path d="M60,155 Q50,142 38,135" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <path d="M60,155 Q45,165 30,172" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <!-- soma -->
+  <ellipse cx="175" cy="95" rx="35" ry="28" fill="#333" stroke="#4ade80" stroke-width="2"/>
+  <text x="175" y="99" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">soma</text>
+  <!-- axon hillock -->
+  <path d="M210,95 Q220,95 225,95" fill="none" stroke="#22d3ee" stroke-width="2.5"/>
+  <!-- axon -->
+  <line x1="225" y1="95" x2="400" y2="95" stroke="#22d3ee" stroke-width="2"/>
+  <!-- myelin sheath segments -->
+  <rect x="230" y="85" width="30" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="3"/>
+  <rect x="268" y="85" width="30" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="3"/>
+  <rect x="306" y="85" width="30" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="3"/>
+  <rect x="344" y="85" width="30" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="3"/>
+  <!-- axon terminals -->
+  <path d="M400,95 Q415,75 430,58" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+  <path d="M430,58 Q440,46 450,36" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <path d="M430,58 Q442,54 456,48" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <path d="M400,95 Q420,95 442,93" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+  <path d="M442,93 Q454,86 466,78" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <path d="M442,93 Q454,100 466,108" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <path d="M400,95 Q415,115 430,132" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+  <path d="M430,132 Q440,144 450,154" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <path d="M430,132 Q442,136 456,142" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <!-- labels -->
+  <text x="42" y="190" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle">dendrites</text>
+  <text x="218" y="135" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">hillock</text>
+  <text x="310" y="78" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">axon + myelin</text>
+  <text x="456" y="190" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">terminals</text>
+  <!-- flow arrow -->
+  <text x="260" y="195" fill="#666" font-family="monospace" font-size="9" text-anchor="middle">signal flow ------></text>
+</svg>
+
+**Dendrites** are the input structures. They branch outward from the cell body like tree roots, forming a dense receiving network. A single neuron can have thousands of dendritic branches, each receiving signals from different upstream neurons. The point where an upstream neuron's axon terminal meets a dendrite is called a **synapse**, and it is the fundamental unit of neural communication.
+
+**The soma** (cell body) is the integration center. It contains the nucleus and the metabolic machinery that keeps the cell alive, but its computational role is to combine all incoming signals from the dendrites. The soma does not simply add these signals. It integrates them over time and space, with signals arriving at different moments and different locations on the dendritic tree contributing differently to the total.
+
+**The axon hillock** sits at the junction between the soma and the axon. This small region has the highest concentration of voltage-gated sodium channels in the entire neuron, making it the trigger zone. When the integrated signal at the hillock exceeds a threshold (approximately -55mV from a resting potential of -70mV), the neuron fires an action potential.
+
+**The axon** is the output fiber. It carries the action potential away from the soma toward other neurons. Axons can be extremely long, up to a meter in motor neurons running from the spinal cord to the foot. Many axons are wrapped in a fatty insulating layer called **myelin sheath**, with periodic gaps called **Nodes of Ranvier** where the signal is regenerated. This insulation dramatically increases signal speed.
+
+**Axon terminals** (synaptic boutons) are the branching endpoints of the axon. When an action potential arrives, the terminal releases neurotransmitter molecules into the synaptic gap, carrying the signal to the next neuron's dendrites.
+
+## The Action Potential: All-or-Nothing
+
+The action potential is the neuron's signal. Understanding how it works reveals why McCulloch and Pitts chose a binary threshold model.
+
+At rest, the neuron's interior sits at approximately -70 millivolts relative to the outside, maintained by ion pumps that actively transport sodium (Na+) out and potassium (K+) in. This is the **resting potential**.
+
+When excitatory signals from dendrites depolarize the axon hillock past the threshold (around -55mV), voltage-gated sodium channels snap open. Na+ rushes in, driving the voltage sharply positive (to about +40mV). This rapid depolarization is the rising phase.
+
+Within a millisecond, sodium channels inactivate and potassium channels open. K+ flows out, repolarizing the cell back past resting potential to about -80mV (the undershoot or hyperpolarization). The ion pumps then restore the resting state.
+
+<svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" style="max-width:460px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="420" height="220" rx="8" fill="#181818"/>
+  <text x="210" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">action potential</text>
+  <!-- axes -->
+  <line x1="60" y1="30" x2="60" y2="190" stroke="#555" stroke-width="1"/>
+  <line x1="60" y1="190" x2="400" y2="190" stroke="#555" stroke-width="1"/>
+  <!-- Y axis labels -->
+  <text x="55" y="48" text-anchor="end" fill="#999" font-family="monospace" font-size="8">+40mV</text>
+  <text x="55" y="108" text-anchor="end" fill="#999" font-family="monospace" font-size="8">-55mV</text>
+  <text x="55" y="140" text-anchor="end" fill="#999" font-family="monospace" font-size="8">-70mV</text>
+  <text x="55" y="168" text-anchor="end" fill="#999" font-family="monospace" font-size="8">-80mV</text>
+  <!-- X axis label -->
+  <text x="230" y="210" text-anchor="middle" fill="#999" font-family="monospace" font-size="9">time (ms)</text>
+  <!-- threshold line -->
+  <line x1="60" y1="105" x2="400" y2="105" stroke="#fbbf24" stroke-width="0.5" stroke-dasharray="4"/>
+  <text x="402" y="108" fill="#fbbf24" font-family="monospace" font-size="7" text-anchor="start">threshold</text>
+  <!-- resting potential line -->
+  <line x1="60" y1="137" x2="400" y2="137" stroke="#4ade80" stroke-width="0.5" stroke-dasharray="4"/>
+  <!-- action potential trace -->
+  <path d="M60,137 L120,137 L140,137 Q155,135 165,105 Q175,60 180,45 Q185,55 190,85 Q200,145 205,165 Q210,170 220,145 L240,137 L400,137" fill="none" stroke="#22d3ee" stroke-width="2"/>
+  <!-- phase labels -->
+  <text x="100" y="130" fill="#4ade80" font-family="monospace" font-size="7" text-anchor="middle">resting</text>
+  <text x="150" y="95" fill="#999" font-family="monospace" font-size="7" text-anchor="middle" transform="rotate(-70,150,95)">depolarize</text>
+  <text x="183" y="36" fill="#22d3ee" font-family="monospace" font-size="7" text-anchor="middle">peak</text>
+  <text x="200" y="130" fill="#999" font-family="monospace" font-size="7" text-anchor="middle" transform="rotate(70,200,130)">repolarize</text>
+  <text x="215" y="178" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">undershoot</text>
+  <!-- animated dot tracing the action potential -->
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M60,137 L120,137 L140,137 Q155,135 165,105 Q175,60 180,45 Q185,55 190,85 Q200,145 205,165 Q210,170 220,145 L240,137 L400,137" dur="4s" repeatCount="indefinite" keyTimes="0;0.1;0.2;1" keyPoints="0;0;0.2;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.09;0.1;0.9;0.95;1" dur="4s" repeatCount="indefinite"/>
+  </circle>
+</svg>
+
+The critical insight: this is a **binary event**. The neuron either fires a full action potential or it does not fire at all. There is no partial spike, no half-signal. The amplitude of every action potential is the same regardless of stimulus strength. Stimulus intensity is encoded in **firing rate** (how many spikes per second), not spike amplitude.
+
+This all-or-nothing property is what McCulloch and Pitts latched onto. It maps directly to a binary output: 1 or 0, fire or do not fire.
+
+## Synaptic Transmission: Weights Before There Were Weights
+
+Neurons communicate across synapses. When an action potential reaches an axon terminal, it triggers the release of neurotransmitter molecules into the synaptic cleft (the gap between neurons, roughly 20 nanometers wide). These molecules bind to receptors on the receiving neuron's dendrite, opening ion channels that either depolarize or hyperpolarize the receiving cell.
+
+This is where the biology maps most directly to the mathematics of neural networks.
+
+**Excitatory synapses** (using neurotransmitters like glutamate) push the receiving neuron toward firing. They depolarize the membrane, bringing it closer to threshold. In the mathematical model, these correspond to **positive weights**.
+
+**Inhibitory synapses** (using neurotransmitters like GABA) push the receiving neuron away from firing. They hyperpolarize the membrane, making it harder to reach threshold. These correspond to **negative weights**.
+
+Not all synapses are equal. Some connections are strong (more neurotransmitter released, more receptors available, larger effect on membrane potential) and some are weak. The strength of a synapse determines how much influence it has on the receiving neuron's decision to fire. In mathematical terms, this is exactly what a weight does: it scales the input.
+
+Furthermore, synaptic strength is not fixed. **Synaptic plasticity**, the ability of synapses to strengthen or weaken over time, is the biological basis of learning. Donald Hebb captured this principle in 1949: "neurons that fire together wire together." When a presynaptic neuron consistently contributes to causing the postsynaptic neuron to fire, the synapse between them strengthens. This anticipates the concept of adjustable weights in artificial neural networks by over a decade.
+
+## Spatial and Temporal Integration
+
+The soma does not evaluate each incoming signal independently. It performs two types of integration.
+
+**Spatial summation** occurs when signals arrive from multiple synapses at the same time. Each synapse produces a small voltage change (an excitatory or inhibitory postsynaptic potential). These changes propagate through the dendrites to the soma, where they combine. If enough excitatory inputs arrive simultaneously to push the hillock past threshold, the neuron fires. This is the biological analog of the weighted sum: multiply each input by its synaptic strength and add them up.
+
+**Temporal summation** occurs when signals arrive from the same synapse in rapid succession. Each individual signal might be too weak to trigger firing, but if they arrive fast enough, the voltage changes accumulate before the previous one decays. This integrates information over time, a property that McCulloch and Pitts deliberately excluded from their model.
+
+<svg viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg" style="max-width:540px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="500" height="180" rx="8" fill="#181818"/>
+  <text x="250" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">signal integration at the soma</text>
+  <!-- three input signals arriving -->
+  <!-- signal 1: excitatory (strong) -->
+  <rect x="20" y="35" width="80" height="25" rx="4" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="60" y="51" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">excitatory +3</text>
+  <!-- signal 2: excitatory (weak) -->
+  <rect x="20" y="70" width="80" height="25" rx="4" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="60" y="86" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">excitatory +1</text>
+  <!-- signal 3: inhibitory -->
+  <rect x="20" y="105" width="80" height="25" rx="4" fill="#333" stroke="#ef4444" stroke-width="1"/>
+  <text x="60" y="121" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle">inhibitory -2</text>
+  <!-- arrows to soma -->
+  <line x1="100" y1="47" x2="155" y2="78" stroke="#4ade80" stroke-width="1"/>
+  <line x1="100" y1="82" x2="155" y2="82" stroke="#4ade80" stroke-width="1"/>
+  <line x1="100" y1="117" x2="155" y2="88" stroke="#ef4444" stroke-width="1"/>
+  <!-- soma integration -->
+  <ellipse cx="190" cy="82" rx="35" ry="25" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="190" y="79" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">sum</text>
+  <text x="190" y="92" fill="#22d3ee" font-family="monospace" font-size="10" text-anchor="middle">= +2</text>
+  <!-- threshold comparison -->
+  <line x1="225" y1="82" x2="280" y2="82" stroke="#888" stroke-width="1.5"/>
+  <rect x="280" y="62" width="70" height="40" rx="4" fill="#333" stroke="#fbbf24" stroke-width="1"/>
+  <text x="315" y="79" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">threshold</text>
+  <text x="315" y="94" fill="#fbbf24" font-family="monospace" font-size="10" text-anchor="middle">= +2</text>
+  <!-- output -->
+  <line x1="350" y1="82" x2="400" y2="82" stroke="#888" stroke-width="1.5"/>
+  <rect x="400" y="62" width="70" height="40" rx="4" fill="#333" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="435" y="79" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="middle">FIRE</text>
+  <text x="435" y="94" fill="#22d3ee" font-family="monospace" font-size="10" text-anchor="middle">y = 1</text>
+  <!-- animated pulse showing summation -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M100,47 L155,78 L190,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.1;0.3;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.1;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M100,82 L155,82 L190,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.15;0.35;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.14;0.15;0.33;0.35;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#ef4444" opacity="0">
+    <animateMotion path="M100,117 L155,88 L190,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.2;0.4;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.19;0.2;0.38;0.4;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- output pulse -->
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M225,82 L315,82 L435,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.5;0.8;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.49;0.5;0.78;0.8;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- explanation -->
+  <text x="250" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">+3 + 1 + (-2) = +2 >= threshold -> neuron fires</text>
+</svg>
+
+## The McCulloch-Pitts Neuron (1943)
+
+Warren McCulloch was a neurophysiologist. Walter Pitts was a mathematical logician. In 1943, they published "A Logical Calculus of the Ideas Immanent in Nervous Activity," proposing the first mathematical model of a neuron.
+
+Their approach was deliberately reductive. They started with the biological neuron and asked: what is the minimum abstraction that preserves the computational behavior?
+
+### What They Kept
+
+1. **Multiple inputs**: A neuron receives signals from many sources (dendrites from many upstream neurons).
+2. **Weighted combination**: Each input has a different influence (synaptic strength varies).
+3. **Threshold firing**: If the combined signal exceeds a threshold, the neuron fires (all-or-nothing).
+4. **Binary output**: The neuron either fires (1) or does not fire (0).
+
+### What They Threw Away
+
+1. **Temporal dynamics**: Real neurons integrate signals over time. The McCulloch-Pitts model computes instantaneously.
+2. **Analog voltage**: Real membrane potentials are continuous values. The model uses binary.
+3. **Spatial structure**: Dendritic geometry matters in real neurons. The model treats all inputs as arriving at a single point.
+4. **Refractory period**: Real neurons cannot fire again immediately after an action potential. The model has no memory of previous states.
+5. **Neurotransmitter chemistry**: The model reduces the complex molecular machinery of synaptic transmission to a simple multiplication.
+6. **Firing rate**: Real neurons encode information in spike frequency. The model produces a single binary value.
+
+### The Mathematical Formulation
+
+The McCulloch-Pitts neuron computes:
+
+```
+y = f(w1*x1 + w2*x2 + ... + wn*xn)
+```
+
+Where:
+- `xi` are the binary inputs (0 or 1)
+- `wi` are the weights (positive for excitatory, negative for inhibitory)
+- `f` is the threshold function: output 1 if the sum exceeds the threshold, 0 otherwise
+
+More precisely, with bias term `b` replacing the threshold:
+
+```
+y = 1  if  w1*x1 + w2*x2 + ... + wn*xn + b >= 0
+y = 0  otherwise
+```
+
+The bias `b` is the negative of the threshold. Moving it to the left side of the inequality recovers the original formulation: fire if the weighted sum exceeds the threshold.
+
+<svg viewBox="0 0 440 150" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="440" height="150" rx="8" fill="#181818"/>
+  <text x="220" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">McCulloch-Pitts neuron</text>
+  <!-- input nodes -->
+  <circle cx="40" cy="35" r="14" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="40" y="39" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">x1</text>
+  <circle cx="40" cy="75" r="14" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="40" y="79" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">x2</text>
+  <circle cx="40" cy="115" r="14" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="40" y="119" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">xn</text>
+  <!-- weight labels -->
+  <text x="105" y="30" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">w1</text>
+  <text x="105" y="72" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">w2</text>
+  <text x="105" y="112" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">wn</text>
+  <!-- edges -->
+  <line x1="54" y1="35" x2="156" y2="70" stroke="#555" stroke-width="1.5"/>
+  <line x1="54" y1="75" x2="156" y2="75" stroke="#555" stroke-width="1.5"/>
+  <line x1="54" y1="115" x2="156" y2="80" stroke="#555" stroke-width="1.5"/>
+  <!-- signal pulses -->
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M54,35 L156,70" dur="3s" repeatCount="indefinite" keyTimes="0;0.3;1" keyPoints="0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M54,75 L156,75" dur="3s" repeatCount="indefinite" keyTimes="0;0.3;1" keyPoints="0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M54,115 L156,80" dur="3s" repeatCount="indefinite" keyTimes="0;0.3;1" keyPoints="0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- sum node -->
+  <circle cx="170" cy="75" r="18" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.29;0.31;0.5;0.52;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text x="170" y="79" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">sum</text>
+  <!-- edge to threshold -->
+  <line x1="188" y1="75" x2="250" y2="75" stroke="#555" stroke-width="1.5"/>
+  <!-- threshold pulse -->
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M188,75 L250,75" dur="3s" repeatCount="indefinite" keyTimes="0;0.5;0.7;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.49;0.5;0.68;0.7;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- threshold node -->
+  <circle cx="265" cy="75" r="18" fill="#333" stroke="#fbbf24" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888;#888" keyTimes="0;0.69;0.71;0.82;0.84;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text x="265" y="72" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">>=</text>
+  <text x="265" y="83" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">thr</text>
+  <!-- edge to output -->
+  <line x1="283" y1="75" x2="365" y2="75" stroke="#555" stroke-width="1.5"/>
+  <!-- output pulse -->
+  <circle r="4" fill="#fbbf24" opacity="0">
+    <animateMotion path="M283,75 L365,75" dur="3s" repeatCount="indefinite" keyTimes="0;0.82;0.97;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0" keyTimes="0;0.81;0.82;0.96;0.97" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- output node -->
+  <circle cx="380" cy="75" r="14" fill="#333" stroke="#888" stroke-width="1.5">
+    <animate attributeName="stroke" values="#888;#888;#fbbf24;#fbbf24;#888" keyTimes="0;0.96;0.97;0.99;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text x="380" y="79" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">y</text>
+  <!-- labels -->
+  <text x="40" y="143" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">inputs</text>
+  <text x="170" y="143" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">weighted sum</text>
+  <text x="265" y="143" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">threshold</text>
+  <text x="380" y="143" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">output</text>
+</svg>
+
+## Computing with Threshold Logic
+
+McCulloch and Pitts did not just propose a model. They proved something profound: networks of their idealized neurons can compute any logical function. A single McCulloch-Pitts neuron can implement the basic Boolean logic gates.
+
+### AND Gate
+
+An AND gate outputs 1 only when both inputs are 1. Set both weights to 1 and the threshold to 2:
+
+```
+weights: w1 = 1, w2 = 1
+threshold: 2
+
+x1=0, x2=0 -> 0+0 = 0 < 2 -> output 0
+x1=1, x2=0 -> 1+0 = 1 < 2 -> output 0
+x1=0, x2=1 -> 0+1 = 1 < 2 -> output 0
+x1=1, x2=1 -> 1+1 = 2 >= 2 -> output 1
+```
+
+### OR Gate
+
+An OR gate outputs 1 when at least one input is 1. Set both weights to 1 and the threshold to 1:
+
+```
+weights: w1 = 1, w2 = 1
+threshold: 1
+
+x1=0, x2=0 -> 0+0 = 0 < 1 -> output 0
+x1=1, x2=0 -> 1+0 = 1 >= 1 -> output 1
+x1=0, x2=1 -> 0+1 = 1 >= 1 -> output 1
+x1=1, x2=1 -> 1+1 = 2 >= 1 -> output 1
+```
+
+### NOT Gate
+
+A NOT gate inverts the input. Set the weight to -1 and the threshold to 0:
+
+```
+weight: w1 = -1
+threshold: 0 (bias = 0)
+
+x1=0 -> -1*0 = 0 >= 0 -> output 1
+x1=1 -> -1*1 = -1 < 0 -> output 0
+```
+
+<svg viewBox="0 0 500 160" xmlns="http://www.w3.org/2000/svg" style="max-width:540px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="500" height="160" rx="8" fill="#181818"/>
+  <text x="250" y="16" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">logic gates as McCulloch-Pitts neurons</text>
+  <!-- AND gate -->
+  <text x="83" y="35" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="9" font-weight="bold">AND</text>
+  <circle cx="30" cy="60" r="10" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="30" y="64" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
+  <circle cx="30" cy="100" r="10" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="30" y="104" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x2</text>
+  <line x1="40" y1="60" x2="70" y2="75" stroke="#555" stroke-width="1"/>
+  <line x1="40" y1="100" x2="70" y2="85" stroke="#555" stroke-width="1"/>
+  <text x="55" y="56" fill="#999" font-family="monospace" font-size="7">1</text>
+  <text x="55" y="104" fill="#999" font-family="monospace" font-size="7">1</text>
+  <circle cx="83" cy="80" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="83" y="77" fill="#fbbf24" font-family="monospace" font-size="7" text-anchor="middle">t=2</text>
+  <text x="83" y="87" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">f</text>
+  <line x1="97" y1="80" x2="130" y2="80" stroke="#555" stroke-width="1"/>
+  <circle cx="140" cy="80" r="10" fill="#333" stroke="#888" stroke-width="1"/>
+  <text x="140" y="84" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">y</text>
+  <text x="83" y="120" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">1 AND 1 = 1</text>
+  <text x="83" y="132" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">1 AND 0 = 0</text>
+  <text x="83" y="144" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">0 AND 0 = 0</text>
+  <!-- OR gate -->
+  <text x="250" y="35" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="9" font-weight="bold">OR</text>
+  <circle cx="197" cy="60" r="10" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="197" y="64" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
+  <circle cx="197" cy="100" r="10" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="197" y="104" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x2</text>
+  <line x1="207" y1="60" x2="237" y2="75" stroke="#555" stroke-width="1"/>
+  <line x1="207" y1="100" x2="237" y2="85" stroke="#555" stroke-width="1"/>
+  <text x="222" y="56" fill="#999" font-family="monospace" font-size="7">1</text>
+  <text x="222" y="104" fill="#999" font-family="monospace" font-size="7">1</text>
+  <circle cx="250" cy="80" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="250" y="77" fill="#fbbf24" font-family="monospace" font-size="7" text-anchor="middle">t=1</text>
+  <text x="250" y="87" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">f</text>
+  <line x1="264" y1="80" x2="297" y2="80" stroke="#555" stroke-width="1"/>
+  <circle cx="307" cy="80" r="10" fill="#333" stroke="#888" stroke-width="1"/>
+  <text x="307" y="84" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">y</text>
+  <text x="250" y="120" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">1 OR 0 = 1</text>
+  <text x="250" y="132" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">0 OR 1 = 1</text>
+  <text x="250" y="144" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">0 OR 0 = 0</text>
+  <!-- NOT gate -->
+  <text x="417" y="35" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="9" font-weight="bold">NOT</text>
+  <circle cx="370" cy="80" r="10" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="370" y="84" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
+  <line x1="380" y1="80" x2="403" y2="80" stroke="#555" stroke-width="1"/>
+  <text x="392" y="74" fill="#ef4444" font-family="monospace" font-size="7">-1</text>
+  <circle cx="417" cy="80" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
+  <text x="417" y="77" fill="#fbbf24" font-family="monospace" font-size="7" text-anchor="middle">t=0</text>
+  <text x="417" y="87" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">f</text>
+  <line x1="431" y1="80" x2="457" y2="80" stroke="#555" stroke-width="1"/>
+  <circle cx="467" cy="80" r="10" fill="#333" stroke="#888" stroke-width="1"/>
+  <text x="467" y="84" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">y</text>
+  <text x="417" y="120" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">NOT 1 = 0</text>
+  <text x="417" y="132" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">NOT 0 = 1</text>
+</svg>
+
+### Toward Turing-Completeness
+
+Since AND, OR, and NOT gates are sufficient to compute any Boolean function (they form a functionally complete set), McCulloch and Pitts showed that networks of their idealized neurons can, in principle, compute anything that Boolean circuits can compute.
+
+They went further. By adding feedback loops (outputs feeding back as inputs, introducing a notion of time steps), they argued that networks of binary threshold units can simulate any finite automaton. This was a remarkable result: it linked neural computation to the formal theory of computation that Turing had developed just seven years earlier.
+
+The practical limitation was glaring: the weights had to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right weights from data. Their model was a proof of computational universality, not a learning algorithm. The question of how to find the right weights would take another 15 years to answer.
+
+## Biology vs. Model: A Side-by-Side View
+
+Understanding what the McCulloch-Pitts model captures and what it misses is essential for understanding every subsequent development in neural networks. Each generation of models recovered some piece of biology that McCulloch and Pitts discarded.
+
+| Biological Property | McCulloch-Pitts | Later Models |
+|---|---|---|
+| Multiple inputs | Yes | Yes |
+| Variable connection strength | Yes (weights) | Yes (learnable weights) |
+| Threshold firing | Yes (step function) | Yes (activation functions) |
+| Binary output | Yes | No (continuous activations) |
+| Temporal dynamics | No | RNNs, LSTMs |
+| Analog voltage | No | Continuous-valued neurons |
+| Spatial dendritic structure | No | Still mostly ignored |
+| Synaptic plasticity | No | Backpropagation |
+| Refractory period | No | Spiking neural networks |
+| Firing rate coding | No | Rate-coded networks |
+| Neurotransmitter diversity | No | Still mostly ignored |
+
+The original model was deliberately minimal. It captured the essence of neural computation, enough to prove universality, but not enough to learn. The next step in the lineage, the perceptron, would add exactly what was missing: a rule for adjusting the weights automatically.
+
+## Key Takeaways
+
+The biological neuron is a sophisticated electrochemical computer. McCulloch and Pitts stripped it down to its computational essence: weighted inputs, summation, threshold, binary output. That abstraction was powerful enough to prove that networks of simple threshold units can compute any Boolean function. But the weights had to be hand-designed. The path from here to modern deep learning is the story of recovering, piece by piece, the capabilities that this first model threw away.
