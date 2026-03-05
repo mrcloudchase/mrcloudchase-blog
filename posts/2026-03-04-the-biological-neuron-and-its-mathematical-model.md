@@ -30,20 +30,38 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <path d="M62,42 Q92,52 115,67 Q133,78 155,88" fill="none" stroke="#4ade80" stroke-width="1.5"/>
   <path d="M62,42 Q48,32 35,24" fill="none" stroke="#4ade80" stroke-width="1"/>
   <path d="M62,42 Q52,54 42,62" fill="none" stroke="#4ade80" stroke-width="1"/>
-  <circle cx="32" cy="22" r="3.5" fill="#4ade80" opacity="0.6"/>
-  <circle cx="39" cy="64" r="3.5" fill="#4ade80" opacity="0.6"/>
+  <circle cx="32" cy="22" r="3.5" fill="#4ade80" opacity="0.6">
+    <animate attributeName="r" values="3.5;3.5;5;3.5;3.5" keyTimes="0;0.005;0.02;0.04;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.6;1;0.6;0.6" keyTimes="0;0.005;0.02;0.04;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="39" cy="64" r="3.5" fill="#4ade80" opacity="0.6">
+    <animate attributeName="r" values="3.5;3.5;5;3.5;3.5" keyTimes="0;0.025;0.04;0.06;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.6;1;0.6;0.6" keyTimes="0;0.025;0.04;0.06;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
   <!-- middle branch -->
   <path d="M57,102 Q87,100 115,97 Q137,94 155,94" fill="none" stroke="#4ade80" stroke-width="1.5"/>
   <path d="M57,102 Q43,90 32,80" fill="none" stroke="#4ade80" stroke-width="1"/>
   <path d="M57,102 Q43,114 32,124" fill="none" stroke="#4ade80" stroke-width="1"/>
-  <circle cx="29" cy="78" r="3.5" fill="#4ade80" opacity="0.6"/>
-  <circle cx="29" cy="126" r="3.5" fill="#4ade80" opacity="0.6"/>
+  <circle cx="29" cy="78" r="3.5" fill="#4ade80" opacity="0.6">
+    <animate attributeName="r" values="3.5;3.5;5;3.5;3.5" keyTimes="0;0.035;0.05;0.07;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.6;1;0.6;0.6" keyTimes="0;0.035;0.05;0.07;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="29" cy="126" r="3.5" fill="#4ade80" opacity="0.6">
+    <animate attributeName="r" values="3.5;3.5;5;3.5;3.5" keyTimes="0;0.055;0.07;0.09;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.6;1;0.6;0.6" keyTimes="0;0.055;0.07;0.09;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
   <!-- bottom branch -->
   <path d="M62,158 Q92,150 115,133 Q133,118 155,108" fill="none" stroke="#4ade80" stroke-width="1.5"/>
   <path d="M62,158 Q52,146 42,138" fill="none" stroke="#4ade80" stroke-width="1"/>
   <path d="M62,158 Q48,168 35,176" fill="none" stroke="#4ade80" stroke-width="1"/>
-  <circle cx="39" cy="136" r="3.5" fill="#4ade80" opacity="0.6"/>
-  <circle cx="32" cy="178" r="3.5" fill="#4ade80" opacity="0.6"/>
+  <circle cx="39" cy="136" r="3.5" fill="#4ade80" opacity="0.6">
+    <animate attributeName="r" values="3.5;3.5;5;3.5;3.5" keyTimes="0;0.045;0.06;0.08;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.6;1;0.6;0.6" keyTimes="0;0.045;0.06;0.08;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="32" cy="178" r="3.5" fill="#4ade80" opacity="0.6">
+    <animate attributeName="r" values="3.5;3.5;5;3.5;3.5" keyTimes="0;0.065;0.08;0.10;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.6;1;0.6;0.6" keyTimes="0;0.065;0.08;0.10;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
   <!-- === SOMA WITH NUCLEUS === -->
   <ellipse cx="195" cy="100" rx="40" ry="30" fill="#333" stroke="#4ade80" stroke-width="2">
     <animate attributeName="stroke-width" values="2;2;3;3.5;3.5;3;2;2" keyTimes="0;0.25;0.30;0.34;0.37;0.40;0.43;1" dur="10s" repeatCount="indefinite"/>
@@ -82,10 +100,13 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <path d="M512,138 Q527,146 540,150" fill="none" stroke="#fbbf24" stroke-width="1"/>
   <circle cx="540" cy="160" r="4" fill="#fbbf24" opacity="0.6"/>
   <circle cx="543" cy="152" r="4" fill="#fbbf24" opacity="0.6"/>
-  <!-- === SYNAPTIC CLEFTS (gap + postsynaptic membrane at select boutons) === -->
+  <!-- === SYNAPTIC CLEFTS (gap + postsynaptic membrane at all 6 boutons) === -->
   <line x1="548" y1="34" x2="548" y2="42" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
+  <line x1="551" y1="46" x2="551" y2="54" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
   <line x1="561" y1="74" x2="561" y2="82" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
+  <line x1="561" y1="114" x2="561" y2="122" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
   <line x1="548" y1="156" x2="548" y2="164" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
+  <line x1="551" y1="148" x2="551" y2="156" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
   <!-- === LABELS === -->
   <text x="18" y="100" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">spines</text>
   <text x="62" y="205" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle">dendrites</text>
@@ -135,26 +156,32 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
     <animate attributeName="opacity" values="0;0;0.1;0.2;0.4;1;0;0" keyTimes="0;0.38;0.40;0.42;0.44;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="6;6;7;8;10;14;6;6" keyTimes="0;0.38;0.40;0.42;0.44;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- PHASE 4: Saltatory conduction - signal JUMPS node to node (5-7.2s) -->
+  <!-- PHASE 4: Saltatory conduction - signal JUMPS node to node (5-7.5s) -->
+  <!-- Each node: white flash (depolarization) -> dim purple (refractory/hyperpolarization) -> invisible -->
   <!-- flash at axon start (x=260) -->
   <circle cx="260" cy="100" r="5" fill="#fff" opacity="0">
-    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.50;0.51;0.53;0.55;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0.35;0;0" keyTimes="0;0.50;0.51;0.53;0.54;0.57;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="fill" values="#fff;#fff;#fff;#fff;#2a1a5a;#2a1a5a;#fff" keyTimes="0;0.50;0.51;0.53;0.54;0.57;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- flash at Node 1 (x=305, gap between myelin 1 and 2) -->
   <circle cx="305" cy="100" r="5" fill="#fff" opacity="0">
-    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.55;0.56;0.58;0.60;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0.35;0;0" keyTimes="0;0.55;0.56;0.58;0.59;0.62;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="fill" values="#fff;#fff;#fff;#fff;#2a1a5a;#2a1a5a;#fff" keyTimes="0;0.55;0.56;0.58;0.59;0.62;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- flash at Node 2 (x=355, gap between myelin 2 and 3) -->
   <circle cx="355" cy="100" r="5" fill="#fff" opacity="0">
-    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.60;0.61;0.63;0.65;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0.35;0;0" keyTimes="0;0.60;0.61;0.63;0.64;0.67;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="fill" values="#fff;#fff;#fff;#fff;#2a1a5a;#2a1a5a;#fff" keyTimes="0;0.60;0.61;0.63;0.64;0.67;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- flash at Node 3 (x=405, gap between myelin 3 and 4) -->
   <circle cx="405" cy="100" r="5" fill="#fff" opacity="0">
-    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.65;0.66;0.68;0.70;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0.35;0;0" keyTimes="0;0.65;0.66;0.68;0.69;0.72;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="fill" values="#fff;#fff;#fff;#fff;#2a1a5a;#2a1a5a;#fff" keyTimes="0;0.65;0.66;0.68;0.69;0.72;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- flash at axon end (x=478) -->
   <circle cx="478" cy="100" r="5" fill="#fff" opacity="0">
-    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.70;0.71;0.73;0.75;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0.35;0;0" keyTimes="0;0.70;0.71;0.73;0.74;0.77;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="fill" values="#fff;#fff;#fff;#fff;#2a1a5a;#2a1a5a;#fff" keyTimes="0;0.70;0.71;0.73;0.74;0.77;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- PHASE 5: Signal branches to all 6 boutons (7.5-8.8s) -->
   <!-- top bouton 1: (480,100) -> (512,62) -> (540,38) -->
@@ -187,40 +214,70 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
     <animateMotion path="M480,100 Q498,122 512,138 Q527,146 543,152" dur="10s" repeatCount="indefinite" keyTimes="0;0.76;0.88;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.75;0.76;0.86;0.88;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- PHASE 6: Bouton flash + vesicle release (8.8-9.5s) -->
-  <!-- top bouton 1 flash -->
+  <!-- PHASE 6: All 6 bouton flashes + vesicle release (8.8-9.5s) -->
+  <!-- top bouton 1 (540,38) flash -->
   <circle cx="540" cy="38" r="4" fill="#fbbf24" opacity="0">
     <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- middle bouton 1 flash -->
+  <!-- top bouton 2 (543,50) flash -->
+  <circle cx="543" cy="50" r="4" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- middle bouton 1 (553,78) flash -->
   <circle cx="553" cy="78" r="4" fill="#fbbf24" opacity="0">
     <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- bottom bouton 1 flash -->
+  <!-- middle bouton 2 (553,118) flash -->
+  <circle cx="553" cy="118" r="4" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- bottom bouton 1 (540,160) flash -->
   <circle cx="540" cy="160" r="4" fill="#fbbf24" opacity="0">
     <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- vesicle dot: top bouton -> across synaptic cleft -->
+  <!-- bottom bouton 2 (543,152) flash -->
+  <circle cx="543" cy="152" r="4" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- vesicle dot: top bouton 1 -> across cleft -->
   <circle r="1.5" fill="#fbbf24" opacity="0">
     <animateMotion path="M540,38 L548,37" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- vesicle dot: middle bouton -> across synaptic cleft -->
+  <!-- vesicle dot: top bouton 2 -> across cleft -->
+  <circle r="1.5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M543,50 L551,49" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- vesicle dot: middle bouton 1 -> across cleft -->
   <circle r="1.5" fill="#fbbf24" opacity="0">
     <animateMotion path="M553,78 L561,77" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- vesicle dot: bottom bouton -> across synaptic cleft -->
+  <!-- vesicle dot: middle bouton 2 -> across cleft -->
+  <circle r="1.5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M553,118 L561,119" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- vesicle dot: bottom bouton 1 -> across cleft -->
   <circle r="1.5" fill="#fbbf24" opacity="0">
     <animateMotion path="M540,160 L548,161" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
+  <!-- vesicle dot: bottom bouton 2 -> across cleft -->
+  <circle r="1.5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M543,152 L551,153" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
 </svg>
 
-*Figure 1: Complete neuron anatomy and signal mechanics. Graded potentials originate at dendritic spines (green circles) and decay as they passively propagate toward the soma. The soma integrates all inputs (stroke glow). If the summed voltage crosses threshold, the axon hillock (tapered cyan funnel with Na+ channel density marks) fires sharply. The action potential then jumps node-to-node along the myelinated axon via saltatory conduction (each Node of Ranvier flashes at equal intensity). At the synaptic boutons (yellow circles), Ca2+ influx triggers vesicle release across the synaptic cleft (faint green postsynaptic membrane) to the next neuron.*
+*Figure 1: Complete neuron anatomy and signal mechanics. Dendritic spines (green circles) flash when neurotransmitter binds, initiating graded potentials that decay as they passively propagate toward the soma. The soma integrates all inputs (stroke glow). If the summed voltage crosses threshold, the axon hillock (tapered cyan funnel with Na+ channel density marks) fires sharply. The action potential then jumps node-to-node along the myelinated axon via saltatory conduction: each Node of Ranvier flashes white (depolarization) at equal intensity, then briefly dims purple (refractory period/hyperpolarization), preventing backward propagation. At all six synaptic boutons (yellow circles), Ca2+ influx triggers vesicle release across the synaptic cleft (faint green postsynaptic membrane) to the next neuron.*
 
 **Dendrites** are the input structures. They branch outward from the cell body like tree roots, forming a dense receiving network. A single neuron can have thousands of dendritic branches, each receiving signals from different upstream neurons. The point where an upstream neuron's axon terminal meets a dendrite is called a **synapse**, and it is the fundamental unit of neural communication.
 
