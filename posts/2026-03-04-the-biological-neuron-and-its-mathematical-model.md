@@ -107,6 +107,13 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <line x1="561" y1="114" x2="561" y2="122" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
   <line x1="548" y1="156" x2="548" y2="164" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
   <line x1="551" y1="148" x2="551" y2="156" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
+  <!-- === PRE-SYNAPTIC CLEFT LINES (upstream neuron terminals before dendrite spines) === -->
+  <line x1="24" y1="18" x2="24" y2="26" stroke="#fbbf24" stroke-width="1.5" opacity="0.4"/>
+  <line x1="31" y1="60" x2="31" y2="68" stroke="#fbbf24" stroke-width="1.5" opacity="0.4"/>
+  <line x1="21" y1="74" x2="21" y2="82" stroke="#fbbf24" stroke-width="1.5" opacity="0.4"/>
+  <line x1="21" y1="122" x2="21" y2="130" stroke="#fbbf24" stroke-width="1.5" opacity="0.4"/>
+  <line x1="31" y1="132" x2="31" y2="140" stroke="#fbbf24" stroke-width="1.5" opacity="0.4"/>
+  <line x1="24" y1="174" x2="24" y2="182" stroke="#fbbf24" stroke-width="1.5" opacity="0.4"/>
   <!-- === LABELS === -->
   <text x="18" y="100" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">spines</text>
   <text x="62" y="205" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle">dendrites</text>
@@ -117,8 +124,39 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <text x="405" y="126" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">node</text>
   <text x="550" y="205" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">boutons</text>
   <!-- ============================================================ -->
-  <!-- ANIMATION: 10s cycle with 8 mechanistic phases               -->
+  <!-- ANIMATION: 10s cycle with 9 mechanistic phases               -->
   <!-- ============================================================ -->
+  <!-- PHASE 0: Input neurotransmitter crosses pre-synaptic cleft to dendrite spines (9.6-10s loop point) -->
+  <!-- input vesicle: upstream -> spine 1 (32,22) -->
+  <circle r="1.5" fill="#fff" opacity="0">
+    <animateMotion path="M24,22 L32,22" dur="10s" repeatCount="indefinite" keyTimes="0;0.96;1" keyPoints="0;0;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8" keyTimes="0;0.955;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- input vesicle: upstream -> spine 2 (39,64) -->
+  <circle r="1.5" fill="#fff" opacity="0">
+    <animateMotion path="M31,64 L39,64" dur="10s" repeatCount="indefinite" keyTimes="0;0.96;1" keyPoints="0;0;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8" keyTimes="0;0.955;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- input vesicle: upstream -> spine 3 (29,78) -->
+  <circle r="1.5" fill="#fff" opacity="0">
+    <animateMotion path="M21,78 L29,78" dur="10s" repeatCount="indefinite" keyTimes="0;0.96;1" keyPoints="0;0;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8" keyTimes="0;0.955;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- input vesicle: upstream -> spine 4 (29,126) -->
+  <circle r="1.5" fill="#fff" opacity="0">
+    <animateMotion path="M21,126 L29,126" dur="10s" repeatCount="indefinite" keyTimes="0;0.96;1" keyPoints="0;0;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8" keyTimes="0;0.955;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- input vesicle: upstream -> spine 5 (39,136) -->
+  <circle r="1.5" fill="#fff" opacity="0">
+    <animateMotion path="M31,136 L39,136" dur="10s" repeatCount="indefinite" keyTimes="0;0.96;1" keyPoints="0;0;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8" keyTimes="0;0.955;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- input vesicle: upstream -> spine 6 (32,178) -->
+  <circle r="1.5" fill="#fff" opacity="0">
+    <animateMotion path="M24,178 L32,178" dur="10s" repeatCount="indefinite" keyTimes="0;0.96;1" keyPoints="0;0;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8" keyTimes="0;0.955;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
   <!-- PHASE 1: Graded potentials travel dendrites with DECAY (0-3s) -->
   <!-- top spine 1 (32,22) -> junction (62,42) -> soma edge (155,88) -->
   <circle r="3" fill="#fff" opacity="0">
@@ -277,7 +315,7 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   </circle>
 </svg>
 
-*Figure 1: Complete neuron anatomy and signal mechanics. Dendritic spines (green circles) flash when neurotransmitter binds, initiating graded potentials that decay as they passively propagate toward the soma. The soma integrates all inputs (stroke glow). If the summed voltage crosses threshold, the axon hillock (tapered cyan funnel with Na+ channel density marks) fires sharply. The action potential then jumps node-to-node along the myelinated axon via saltatory conduction: each Node of Ranvier flashes white (depolarization) at equal intensity, then briefly dims purple (refractory period/hyperpolarization), preventing backward propagation. At all six synaptic boutons (yellow circles), Ca2+ influx triggers vesicle release across the synaptic cleft (faint green postsynaptic membrane) to the next neuron.*
+*Figure 1: Complete neuron anatomy and signal mechanics. Neurotransmitter vesicles (white dots) cross the pre-synaptic cleft from upstream terminals (faint yellow lines) to dendritic spines. The spines flash on binding, initiating graded potentials that decay as they passively propagate toward the soma. The soma integrates all inputs (stroke glow). If the summed voltage crosses threshold, the axon hillock fires sharply. The action potential jumps node-to-node via saltatory conduction: each Node of Ranvier flashes white (depolarization) then dims purple (refractory period), preventing backward propagation. At all six boutons, Ca2+ influx triggers vesicle release across the output synaptic cleft (faint green postsynaptic membrane). The animation loops continuously, connecting output vesicle release to input synaptic crossing, simulating signal propagation through a chain of neurons.*
 
 **Dendrites** are the input structures. They branch outward from the cell body like tree roots, forming a dense receiving network. A single neuron can have thousands of dendritic branches, each receiving signals from different upstream neurons. The point where an upstream neuron's axon terminal meets a dendrite is called a **synapse**, and it is the fundamental unit of neural communication.
 
