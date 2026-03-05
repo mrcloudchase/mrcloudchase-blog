@@ -19,126 +19,206 @@ This post covers both sides: the biology they started with and the mathematics t
 
 The human brain contains roughly 86 billion neurons. Each one is a specialized cell optimized for one job: receive signals, decide whether to fire, and transmit the result. Despite enormous variation in shape and size across the nervous system, every neuron shares the same four functional components.
 
-<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of a biological neuron showing dendrites receiving input, the soma integrating signals, and the axon transmitting output to synaptic terminals." style="max-width:560px;width:100%;height:auto;display:block;margin:1.5em auto;">
-  <title>Biological neuron anatomy with animated signal flow from dendrite tips through soma and axon to synaptic terminals</title>
-  <rect width="520" height="200" rx="8" fill="#181818"/>
-  <text x="260" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">neuron anatomy</text>
-  <!-- dendrite tree -->
-  <path d="M60,40 Q90,50 110,65 Q125,75 140,85" fill="none" stroke="#4ade80" stroke-width="1.5"/>
-  <path d="M60,40 Q45,30 30,22" fill="none" stroke="#4ade80" stroke-width="1"/>
-  <path d="M60,40 Q50,52 38,60" fill="none" stroke="#4ade80" stroke-width="1"/>
-  <path d="M55,100 Q85,98 110,94 Q130,90 140,90" fill="none" stroke="#4ade80" stroke-width="1.5"/>
-  <path d="M55,100 Q40,88 28,78" fill="none" stroke="#4ade80" stroke-width="1"/>
-  <path d="M55,100 Q40,112 28,122" fill="none" stroke="#4ade80" stroke-width="1"/>
-  <path d="M60,155 Q90,148 110,130 Q125,115 140,100" fill="none" stroke="#4ade80" stroke-width="1.5"/>
-  <path d="M60,155 Q50,142 38,135" fill="none" stroke="#4ade80" stroke-width="1"/>
-  <path d="M60,155 Q45,165 30,172" fill="none" stroke="#4ade80" stroke-width="1"/>
-  <!-- soma -->
-  <ellipse cx="175" cy="95" rx="35" ry="28" fill="#333" stroke="#4ade80" stroke-width="2">
-    <animate attributeName="stroke-width" values="2;2;3;3.5;3.5;3;2;2" keyTimes="0;0.25;0.30;0.35;0.38;0.42;0.46;1" dur="8s" repeatCount="indefinite"/>
-    <animate attributeName="stroke" values="#4ade80;#4ade80;#6aeda0;#86efac;#86efac;#6aeda0;#4ade80;#4ade80" keyTimes="0;0.25;0.30;0.35;0.38;0.42;0.46;1" dur="8s" repeatCount="indefinite"/>
+<svg viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Biological neuron with animated signal mechanics: graded potentials decay along dendrites to the soma, summation triggers the axon hillock, the action potential jumps node-to-node via saltatory conduction, and neurotransmitter vesicles release at synaptic boutons." style="max-width:700px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <title>Biological neuron anatomy and signal mechanics: dendritic spines, passive graded potentials, soma integration, hillock threshold, saltatory conduction at Nodes of Ranvier, and vesicle release at synaptic boutons</title>
+  <rect width="660" height="220" rx="8" fill="#181818"/>
+  <text x="330" y="16" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">neuron anatomy + signal mechanics</text>
+  <!-- === DENDRITES WITH SPINES === -->
+  <!-- top branch -->
+  <path d="M62,42 Q92,52 115,67 Q133,78 155,88" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+  <path d="M62,42 Q48,32 35,24" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <path d="M62,42 Q52,54 42,62" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <circle cx="32" cy="22" r="3.5" fill="#4ade80" opacity="0.6"/>
+  <circle cx="39" cy="64" r="3.5" fill="#4ade80" opacity="0.6"/>
+  <!-- middle branch -->
+  <path d="M57,102 Q87,100 115,97 Q137,94 155,94" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+  <path d="M57,102 Q43,90 32,80" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <path d="M57,102 Q43,114 32,124" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <circle cx="29" cy="78" r="3.5" fill="#4ade80" opacity="0.6"/>
+  <circle cx="29" cy="126" r="3.5" fill="#4ade80" opacity="0.6"/>
+  <!-- bottom branch -->
+  <path d="M62,158 Q92,150 115,133 Q133,118 155,108" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+  <path d="M62,158 Q52,146 42,138" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <path d="M62,158 Q48,168 35,176" fill="none" stroke="#4ade80" stroke-width="1"/>
+  <circle cx="39" cy="136" r="3.5" fill="#4ade80" opacity="0.6"/>
+  <circle cx="32" cy="178" r="3.5" fill="#4ade80" opacity="0.6"/>
+  <!-- === SOMA WITH NUCLEUS === -->
+  <ellipse cx="195" cy="100" rx="40" ry="30" fill="#333" stroke="#4ade80" stroke-width="2">
+    <animate attributeName="stroke-width" values="2;2;3;3.5;3.5;3;2;2" keyTimes="0;0.25;0.30;0.34;0.37;0.40;0.43;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="stroke" values="#4ade80;#4ade80;#6aeda0;#86efac;#86efac;#6aeda0;#4ade80;#4ade80" keyTimes="0;0.25;0.30;0.34;0.37;0.40;0.43;1" dur="10s" repeatCount="indefinite"/>
   </ellipse>
-  <text x="175" y="99" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">soma</text>
-  <!-- axon hillock -->
-  <path d="M210,95 Q220,95 225,95" fill="none" stroke="#22d3ee" stroke-width="2.5"/>
-  <!-- axon -->
-  <line x1="225" y1="95" x2="400" y2="95" stroke="#22d3ee" stroke-width="2"/>
-  <!-- myelin sheath segments -->
-  <rect x="230" y="85" width="30" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="3"/>
-  <rect x="268" y="85" width="30" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="3"/>
-  <rect x="306" y="85" width="30" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="3"/>
-  <rect x="344" y="85" width="30" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="3"/>
-  <!-- axon terminals -->
-  <path d="M400,95 Q415,75 430,58" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
-  <path d="M430,58 Q440,46 450,36" fill="none" stroke="#fbbf24" stroke-width="1"/>
-  <path d="M430,58 Q442,54 456,48" fill="none" stroke="#fbbf24" stroke-width="1"/>
-  <path d="M400,95 Q420,95 442,93" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
-  <path d="M442,93 Q454,86 466,78" fill="none" stroke="#fbbf24" stroke-width="1"/>
-  <path d="M442,93 Q454,100 466,108" fill="none" stroke="#fbbf24" stroke-width="1"/>
-  <path d="M400,95 Q415,115 430,132" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
-  <path d="M430,132 Q440,144 450,154" fill="none" stroke="#fbbf24" stroke-width="1"/>
-  <path d="M430,132 Q442,136 456,142" fill="none" stroke="#fbbf24" stroke-width="1"/>
-  <!-- labels -->
-  <text x="42" y="190" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle">dendrites</text>
-  <text x="218" y="135" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">hillock</text>
-  <text x="310" y="78" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">axon + myelin</text>
-  <text x="456" y="190" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">terminals</text>
-  <!-- phase 1: input signals from all 6 dendrite tips to soma edge (0-2.2s) -->
-  <!-- top branch: tip 1 (30,22) -> junction (60,40) -> soma edge (140,85) -->
+  <circle cx="195" cy="97" r="13" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
+  <text x="195" y="101" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">soma</text>
+  <!-- === AXON HILLOCK (tapered funnel with Na+ channel density marks) === -->
+  <path d="M235,88 L258,96 L258,104 L235,112 Z" fill="#222" stroke="#22d3ee" stroke-width="1.2"/>
+  <line x1="242" y1="91" x2="242" y2="109" stroke="#22d3ee" stroke-width="0.5" opacity="0.3"/>
+  <line x1="247" y1="93" x2="247" y2="107" stroke="#22d3ee" stroke-width="0.5" opacity="0.3"/>
+  <line x1="252" y1="95" x2="252" y2="105" stroke="#22d3ee" stroke-width="0.5" opacity="0.3"/>
+  <!-- === AXON === -->
+  <line x1="258" y1="100" x2="480" y2="100" stroke="#22d3ee" stroke-width="2"/>
+  <!-- === MYELIN SHEATH SEGMENTS (filled oblongs) === -->
+  <rect x="266" y="89" width="34" height="22" rx="11" fill="#252525" stroke="#555" stroke-width="1"/>
+  <rect x="316" y="89" width="34" height="22" rx="11" fill="#252525" stroke="#555" stroke-width="1"/>
+  <rect x="366" y="89" width="34" height="22" rx="11" fill="#252525" stroke="#555" stroke-width="1"/>
+  <rect x="416" y="89" width="34" height="22" rx="11" fill="#252525" stroke="#555" stroke-width="1"/>
+  <!-- === AXON TERMINALS WITH BOUTONS === -->
+  <!-- top terminal branch -->
+  <path d="M480,100 Q498,78 512,62" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+  <path d="M512,62 Q525,48 537,40" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <path d="M512,62 Q527,56 540,50" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <circle cx="540" cy="38" r="4" fill="#fbbf24" opacity="0.6"/>
+  <circle cx="543" cy="50" r="4" fill="#fbbf24" opacity="0.6"/>
+  <!-- middle terminal branch -->
+  <path d="M480,100 Q505,100 522,98" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+  <path d="M522,98 Q538,88 550,80" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <path d="M522,98 Q538,108 550,116" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <circle cx="553" cy="78" r="4" fill="#fbbf24" opacity="0.6"/>
+  <circle cx="553" cy="118" r="4" fill="#fbbf24" opacity="0.6"/>
+  <!-- bottom terminal branch -->
+  <path d="M480,100 Q498,122 512,138" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+  <path d="M512,138 Q525,150 537,158" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <path d="M512,138 Q527,146 540,150" fill="none" stroke="#fbbf24" stroke-width="1"/>
+  <circle cx="540" cy="160" r="4" fill="#fbbf24" opacity="0.6"/>
+  <circle cx="543" cy="152" r="4" fill="#fbbf24" opacity="0.6"/>
+  <!-- === SYNAPTIC CLEFTS (gap + postsynaptic membrane at select boutons) === -->
+  <line x1="548" y1="34" x2="548" y2="42" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
+  <line x1="561" y1="74" x2="561" y2="82" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
+  <line x1="548" y1="156" x2="548" y2="164" stroke="#4ade80" stroke-width="1.5" opacity="0.4"/>
+  <!-- === LABELS === -->
+  <text x="18" y="100" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">spines</text>
+  <text x="62" y="205" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle">dendrites</text>
+  <text x="247" y="126" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">hillock</text>
+  <text x="350" y="80" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">myelin</text>
+  <text x="305" y="126" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">node</text>
+  <text x="355" y="126" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">node</text>
+  <text x="405" y="126" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">node</text>
+  <text x="550" y="205" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">boutons</text>
+  <!-- ============================================================ -->
+  <!-- ANIMATION: 10s cycle with 8 mechanistic phases               -->
+  <!-- ============================================================ -->
+  <!-- PHASE 1: Graded potentials travel dendrites with DECAY (0-3s) -->
+  <!-- top spine 1 (32,22) -> junction (62,42) -> soma edge (155,88) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85" dur="8s" repeatCount="indefinite" keyTimes="0;0.02;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.02;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M32,22 Q48,32 62,42 Q92,52 115,67 Q133,78 155,88" dur="10s" repeatCount="indefinite" keyTimes="0;0.02;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.8;0.5;0.25;0;0" keyTimes="0;0.02;0.14;0.24;0.28;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- top branch: tip 2 (38,60) -> junction (60,40) -> soma edge (140,85) -->
+  <!-- top spine 2 (39,64) -> junction (62,42) -> soma edge (155,88) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M38,60 Q50,52 60,40 Q90,50 110,65 Q125,75 140,85" dur="8s" repeatCount="indefinite" keyTimes="0;0.04;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.04;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M39,64 Q52,54 62,42 Q92,52 115,67 Q133,78 155,88" dur="10s" repeatCount="indefinite" keyTimes="0;0.04;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.8;0.5;0.25;0;0" keyTimes="0;0.04;0.14;0.24;0.28;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- middle branch: tip 1 (28,78) -> junction (55,100) -> soma edge (140,90) -->
+  <!-- middle spine 1 (29,78) -> junction (57,102) -> soma edge (155,94) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90" dur="8s" repeatCount="indefinite" keyTimes="0;0.05;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.05;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M29,78 Q43,90 57,102 Q87,100 115,97 Q137,94 155,94" dur="10s" repeatCount="indefinite" keyTimes="0;0.05;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.8;0.5;0.25;0;0" keyTimes="0;0.05;0.15;0.24;0.28;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- middle branch: tip 2 (28,122) -> junction (55,100) -> soma edge (140,90) -->
+  <!-- middle spine 2 (29,126) -> junction (57,102) -> soma edge (155,94) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M28,122 Q40,112 55,100 Q85,98 110,94 Q130,90 140,90" dur="8s" repeatCount="indefinite" keyTimes="0;0.07;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.07;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M29,126 Q43,114 57,102 Q87,100 115,97 Q137,94 155,94" dur="10s" repeatCount="indefinite" keyTimes="0;0.07;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.8;0.5;0.25;0;0" keyTimes="0;0.07;0.16;0.24;0.28;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- bottom branch: tip 1 (38,135) -> junction (60,155) -> soma edge (140,100) -->
+  <!-- bottom spine 1 (39,136) -> junction (62,158) -> soma edge (155,108) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M38,135 Q50,142 60,155 Q90,148 110,130 Q125,115 140,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.08;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M39,136 Q52,146 62,158 Q92,150 115,133 Q133,118 155,108" dur="10s" repeatCount="indefinite" keyTimes="0;0.06;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.8;0.5;0.25;0;0" keyTimes="0;0.06;0.15;0.24;0.28;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- bottom branch: tip 2 (30,172) -> junction (60,155) -> soma edge (140,100) -->
+  <!-- bottom spine 2 (32,178) -> junction (62,158) -> soma edge (155,108) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.10;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.10;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M32,178 Q48,168 62,158 Q92,150 115,133 Q133,118 155,108" dur="10s" repeatCount="indefinite" keyTimes="0;0.08;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.8;0.5;0.25;0;0" keyTimes="0;0.08;0.16;0.24;0.28;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- phase 2: soma stroke brightens as it summates inputs (see ellipse animate above) -->
-  <!-- phase 3: depolarization builds at axon hillock (3.2-4.4s) -->
-  <circle cx="218" cy="95" r="6" fill="#22d3ee" opacity="0">
-    <animate attributeName="opacity" values="0;0;0.15;0.3;0.6;0.9;0;0" keyTimes="0;0.40;0.43;0.46;0.49;0.52;0.56;1" dur="8s" repeatCount="indefinite"/>
-    <animate attributeName="r" values="6;6;7;8;10;12;6;6" keyTimes="0;0.40;0.43;0.46;0.49;0.52;0.56;1" dur="8s" repeatCount="indefinite"/>
+  <!-- PHASE 2: Soma summation (stroke glow on ellipse above, keyTimes 0.25-0.43) -->
+  <!-- PHASE 3: Hillock charges then SHARP threshold flash (3.5-5s) -->
+  <circle cx="247" cy="100" r="6" fill="#22d3ee" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.1;0.2;0.4;1;0;0" keyTimes="0;0.38;0.40;0.42;0.44;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="6;6;7;8;10;14;6;6" keyTimes="0;0.38;0.40;0.42;0.44;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- phase 4: action potential fires down axon (4.5-5.8s) -->
-  <circle r="4" fill="#fff" opacity="0">
-    <animateMotion path="M218,95 L225,95 L400,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.56;0.72;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.55;0.56;0.71;0.73;1" dur="8s" repeatCount="indefinite"/>
+  <!-- PHASE 4: Saltatory conduction - signal JUMPS node to node (5-7.2s) -->
+  <!-- flash at axon start (x=260) -->
+  <circle cx="260" cy="100" r="5" fill="#fff" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.50;0.51;0.53;0.55;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- phase 5: signal branches from axon end to all 6 terminal tips (5.9-7.2s) -->
-  <!-- top terminal: main (400,95) -> junction (430,58) -> tip 1 (450,36) -->
+  <!-- flash at Node 1 (x=305, gap between myelin 1 and 2) -->
+  <circle cx="305" cy="100" r="5" fill="#fff" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.55;0.56;0.58;0.60;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- flash at Node 2 (x=355, gap between myelin 2 and 3) -->
+  <circle cx="355" cy="100" r="5" fill="#fff" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.60;0.61;0.63;0.65;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- flash at Node 3 (x=405, gap between myelin 3 and 4) -->
+  <circle cx="405" cy="100" r="5" fill="#fff" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.65;0.66;0.68;0.70;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- flash at axon end (x=478) -->
+  <circle cx="478" cy="100" r="5" fill="#fff" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.3;0;0" keyTimes="0;0.70;0.71;0.73;0.75;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- PHASE 5: Signal branches to all 6 boutons (7.5-8.8s) -->
+  <!-- top bouton 1: (480,100) -> (512,62) -> (540,38) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M400,95 Q415,75 430,58 Q440,46 450,36" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M480,100 Q498,78 512,62 Q525,48 540,38" dur="10s" repeatCount="indefinite" keyTimes="0;0.76;0.88;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.75;0.76;0.86;0.88;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- top terminal: main (400,95) -> junction (430,58) -> tip 2 (456,48) -->
+  <!-- top bouton 2: (480,100) -> (512,62) -> (543,50) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M400,95 Q415,75 430,58 Q442,54 456,48" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M480,100 Q498,78 512,62 Q527,56 543,50" dur="10s" repeatCount="indefinite" keyTimes="0;0.76;0.88;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.75;0.76;0.86;0.88;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- middle terminal: main (400,95) -> junction (442,93) -> tip 1 (466,78) -->
+  <!-- middle bouton 1: (480,100) -> (522,98) -> (553,78) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M400,95 Q420,95 442,93 Q454,86 466,78" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M480,100 Q505,100 522,98 Q538,88 553,78" dur="10s" repeatCount="indefinite" keyTimes="0;0.76;0.88;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.75;0.76;0.86;0.88;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- middle terminal: main (400,95) -> junction (442,93) -> tip 2 (466,108) -->
+  <!-- middle bouton 2: (480,100) -> (522,98) -> (553,118) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M400,95 Q420,95 442,93 Q454,100 466,108" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M480,100 Q505,100 522,98 Q538,108 553,118" dur="10s" repeatCount="indefinite" keyTimes="0;0.76;0.88;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.75;0.76;0.86;0.88;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- bottom terminal: main (400,95) -> junction (430,132) -> tip 1 (450,154) -->
+  <!-- bottom bouton 1: (480,100) -> (512,138) -> (540,160) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M400,95 Q415,115 430,132 Q440,144 450,154" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M480,100 Q498,122 512,138 Q525,150 540,160" dur="10s" repeatCount="indefinite" keyTimes="0;0.76;0.88;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.75;0.76;0.86;0.88;1" dur="10s" repeatCount="indefinite"/>
   </circle>
-  <!-- bottom terminal: main (400,95) -> junction (430,132) -> tip 2 (456,142) -->
+  <!-- bottom bouton 2: (480,100) -> (512,138) -> (543,152) -->
   <circle r="3" fill="#fff" opacity="0">
-    <animateMotion path="M400,95 Q415,115 430,132 Q442,136 456,142" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M480,100 Q498,122 512,138 Q527,146 543,152" dur="10s" repeatCount="indefinite" keyTimes="0;0.76;0.88;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.75;0.76;0.86;0.88;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- PHASE 6: Bouton flash + vesicle release (8.8-9.5s) -->
+  <!-- top bouton 1 flash -->
+  <circle cx="540" cy="38" r="4" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- middle bouton 1 flash -->
+  <circle cx="553" cy="78" r="4" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- bottom bouton 1 flash -->
+  <circle cx="540" cy="160" r="4" fill="#fbbf24" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- vesicle dot: top bouton -> across synaptic cleft -->
+  <circle r="1.5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M540,38 L548,37" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- vesicle dot: middle bouton -> across synaptic cleft -->
+  <circle r="1.5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M553,78 L561,77" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- vesicle dot: bottom bouton -> across synaptic cleft -->
+  <circle r="1.5" fill="#fbbf24" opacity="0">
+    <animateMotion path="M540,160 L548,161" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
 </svg>
 
-*Figure 1: Anatomy of a biological neuron. Signals enter through dendrite tips (green), converge at the soma for integration, travel through the axon hillock trigger zone and along the myelinated axon (cyan), then branch out to synaptic terminals (yellow) where neurotransmitters carry the signal to the next neuron.*
+*Figure 1: Complete neuron anatomy and signal mechanics. Graded potentials originate at dendritic spines (green circles) and decay as they passively propagate toward the soma. The soma integrates all inputs (stroke glow). If the summed voltage crosses threshold, the axon hillock (tapered cyan funnel with Na+ channel density marks) fires sharply. The action potential then jumps node-to-node along the myelinated axon via saltatory conduction (each Node of Ranvier flashes at equal intensity). At the synaptic boutons (yellow circles), Ca2+ influx triggers vesicle release across the synaptic cleft (faint green postsynaptic membrane) to the next neuron.*
 
 **Dendrites** are the input structures. They branch outward from the cell body like tree roots, forming a dense receiving network. A single neuron can have thousands of dendritic branches, each receiving signals from different upstream neurons. The point where an upstream neuron's axon terminal meets a dendrite is called a **synapse**, and it is the fundamental unit of neural communication.
 
