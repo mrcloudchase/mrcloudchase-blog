@@ -9,9 +9,9 @@ draft: false
 
 ## Introduction
 
-Every neural network, every transformer, every LLM traces back to a single biological structure: the neuron. In 1943, Warren McCulloch and Walter Pitts looked at this cell and asked a question that launched an entire field: what is the simplest mathematical model that captures what a neuron does?
+Every neural network including the current transformer based LLMs can trace their roots back to a single biological structure: the neuron. In 1943, Warren McCulloch and Walter Pitts looked at a neuron and asked themselves a question: what is the simplest mathematical model that captures what a neuron does?
 
-Their answer was remarkably sparse. They threw away almost everything about the biology and kept only the essence: weighted inputs, a sum, a threshold, a binary output. That reductive choice turned out to be one of the most consequential abstractions in the history of computing.
+Their answer threw away the complexities of biology and kept only the essence: weighted inputs, a sum, a threshold, a binary output. This distillation turned out to be one of the most consequential mathematical models in the history of computing.
 
 This post covers both sides: the biology they started with and the mathematics they extracted from it. Understanding what they kept and what they discarded makes every subsequent development in deep learning clearer.
 
@@ -19,7 +19,8 @@ This post covers both sides: the biology they started with and the mathematics t
 
 The human brain contains roughly 86 billion neurons. Each one is a specialized cell optimized for one job: receive signals, decide whether to fire, and transmit the result. Despite enormous variation in shape and size across the nervous system, every neuron shares the same four functional components.
 
-<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="max-width:560px;width:100%;height:auto;display:block;margin:1.5em auto;">
+<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of a biological neuron showing dendrites receiving input, the soma integrating signals, and the axon transmitting output to synaptic terminals." style="max-width:560px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <title>Biological neuron anatomy with animated signal flow from dendrite tips through soma and axon to synaptic terminals</title>
   <rect width="520" height="200" rx="8" fill="#181818"/>
   <text x="260" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">neuron anatomy</text>
   <!-- dendrite tree -->
@@ -59,9 +60,24 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <text x="218" y="135" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">hillock</text>
   <text x="310" y="78" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">axon + myelin</text>
   <text x="456" y="190" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">terminals</text>
-  <!-- flow arrow -->
-  <text x="260" y="195" fill="#666" font-family="monospace" font-size="9" text-anchor="middle">signal flow ------></text>
+  <!-- animated signal: dendrite tip -> branch -> main branch -> soma -> hillock -> axon -> terminal branch -> terminal tip -->
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85 L175,95 L210,95 L225,95 L400,95 Q415,75 430,58 Q440,46 450,36" dur="5s" repeatCount="indefinite" keyTimes="0;0.05;0.9;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.05;0.88;0.9;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- second signal staggered: bottom dendrite tip -> soma -> middle terminal tip -->
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100 L175,95 L210,95 L225,95 L400,95 Q420,95 442,93 Q454,100 466,108" dur="5s" begin="1.5s" repeatCount="indefinite" keyTimes="0;0.05;0.9;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.05;0.88;0.9;1" dur="5s" begin="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <!-- third signal staggered: middle dendrite tip -> soma -> bottom terminal tip -->
+  <circle r="4" fill="#22d3ee" opacity="0">
+    <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90 L175,95 L210,95 L225,95 L400,95 Q415,115 430,132 Q440,144 450,154" dur="5s" begin="3s" repeatCount="indefinite" keyTimes="0;0.05;0.9;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.05;0.88;0.9;1" dur="5s" begin="3s" repeatCount="indefinite"/>
+  </circle>
 </svg>
+
+*Figure 1: Anatomy of a biological neuron. Signals enter through dendrite tips (green), converge at the soma for integration, travel through the axon hillock trigger zone and along the myelinated axon (cyan), then branch out to synaptic terminals (yellow) where neurotransmitters carry the signal to the next neuron.*
 
 **Dendrites** are the input structures. They branch outward from the cell body like tree roots, forming a dense receiving network. A single neuron can have thousands of dendritic branches, each receiving signals from different upstream neurons. The point where an upstream neuron's axon terminal meets a dendrite is called a **synapse**, and it is the fundamental unit of neural communication.
 
