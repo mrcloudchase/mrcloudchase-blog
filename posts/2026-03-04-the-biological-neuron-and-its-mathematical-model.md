@@ -34,7 +34,10 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <path d="M60,155 Q50,142 38,135" fill="none" stroke="#4ade80" stroke-width="1"/>
   <path d="M60,155 Q45,165 30,172" fill="none" stroke="#4ade80" stroke-width="1"/>
   <!-- soma -->
-  <ellipse cx="175" cy="95" rx="35" ry="28" fill="#333" stroke="#4ade80" stroke-width="2"/>
+  <ellipse cx="175" cy="95" rx="35" ry="28" fill="#333" stroke="#4ade80" stroke-width="2">
+    <animate attributeName="stroke-width" values="2;2;3;3.5;3.5;3;2;2" keyTimes="0;0.25;0.30;0.35;0.38;0.42;0.46;1" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="stroke" values="#4ade80;#4ade80;#6aeda0;#86efac;#86efac;#6aeda0;#4ade80;#4ade80" keyTimes="0;0.25;0.30;0.35;0.38;0.42;0.46;1" dur="8s" repeatCount="indefinite"/>
+  </ellipse>
   <text x="175" y="99" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">soma</text>
   <!-- axon hillock -->
   <path d="M210,95 Q220,95 225,95" fill="none" stroke="#22d3ee" stroke-width="2.5"/>
@@ -60,41 +63,42 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <text x="218" y="135" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">hillock</text>
   <text x="310" y="78" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">axon + myelin</text>
   <text x="456" y="190" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">terminals</text>
-  <!-- phase 1: dim input signals travel from dendrite tips to soma (0-2.5s of 8s cycle) -->
+  <!-- phase 1: input signals travel from dendrite tips to soma (0-2.2s) -->
   <circle r="3" fill="#4ade80" opacity="0">
-    <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.02;0.30;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.02;0.27;0.30;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.02;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.02;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <circle r="3" fill="#4ade80" opacity="0">
-    <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.05;0.30;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.05;0.27;0.30;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.05;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.05;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <circle r="3" fill="#4ade80" opacity="0">
-    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.30;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.08;0.27;0.30;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.08;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
-  <!-- phase 2: depolarization builds at axon hillock (2-3.5s) -->
+  <!-- phase 2: soma stroke brightens as it summates inputs (see ellipse animate above) -->
+  <!-- phase 3: depolarization builds at axon hillock (3.2-4.4s) -->
   <circle cx="218" cy="95" r="6" fill="#22d3ee" opacity="0">
-    <animate attributeName="opacity" values="0;0;0.15;0.3;0.5;0.9;0;0" keyTimes="0;0.25;0.30;0.34;0.38;0.42;0.46;1" dur="8s" repeatCount="indefinite"/>
-    <animate attributeName="r" values="6;6;7;8;10;12;6;6" keyTimes="0;0.25;0.30;0.34;0.38;0.42;0.46;1" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;0.15;0.3;0.6;0.9;0;0" keyTimes="0;0.40;0.43;0.46;0.49;0.52;0.56;1" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="6;6;7;8;10;12;6;6" keyTimes="0;0.40;0.43;0.46;0.49;0.52;0.56;1" dur="8s" repeatCount="indefinite"/>
   </circle>
-  <!-- phase 3: action potential fires down axon (3.5-5.2s) -->
+  <!-- phase 4: action potential fires down axon (4.5-5.8s) -->
   <circle r="4" fill="#22d3ee" opacity="0">
-    <animateMotion path="M218,95 L225,95 L400,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.44;0.65;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.43;0.44;0.64;0.66;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M218,95 L225,95 L400,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.56;0.72;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.55;0.56;0.71;0.73;1" dur="8s" repeatCount="indefinite"/>
   </circle>
-  <!-- phase 4: signal branches to synaptic terminal tips (5.2-7s) -->
+  <!-- phase 5: signal branches to synaptic terminal tips (5.9-7.2s) -->
   <circle r="3" fill="#fbbf24" opacity="0">
-    <animateMotion path="M400,95 Q415,75 430,58 Q440,46 450,36" dur="8s" repeatCount="indefinite" keyTimes="0;0.66;0.85;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.65;0.66;0.83;0.86;1" dur="8s" repeatCount="indefinite"/>
-  </circle>
-  <circle r="3" fill="#fbbf24" opacity="0">
-    <animateMotion path="M400,95 Q420,95 442,93 Q454,100 466,108" dur="8s" repeatCount="indefinite" keyTimes="0;0.66;0.85;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.65;0.66;0.83;0.86;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M400,95 Q415,75 430,58 Q440,46 450,36" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <circle r="3" fill="#fbbf24" opacity="0">
-    <animateMotion path="M400,95 Q415,115 430,132 Q440,144 450,154" dur="8s" repeatCount="indefinite" keyTimes="0;0.66;0.85;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.65;0.66;0.83;0.86;1" dur="8s" repeatCount="indefinite"/>
+    <animateMotion path="M400,95 Q420,95 442,93 Q454,100 466,108" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M400,95 Q415,115 430,132 Q440,144 450,154" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
 </svg>
 
