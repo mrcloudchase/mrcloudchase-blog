@@ -152,7 +152,7 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   </circle>
   <!-- PHASE 2: Soma summation (stroke glow on ellipse above, keyTimes 0.25-0.43) -->
   <!-- PHASE 3: Hillock charges then SHARP threshold flash (3.5-5s) -->
-  <circle cx="247" cy="100" r="6" fill="#22d3ee" opacity="0">
+  <circle cx="247" cy="100" r="6" fill="#fff" opacity="0">
     <animate attributeName="opacity" values="0;0;0.1;0.2;0.4;1;0;0" keyTimes="0;0.38;0.40;0.42;0.44;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="6;6;7;8;10;14;6;6" keyTimes="0;0.38;0.40;0.42;0.44;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
   </circle>
@@ -216,62 +216,62 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   </circle>
   <!-- PHASE 6: All 6 bouton flashes + vesicle release (8.8-9.5s) -->
   <!-- top bouton 1 (540,38) flash -->
-  <circle cx="540" cy="38" r="4" fill="#fbbf24" opacity="0">
+  <circle cx="540" cy="38" r="4" fill="#fff" opacity="0">
     <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- top bouton 2 (543,50) flash -->
-  <circle cx="543" cy="50" r="4" fill="#fbbf24" opacity="0">
+  <circle cx="543" cy="50" r="4" fill="#fff" opacity="0">
     <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- middle bouton 1 (553,78) flash -->
-  <circle cx="553" cy="78" r="4" fill="#fbbf24" opacity="0">
+  <circle cx="553" cy="78" r="4" fill="#fff" opacity="0">
     <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- middle bouton 2 (553,118) flash -->
-  <circle cx="553" cy="118" r="4" fill="#fbbf24" opacity="0">
+  <circle cx="553" cy="118" r="4" fill="#fff" opacity="0">
     <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- bottom bouton 1 (540,160) flash -->
-  <circle cx="540" cy="160" r="4" fill="#fbbf24" opacity="0">
+  <circle cx="540" cy="160" r="4" fill="#fff" opacity="0">
     <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- bottom bouton 2 (543,152) flash -->
-  <circle cx="543" cy="152" r="4" fill="#fbbf24" opacity="0">
+  <circle cx="543" cy="152" r="4" fill="#fff" opacity="0">
     <animate attributeName="opacity" values="0;0;0.9;0.4;0;0" keyTimes="0;0.87;0.88;0.91;0.94;1" dur="10s" repeatCount="indefinite"/>
     <animate attributeName="r" values="4;4;6;4;4" keyTimes="0;0.87;0.89;0.93;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- vesicle dot: top bouton 1 -> across cleft -->
-  <circle r="1.5" fill="#fbbf24" opacity="0">
+  <circle r="1.5" fill="#fff" opacity="0">
     <animateMotion path="M540,38 L548,37" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- vesicle dot: top bouton 2 -> across cleft -->
-  <circle r="1.5" fill="#fbbf24" opacity="0">
+  <circle r="1.5" fill="#fff" opacity="0">
     <animateMotion path="M543,50 L551,49" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- vesicle dot: middle bouton 1 -> across cleft -->
-  <circle r="1.5" fill="#fbbf24" opacity="0">
+  <circle r="1.5" fill="#fff" opacity="0">
     <animateMotion path="M553,78 L561,77" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- vesicle dot: middle bouton 2 -> across cleft -->
-  <circle r="1.5" fill="#fbbf24" opacity="0">
+  <circle r="1.5" fill="#fff" opacity="0">
     <animateMotion path="M553,118 L561,119" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- vesicle dot: bottom bouton 1 -> across cleft -->
-  <circle r="1.5" fill="#fbbf24" opacity="0">
+  <circle r="1.5" fill="#fff" opacity="0">
     <animateMotion path="M540,160 L548,161" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
   <!-- vesicle dot: bottom bouton 2 -> across cleft -->
-  <circle r="1.5" fill="#fbbf24" opacity="0">
+  <circle r="1.5" fill="#fff" opacity="0">
     <animateMotion path="M543,152 L551,153" dur="10s" repeatCount="indefinite" keyTimes="0;0.90;0.96;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0;0" keyTimes="0;0.89;0.90;0.96;1" dur="10s" repeatCount="indefinite"/>
   </circle>
