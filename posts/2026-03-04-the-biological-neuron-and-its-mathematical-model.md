@@ -70,7 +70,22 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <circle cx="195" cy="97" r="13" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
   <text x="195" y="101" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">soma</text>
   <!-- === AXON HILLOCK (tapered funnel with Na+ channel density marks) === -->
-  <path d="M235,88 L258,96 L258,104 L235,112 Z" fill="#222" stroke="#22d3ee" stroke-width="1.2"/>
+  <path d="M235,88 L258,96 L258,104 L235,112 Z" fill="#222" stroke="none"/>
+  <!-- Hillock section fills (voltage buildup left-to-right toward threshold) -->
+  <path d="M235,88 L242,90 L242,110 L235,112 Z" fill="#fff" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.3;0.5;0.5;1;0;0" keyTimes="0;0.38;0.40;0.42;0.46;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
+  </path>
+  <path d="M242,90 L247,92 L247,108 L242,110 Z" fill="#fff" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.3;0.5;1;0;0" keyTimes="0;0.40;0.42;0.44;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
+  </path>
+  <path d="M247,92 L252,94 L252,106 L247,108 Z" fill="#fff" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.3;0.5;1;0;0" keyTimes="0;0.42;0.44;0.46;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
+  </path>
+  <path d="M252,94 L258,96 L258,104 L252,106 Z" fill="#fff" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.5;1;0;0" keyTimes="0;0.44;0.46;0.47;0.50;1" dur="10s" repeatCount="indefinite"/>
+  </path>
+  <!-- Hillock outline and Na+ channel density marks (on top of fills) -->
+  <path d="M235,88 L258,96 L258,104 L235,112 Z" fill="none" stroke="#22d3ee" stroke-width="1.2"/>
   <line x1="242" y1="91" x2="242" y2="109" stroke="#22d3ee" stroke-width="0.5" opacity="0.3"/>
   <line x1="247" y1="93" x2="247" y2="107" stroke="#22d3ee" stroke-width="0.5" opacity="0.3"/>
   <line x1="252" y1="95" x2="252" y2="105" stroke="#22d3ee" stroke-width="0.5" opacity="0.3"/>
