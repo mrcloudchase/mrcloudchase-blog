@@ -9,17 +9,19 @@ draft: false
 
 ## Introduction
 
-In 1943, a neurophysiologist named Warren McCulloch and a mathematician named Walter Pitts sat down with a simple question: can you describe what a neuron does using math?
+What is a neuron? A specialized type of cell, nicknamed a brain cell, that provides the human brain with both its structure and the mechanics necessary for intelligent capabilities. Roughly 86 billion of them wire together with trillions of connections into a network so dense that it gives rise to perception, memory, language, reasoning, consciousness itself. Understanding the neuron is the first step toward understanding the mind.
 
-They knew the biology. A neuron receives signals from other neurons, combines them, and if the total is strong enough, it fires a signal of its own. That is the entire job. Receive, sum, decide, output. McCulloch and Pitts realized that this behavior maps cleanly to a mathematical function. You take a set of inputs, multiply each one by a weight that represents how strong the connection is, add them up, and check if the total crosses a threshold. If it does, output a 1. If not, output a 0. That is the model. They threw away everything else: the chemistry, the timing, the shape of the cell, the ions flowing through membranes. They kept only the logic.
+Humans have always been obsessed with this question. How does tissue produce thought? One of the most powerful approaches we have developed is building mathematical models of biology. You take a system you cannot fully observe, strip it down to its essential behavior, express that behavior in mathematics, and test whether the model reproduces what the real system does. If it does, you have captured something true about the mechanism. If it does not, the gap tells you what you missed.
 
-That distillation turned out to be one of the most consequential simplifications in the history of computing. Every neural network, every deep learning model, every transformer powering today's LLMs traces back to this single idea.
+In 1943, neurophysiologist Warren McCulloch and mathematician Walter Pitts applied exactly this method to the neuron in their paper [A Logical Calculus of the Ideas Immanent in Nervous Activity](https://www.cs.cmu.edu/~./epxing/Class/10715/reading/McCulloch.and.Pitts.pdf). They asked a deceptively simple question: can you describe what a single neuron does using math? They studied the biology. A neuron receives signals through its input branches, sums them in its cell body, and if the total exceeds a threshold, fires a signal down its output line to the next neuron. Receive, sum, decide, output. They realized this behavior maps directly to a mathematical function. Take a set of inputs, multiply each by a weight representing connection strength, add them up, and check if the total crosses a threshold. If it does, output a 1. If not, output a 0. They threw away the chemistry, the timing, the cell's shape, the ions flowing through membranes. They kept only the logic.
 
-I wanted to understand why they made the choices they did. Not just what the model looks like, but what they were looking at when they built it. So I went back to the beginning and asked myself the same question they asked: what does a neuron actually do, and what is the simplest abstraction that captures it? This post is that path. The biology they started with, the mathematics they extracted, and the gap between the two.
+That distillation, inputs weighted by connection strength, summation, threshold activation, binary output, turned out to be one of the most consequential simplifications in the history of computing. Every neural network, every deep learning model, every transformer powering today's LLMs can trace its lineage back to that 1943 paper.
+
+I wanted to put myself in their shoes. Not just learn the model, but understand what they were looking at when they built it. So I asked myself the same question McCulloch and Pitts asked: what does a neuron actually do, and what is the simplest mathematical abstraction that captures it? The rest of this post is that chain of thought. The biology they started with, the mathematics they extracted, and the gap between the two.
 
 ## The Neuron: Basic Anatomy
 
-The human brain contains roughly 86 billion neurons. Each one is a specialized cell optimized for one job: receive signals, decide whether to fire, and transmit the result. Despite enormous variation in shape and size across the nervous system, every neuron shares the same four functional components.
+If I want to model a neuron mathematically, I first need to understand what it actually looks like and what its parts do. Despite enormous variation in shape and size across the nervous system, every neuron shares the same functional components.
 
 <svg viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Biological neuron with animated signal mechanics: graded potentials decay along dendrites to the soma, summation triggers the axon hillock, the action potential jumps node-to-node via saltatory conduction, and neurotransmitter vesicles release at synaptic boutons." style="max-width:700px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <title>Biological neuron anatomy and signal mechanics: dendritic spines, passive graded potentials, soma integration, hillock threshold, saltatory conduction at Nodes of Ranvier, and vesicle release at synaptic boutons</title>
@@ -336,19 +338,21 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
 
 *Figure 1: Complete neuron anatomy and signal mechanics. Neurotransmitter vesicles (white dots) cross the pre-synaptic cleft from upstream terminals (faint yellow lines) to dendritic spines. The spines flash on binding, initiating graded potentials that decay as they passively propagate toward the soma. The soma integrates all inputs (stroke glow). If the summed voltage crosses threshold, the axon hillock fires sharply. The action potential jumps node-to-node via saltatory conduction: each Node of Ranvier flashes white (depolarization) then dims purple (refractory period), preventing backward propagation. At all six boutons, Ca2+ influx triggers vesicle release across the output synaptic cleft (faint green postsynaptic membrane). The animation loops continuously, connecting output vesicle release to input synaptic crossing, simulating signal propagation through a chain of neurons.*
 
-**Dendrites** are the input structures. They branch outward from the cell body like tree roots, forming a dense receiving network. A single neuron can have thousands of dendritic branches, each receiving signals from different upstream neurons. The point where an upstream neuron's axon terminal meets a dendrite is called a **synapse**, and it is the fundamental unit of neural communication.
+**Dendrites** are the input structures. They branch outward from the cell body like tree roots, forming a dense receiving network. A single neuron can have thousands of dendritic branches, each receiving signals from different upstream neurons. The point where an upstream neuron's axon terminal meets a dendrite is called a **synapse**, and it is the fundamental unit of neural communication. Already I can see a pattern forming: multiple inputs feeding into a single cell.
 
-**The soma** (cell body) is the integration center. It contains the nucleus and the metabolic machinery that keeps the cell alive, but its computational role is to combine all incoming signals from the dendrites. The soma does not simply add these signals. It integrates them over time and space, with signals arriving at different moments and different locations on the dendritic tree contributing differently to the total.
+**The soma** (cell body) is the integration center. It contains the nucleus and the metabolic machinery that keeps the cell alive, but its computational role is to combine all incoming signals from the dendrites. The soma does not simply add these signals. It integrates them over time and space, with signals arriving at different moments and different locations on the dendritic tree contributing differently to the total. This is the first hint of summation.
 
-**The axon hillock** sits at the junction between the soma and the axon. This small region has the highest concentration of voltage-gated sodium channels in the entire neuron, making it the trigger zone. When the integrated signal at the hillock exceeds a threshold (approximately -55mV from a resting potential of -70mV), the neuron fires an action potential.
+**The axon hillock** sits at the junction between the soma and the axon. This small region has the highest concentration of voltage-gated sodium channels in the entire neuron, making it the trigger zone. When the integrated signal at the hillock exceeds a threshold (approximately -55mV from a resting potential of -70mV), the neuron fires an action potential. A threshold that determines whether the cell fires or stays silent. That is a decision boundary.
 
 **The axon** is the output fiber. It carries the action potential away from the soma toward other neurons. Axons can be extremely long, up to a meter in motor neurons running from the spinal cord to the foot. Many axons are wrapped in a fatty insulating layer called **myelin sheath**, with periodic gaps called **Nodes of Ranvier** where the signal is regenerated. This insulation dramatically increases signal speed.
 
-**Axon terminals** (synaptic boutons) are the branching endpoints of the axon. When an action potential arrives, the terminal releases neurotransmitter molecules into the synaptic gap, carrying the signal to the next neuron's dendrites.
+**Axon terminals** (synaptic boutons) are the branching endpoints of the axon. When an action potential arrives, the terminal releases neurotransmitter molecules into the synaptic gap, carrying the signal to the next neuron's dendrites. One output, broadcast to many downstream neurons.
+
+So the anatomy alone gives me a blueprint: multiple inputs, integration, a threshold decision, and a single output. The question now is how the signal itself behaves.
 
 ## The Action Potential: All-or-Nothing
 
-The action potential is the neuron's signal. Understanding how it works reveals why McCulloch and Pitts chose a binary threshold model.
+Now I need to understand the signal itself. What actually happens when a neuron fires?
 
 At rest, the neuron's interior sits at approximately -70 millivolts relative to the outside, maintained by ion pumps that actively transport sodium (Na+) out and potassium (K+) in. This is the **resting potential**.
 
@@ -392,31 +396,33 @@ Within a millisecond, sodium channels inactivate and potassium channels open. K+
 
 *Figure 2: The action potential. Membrane voltage sits at the resting potential (-70mV) until depolarization crosses the threshold (-55mV), triggering a rapid spike to +40mV. The signal is all-or-nothing: same amplitude every time, regardless of stimulus strength.*
 
-The critical insight: this is a **binary event**. The neuron either fires a full action potential or it does not fire at all. There is no partial spike, no half-signal. The amplitude of every action potential is the same regardless of stimulus strength. Stimulus intensity is encoded in **firing rate** (how many spikes per second), not spike amplitude.
+Here is the critical insight for building a model: this is a **binary event**. The neuron either fires a full action potential or it does not fire at all. There is no partial spike, no half-signal. The amplitude of every action potential is the same regardless of stimulus strength. Stimulus intensity is encoded in **firing rate** (how many spikes per second), not spike amplitude.
 
-This all-or-nothing property is what McCulloch and Pitts latched onto. It maps directly to a binary output: 1 or 0, fire or do not fire.
+This is the property that makes mathematical modeling tractable. If I ignore firing rate and look at a single moment in time, the neuron's output is binary: 1 or 0, fire or do not fire. That maps directly to a mathematical function with a binary output.
 
 ## Synaptic Transmission: Weights Before There Were Weights
 
-Neurons communicate across synapses. When an action potential reaches an axon terminal, it triggers the release of neurotransmitter molecules into the synaptic cleft (the gap between neurons, roughly 20 nanometers wide). These molecules bind to receptors on the receiving neuron's dendrite, opening ion channels that either depolarize or hyperpolarize the receiving cell.
+I have inputs, summation, a threshold, and a binary output. But not all inputs are equal. The next piece of the puzzle is how neurons communicate across the gaps between them, and why some connections matter more than others.
 
-This is where the biology maps most directly to the mathematics of neural networks.
+When an action potential reaches an axon terminal, it triggers the release of neurotransmitter molecules into the synaptic cleft (the gap between neurons, roughly 20 nanometers wide). These molecules bind to receptors on the receiving neuron's dendrite, opening ion channels that either depolarize or hyperpolarize the receiving cell.
 
 **Excitatory synapses** (using neurotransmitters like glutamate) push the receiving neuron toward firing. They depolarize the membrane, bringing it closer to threshold. In the mathematical model, these correspond to **positive weights**.
 
 **Inhibitory synapses** (using neurotransmitters like GABA) push the receiving neuron away from firing. They hyperpolarize the membrane, making it harder to reach threshold. These correspond to **negative weights**.
 
-Not all synapses are equal. Some connections are strong (more neurotransmitter released, more receptors available, larger effect on membrane potential) and some are weak. The strength of a synapse determines how much influence it has on the receiving neuron's decision to fire. In mathematical terms, this is exactly what a weight does: it scales the input.
+Not all synapses are equal. Some connections are strong (more neurotransmitter released, more receptors available, larger effect on membrane potential) and some are weak. The strength of a synapse determines how much influence it has on the receiving neuron's decision to fire. In mathematical terms, this is exactly what a weight does: it scales the input. So each input does not just arrive, it arrives with a strength. Multiply the input by that strength and I have a weighted input.
 
-Furthermore, synaptic strength is not fixed. **Synaptic plasticity**, the ability of synapses to strengthen or weaken over time, is the biological basis of learning. Donald Hebb captured this principle in 1949: "neurons that fire together wire together." When a presynaptic neuron consistently contributes to causing the postsynaptic neuron to fire, the synapse between them strengthens. This anticipates the concept of adjustable weights in artificial neural networks by over a decade.
+Furthermore, synaptic strength is not fixed. **Synaptic plasticity**, the ability of synapses to strengthen or weaken over time, is the biological basis of learning. Donald Hebb captured this principle in 1949: "neurons that fire together wire together." When a presynaptic neuron consistently contributes to causing the postsynaptic neuron to fire, the synapse between them strengthens. This is worth noting for later: the weights can change. The brain learns by adjusting connection strengths.
 
 ## Spatial and Temporal Integration
 
-The soma does not evaluate each incoming signal independently. It performs two types of integration.
+I said the soma sums its inputs, but the reality is more nuanced than simple addition. The soma performs two distinct types of integration, and understanding the difference matters for deciding what to keep in the model and what to throw away.
 
-**Spatial summation** occurs when signals arrive from multiple synapses at the same time. Each synapse produces a small voltage change (an excitatory or inhibitory postsynaptic potential). These changes propagate through the dendrites to the soma, where they combine. If enough excitatory inputs arrive simultaneously to push the hillock past threshold, the neuron fires. This is the biological analog of the weighted sum: multiply each input by its synaptic strength and add them up.
+**Spatial summation** occurs when signals arrive from multiple synapses at the same time. Each synapse produces a small voltage change (an excitatory or inhibitory postsynaptic potential). These changes propagate through the dendrites to the soma, where they combine. If enough excitatory inputs arrive simultaneously to push the hillock past threshold, the neuron fires. This is the biological version of the weighted sum I am building toward: multiply each input by its synaptic strength and add them up.
 
-**Temporal summation** occurs when signals arrive from the same synapse in rapid succession. Each individual signal might be too weak to trigger firing, but if they arrive fast enough, the voltage changes accumulate before the previous one decays. This integrates information over time, a property that McCulloch and Pitts deliberately excluded from their model.
+**Temporal summation** occurs when signals arrive from the same synapse in rapid succession. Each individual signal might be too weak to trigger firing, but if they arrive fast enough, the voltage changes accumulate before the previous one decays. This integrates information over time.
+
+For the purposes of a minimal model, spatial summation is the mechanism that matters most. It captures the core computation: take all inputs arriving at this moment, weight them, sum them, check the threshold. Temporal summation adds a time dimension that makes the math significantly harder. If I want the simplest possible abstraction, I can set it aside and treat each computation as a single snapshot in time.
 
 <svg viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg" style="max-width:540px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <rect width="500" height="180" rx="8" fill="#181818"/>
@@ -473,9 +479,9 @@ The soma does not evaluate each incoming signal independently. It performs two t
 
 ## The McCulloch-Pitts Neuron (1943)
 
-Warren McCulloch was a neurophysiologist. Walter Pitts was a mathematical logician. In 1943, they published "A Logical Calculus of the Ideas Immanent in Nervous Activity," proposing the first mathematical model of a neuron.
+At this point I have all the biological pieces: weighted inputs, summation, a threshold, and a binary output. This is exactly where McCulloch and Pitts were in 1943. They looked at the same biology and asked the same question I have been working toward: what is the minimum abstraction that preserves the computational behavior?
 
-Their approach was deliberately reductive. They started with the biological neuron and asked: what is the minimum abstraction that preserves the computational behavior?
+Their answer was deliberately reductive.
 
 ### What They Kept
 
@@ -585,7 +591,7 @@ The bias `b` is the negative of the threshold. Moving it to the left side of the
 
 ## Computing with Threshold Logic
 
-McCulloch and Pitts did not just propose a model. They proved something profound: networks of their idealized neurons can compute any logical function. A single McCulloch-Pitts neuron can implement the basic Boolean logic gates.
+The model raises an immediate question: is this abstraction powerful enough to do anything useful? McCulloch and Pitts proved something profound: networks of their idealized neurons can compute any logical function. A single McCulloch-Pitts neuron can implement the basic Boolean logic gates.
 
 ### AND Gate
 
@@ -686,15 +692,15 @@ x1=1 -> -1*1 = -1 < 0 -> output 0
 
 ### Toward Turing-Completeness
 
-Since AND, OR, and NOT gates are sufficient to compute any Boolean function (they form a functionally complete set), McCulloch and Pitts showed that networks of their idealized neurons can, in principle, compute anything that Boolean circuits can compute.
+Since AND, OR, and NOT gates are sufficient to compute any Boolean function (they form a functionally complete set), this means networks of McCulloch-Pitts neurons can, in principle, compute anything that Boolean circuits can compute.
 
-They went further. By adding feedback loops (outputs feeding back as inputs, introducing a notion of time steps), they argued that networks of binary threshold units can simulate any finite automaton. This was a remarkable result: it linked neural computation to the formal theory of computation that Turing had developed just seven years earlier.
+They went further. By adding feedback loops (outputs feeding back as inputs, introducing a notion of time steps), they argued that networks of binary threshold units can simulate any finite automaton. This linked neural computation to the formal theory of computation that Turing had developed just seven years earlier. The abstraction is not just useful, it is computationally universal.
 
-The practical limitation was glaring: the weights had to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right weights from data. Their model was a proof of computational universality, not a learning algorithm. The question of how to find the right weights would take another 15 years to answer.
+But there is a glaring limitation: the weights have to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right weights from data. Their model was a proof of computational universality, not a learning algorithm. Remember the synaptic plasticity I noted earlier, the brain's ability to strengthen and weaken connections? That is the biological mechanism for learning, and it is entirely absent from this model. The question of how to find the right weights automatically would take another 15 years to answer.
 
 ## Biology vs. Model: A Side-by-Side View
 
-Understanding what the McCulloch-Pitts model captures and what it misses is essential for understanding every subsequent development in neural networks. Each generation of models recovered some piece of biology that McCulloch and Pitts discarded.
+Now I can step back and see exactly what was kept and what was thrown away. This comparison matters because every subsequent development in neural networks recovered some piece of biology that this first model discarded.
 
 | Biological Property | McCulloch-Pitts | Later Models |
 |---|---|---|
@@ -710,8 +716,8 @@ Understanding what the McCulloch-Pitts model captures and what it misses is esse
 | Firing rate coding | No | Rate-coded networks |
 | Neurotransmitter diversity | No | Still mostly ignored |
 
-The original model was deliberately minimal. It captured the essence of neural computation, enough to prove universality, but not enough to learn. The next step in the lineage, the perceptron, would add exactly what was missing: a rule for adjusting the weights automatically.
+The original model was deliberately minimal. It captured the essence of neural computation, enough to prove universality, but not enough to learn. The gap column on the right is a roadmap for the next 80 years of AI research. The next step in the lineage, the perceptron, would add exactly what was missing: a rule for adjusting the weights automatically.
 
 ## Key Takeaways
 
-The biological neuron is a sophisticated electrochemical computer. McCulloch and Pitts stripped it down to its computational essence: weighted inputs, summation, threshold, binary output. That abstraction was powerful enough to prove that networks of simple threshold units can compute any Boolean function. But the weights had to be hand-designed. The path from here to modern deep learning is the story of recovering, piece by piece, the capabilities that this first model threw away.
+I started with a question: what does a neuron actually do, and what is the simplest mathematical abstraction that captures it? The answer, the same answer McCulloch and Pitts arrived at in 1943, is: weighted inputs, summation, threshold, binary output. A sophisticated electrochemical computer stripped down to its computational essence. That abstraction was powerful enough to prove that networks of simple threshold units can compute any Boolean function. But the weights had to be hand-designed, and the biology I set aside along the way, temporal dynamics, analog voltage, synaptic plasticity, is exactly what later generations of models would recover. The path from here to modern deep learning is the story of adding those pieces back, one by one.
