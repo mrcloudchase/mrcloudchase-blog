@@ -1,6 +1,6 @@
 ---
 title: "The Transformer: Architecture of Modern AI"
-date: "2026-03-15"
+date: "2026-03-08"
 excerpt: "How attention, normalization, and residual connections combine into the architecture powering every modern LLM, from the original encoder-decoder to decoder-only GPT."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]

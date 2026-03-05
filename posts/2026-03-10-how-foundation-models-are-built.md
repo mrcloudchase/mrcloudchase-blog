@@ -1,6 +1,6 @@
 ---
 title: "How Foundation Models Are Built"
-date: "2026-03-05"
+date: "2026-03-10"
 excerpt: "A technical walkthrough of building a foundation model - from architecture decisions and dataset curation to pretraining, supervised fine-tuning, and RLHF. With concrete examples at every stage."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]

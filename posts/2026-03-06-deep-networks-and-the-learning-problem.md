@@ -1,6 +1,6 @@
 ---
 title: "Deep Networks and the Learning Problem"
-date: "2026-03-13"
+date: "2026-03-06"
 excerpt: "How stacking neurons into layers creates universal function approximators, and the mathematical machinery - backpropagation and gradient descent - that makes them learn."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]

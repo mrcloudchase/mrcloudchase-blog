@@ -1,6 +1,6 @@
 ---
 title: "Attention: The Mechanism That Changed Everything"
-date: "2026-03-14"
+date: "2026-03-07"
 excerpt: "Why sequential models hit a wall with long sequences, and how the attention mechanism - queries, keys, and values - solved the problem and unlocked modern AI."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]
