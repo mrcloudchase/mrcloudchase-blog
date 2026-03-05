@@ -9,11 +9,13 @@ draft: false
 
 ## Introduction
 
-Every neural network including the current transformer based LLMs can trace their roots back to a single biological structure: the neuron. In 1943, Warren McCulloch and Walter Pitts looked at a neuron and asked themselves a question: what is the simplest mathematical model that captures what a neuron does?
+In 1943, a neurophysiologist named Warren McCulloch and a mathematician named Walter Pitts sat down with a simple question: can you describe what a neuron does using math?
 
-Their answer threw away the complexities of biology and kept only the essence: weighted inputs, a sum, a threshold, a binary output. This distillation turned out to be one of the most consequential mathematical models in the history of computing.
+They knew the biology. A neuron receives signals from other neurons, combines them, and if the total is strong enough, it fires a signal of its own. That is the entire job. Receive, sum, decide, output. McCulloch and Pitts realized that this behavior maps cleanly to a mathematical function. You take a set of inputs, multiply each one by a weight that represents how strong the connection is, add them up, and check if the total crosses a threshold. If it does, output a 1. If not, output a 0. That is the model. They threw away everything else: the chemistry, the timing, the shape of the cell, the ions flowing through membranes. They kept only the logic.
 
-This post covers both sides: the biology they started with and the mathematics they extracted from it. Understanding what they kept and what they discarded makes every subsequent development in deep learning clearer.
+That distillation turned out to be one of the most consequential simplifications in the history of computing. Every neural network, every deep learning model, every transformer powering today's LLMs traces back to this single idea.
+
+I wanted to understand why they made the choices they did. Not just what the model looks like, but what they were looking at when they built it. So I went back to the beginning and asked myself the same question they asked: what does a neuron actually do, and what is the simplest abstraction that captures it? This post is that path. The biology they started with, the mathematics they extracted, and the gap between the two.
 
 ## The Neuron: Basic Anatomy
 
