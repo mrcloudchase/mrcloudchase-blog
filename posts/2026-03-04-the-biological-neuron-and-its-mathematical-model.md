@@ -65,7 +65,7 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <!-- === SOMA WITH NUCLEUS === -->
   <ellipse cx="195" cy="100" rx="40" ry="30" fill="#333" stroke="#4ade80" stroke-width="2">
     <animate attributeName="stroke-width" values="2;2;3;3.5;3.5;3;2;2" keyTimes="0;0.25;0.30;0.34;0.37;0.40;0.43;1" dur="10s" repeatCount="indefinite"/>
-    <animate attributeName="stroke" values="#4ade80;#4ade80;#6aeda0;#86efac;#86efac;#6aeda0;#4ade80;#4ade80" keyTimes="0;0.25;0.30;0.34;0.37;0.40;0.43;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="stroke" values="#4ade80;#4ade80;#fff;#fff;#fff;#fff;#4ade80;#4ade80" keyTimes="0;0.25;0.30;0.34;0.37;0.40;0.43;1" dur="10s" repeatCount="indefinite"/>
   </ellipse>
   <circle cx="195" cy="97" r="13" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
   <text x="195" y="101" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">soma</text>
