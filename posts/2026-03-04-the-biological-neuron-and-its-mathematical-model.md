@@ -65,32 +65,32 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <text x="456" y="190" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">terminals</text>
   <!-- phase 1: input signals from all 6 dendrite tips to soma edge (0-2.2s) -->
   <!-- top branch: tip 1 (30,22) -> junction (60,40) -> soma edge (140,85) -->
-  <circle r="3" fill="#4ade80" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85" dur="8s" repeatCount="indefinite" keyTimes="0;0.02;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.02;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- top branch: tip 2 (38,60) -> junction (60,40) -> soma edge (140,85) -->
-  <circle r="3" fill="#4ade80" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M38,60 Q50,52 60,40 Q90,50 110,65 Q125,75 140,85" dur="8s" repeatCount="indefinite" keyTimes="0;0.04;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.04;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- middle branch: tip 1 (28,78) -> junction (55,100) -> soma edge (140,90) -->
-  <circle r="3" fill="#4ade80" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90" dur="8s" repeatCount="indefinite" keyTimes="0;0.05;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.05;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- middle branch: tip 2 (28,122) -> junction (55,100) -> soma edge (140,90) -->
-  <circle r="3" fill="#4ade80" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M28,122 Q40,112 55,100 Q85,98 110,94 Q130,90 140,90" dur="8s" repeatCount="indefinite" keyTimes="0;0.07;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.07;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- bottom branch: tip 1 (38,135) -> junction (60,155) -> soma edge (140,100) -->
-  <circle r="3" fill="#4ade80" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M38,135 Q50,142 60,155 Q90,148 110,130 Q125,115 140,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.08;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- bottom branch: tip 2 (30,172) -> junction (60,155) -> soma edge (140,100) -->
-  <circle r="3" fill="#4ade80" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.10;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.10;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
@@ -101,38 +101,38 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
     <animate attributeName="r" values="6;6;7;8;10;12;6;6" keyTimes="0;0.40;0.43;0.46;0.49;0.52;0.56;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- phase 4: action potential fires down axon (4.5-5.8s) -->
-  <circle r="4" fill="#22d3ee" opacity="0">
+  <circle r="4" fill="#fff" opacity="0">
     <animateMotion path="M218,95 L225,95 L400,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.56;0.72;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.55;0.56;0.71;0.73;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- phase 5: signal branches from axon end to all 6 terminal tips (5.9-7.2s) -->
   <!-- top terminal: main (400,95) -> junction (430,58) -> tip 1 (450,36) -->
-  <circle r="3" fill="#fbbf24" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M400,95 Q415,75 430,58 Q440,46 450,36" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- top terminal: main (400,95) -> junction (430,58) -> tip 2 (456,48) -->
-  <circle r="3" fill="#fbbf24" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M400,95 Q415,75 430,58 Q442,54 456,48" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- middle terminal: main (400,95) -> junction (442,93) -> tip 1 (466,78) -->
-  <circle r="3" fill="#fbbf24" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M400,95 Q420,95 442,93 Q454,86 466,78" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- middle terminal: main (400,95) -> junction (442,93) -> tip 2 (466,108) -->
-  <circle r="3" fill="#fbbf24" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M400,95 Q420,95 442,93 Q454,100 466,108" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- bottom terminal: main (400,95) -> junction (430,132) -> tip 1 (450,154) -->
-  <circle r="3" fill="#fbbf24" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M400,95 Q415,115 430,132 Q440,144 450,154" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- bottom terminal: main (400,95) -> junction (430,132) -> tip 2 (456,142) -->
-  <circle r="3" fill="#fbbf24" opacity="0">
+  <circle r="3" fill="#fff" opacity="0">
     <animateMotion path="M400,95 Q415,115 430,132 Q442,136 456,142" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
@@ -188,7 +188,7 @@ Within a millisecond, sodium channels inactivate and potassium channels open. K+
   <text x="200" y="130" fill="#999" font-family="monospace" font-size="7" text-anchor="middle" transform="rotate(70,200,130)">repolarize</text>
   <text x="215" y="178" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">undershoot</text>
   <!-- animated dot tracing the action potential -->
-  <circle r="4" fill="#22d3ee" opacity="0">
+  <circle r="4" fill="#fff" opacity="0">
     <animateMotion path="M60,137 L120,137 L140,137 Q155,135 165,105 Q175,60 180,45 Q185,55 190,85 Q200,145 205,165 Q210,170 220,145 L240,137 L400,137" dur="4s" repeatCount="indefinite" keyTimes="0;0.1;0.2;1" keyPoints="0;0;0.2;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.09;0.1;0.9;0.95;1" dur="4s" repeatCount="indefinite"/>
   </circle>
@@ -267,7 +267,7 @@ The soma does not evaluate each incoming signal independently. It performs two t
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.19;0.2;0.38;0.4;1" dur="3s" repeatCount="indefinite"/>
   </circle>
   <!-- output pulse -->
-  <circle r="4" fill="#22d3ee" opacity="0">
+  <circle r="4" fill="#fff" opacity="0">
     <animateMotion path="M225,82 L315,82 L435,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.5;0.8;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.49;0.5;0.78;0.8;1" dur="3s" repeatCount="indefinite"/>
   </circle>
@@ -358,7 +358,7 @@ The bias `b` is the negative of the threshold. Moving it to the left side of the
   <!-- edge to threshold -->
   <line x1="188" y1="75" x2="250" y2="75" stroke="#555" stroke-width="1.5"/>
   <!-- threshold pulse -->
-  <circle r="4" fill="#22d3ee" opacity="0">
+  <circle r="4" fill="#fff" opacity="0">
     <animateMotion path="M188,75 L250,75" dur="3s" repeatCount="indefinite" keyTimes="0;0.5;0.7;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.49;0.5;0.68;0.7;1" dur="3s" repeatCount="indefinite"/>
   </circle>
