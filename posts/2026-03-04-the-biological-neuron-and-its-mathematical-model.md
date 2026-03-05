@@ -130,14 +130,18 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <line x1="31" y1="132" x2="31" y2="140" stroke="#fbbf24" stroke-width="1.5" opacity="0.4"/>
   <line x1="24" y1="174" x2="24" y2="182" stroke="#fbbf24" stroke-width="1.5" opacity="0.4"/>
   <!-- === LABELS === -->
+  <text x="6" y="15" fill="#999" font-family="monospace" font-size="7" text-anchor="start">synapse</text>
   <text x="18" y="100" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">spines</text>
   <text x="62" y="205" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle">dendrites</text>
+  <text x="195" y="90" fill="#555" font-family="monospace" font-size="7" text-anchor="middle">nucleus</text>
   <text x="247" y="126" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">hillock</text>
   <text x="350" y="80" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">myelin</text>
   <text x="305" y="126" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">node</text>
   <text x="355" y="126" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">node</text>
   <text x="405" y="126" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">node</text>
+  <text x="465" y="115" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">axon</text>
   <text x="550" y="205" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">boutons</text>
+  <text x="570" y="100" fill="#999" font-family="monospace" font-size="7" text-anchor="start">synapse</text>
   <!-- ============================================================ -->
   <!-- ANIMATION: 10s cycle with 9 mechanistic phases               -->
   <!-- ============================================================ -->
