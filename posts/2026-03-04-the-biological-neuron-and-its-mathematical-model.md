@@ -60,20 +60,41 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <text x="218" y="135" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">hillock</text>
   <text x="310" y="78" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">axon + myelin</text>
   <text x="456" y="190" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">terminals</text>
-  <!-- animated signal: dendrite tip -> branch -> main branch -> soma -> hillock -> axon -> terminal branch -> terminal tip -->
-  <circle r="4" fill="#22d3ee" opacity="0">
-    <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85 L175,95 L210,95 L225,95 L400,95 Q415,75 430,58 Q440,46 450,36" dur="5s" repeatCount="indefinite" keyTimes="0;0.05;0.9;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.05;0.88;0.9;1" dur="5s" repeatCount="indefinite"/>
+  <!-- phase 1: dim input signals travel from dendrite tips to soma (0-2.5s of 8s cycle) -->
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.02;0.30;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.02;0.27;0.30;1" dur="8s" repeatCount="indefinite"/>
   </circle>
-  <!-- second signal staggered: bottom dendrite tip -> soma -> middle terminal tip -->
-  <circle r="4" fill="#22d3ee" opacity="0">
-    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100 L175,95 L210,95 L225,95 L400,95 Q420,95 442,93 Q454,100 466,108" dur="5s" begin="1.5s" repeatCount="indefinite" keyTimes="0;0.05;0.9;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.05;0.88;0.9;1" dur="5s" begin="1.5s" repeatCount="indefinite"/>
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.05;0.30;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.05;0.27;0.30;1" dur="8s" repeatCount="indefinite"/>
   </circle>
-  <!-- third signal staggered: middle dendrite tip -> soma -> bottom terminal tip -->
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.30;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.08;0.27;0.30;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- phase 2: depolarization builds at axon hillock (2-3.5s) -->
+  <circle cx="218" cy="95" r="6" fill="#22d3ee" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.15;0.3;0.5;0.9;0;0" keyTimes="0;0.25;0.30;0.34;0.38;0.42;0.46;1" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="6;6;7;8;10;12;6;6" keyTimes="0;0.25;0.30;0.34;0.38;0.42;0.46;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- phase 3: action potential fires down axon (3.5-5.2s) -->
   <circle r="4" fill="#22d3ee" opacity="0">
-    <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90 L175,95 L210,95 L225,95 L400,95 Q415,115 430,132 Q440,144 450,154" dur="5s" begin="3s" repeatCount="indefinite" keyTimes="0;0.05;0.9;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.05;0.88;0.9;1" dur="5s" begin="3s" repeatCount="indefinite"/>
+    <animateMotion path="M218,95 L225,95 L400,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.44;0.65;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.43;0.44;0.64;0.66;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- phase 4: signal branches to synaptic terminal tips (5.2-7s) -->
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M400,95 Q415,75 430,58 Q440,46 450,36" dur="8s" repeatCount="indefinite" keyTimes="0;0.66;0.85;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.65;0.66;0.83;0.86;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M400,95 Q420,95 442,93 Q454,100 466,108" dur="8s" repeatCount="indefinite" keyTimes="0;0.66;0.85;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.65;0.66;0.83;0.86;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M400,95 Q415,115 430,132 Q440,144 450,154" dur="8s" repeatCount="indefinite" keyTimes="0;0.66;0.85;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.65;0.66;0.83;0.86;1" dur="8s" repeatCount="indefinite"/>
   </circle>
 </svg>
 
@@ -99,7 +120,8 @@ When excitatory signals from dendrites depolarize the axon hillock past the thre
 
 Within a millisecond, sodium channels inactivate and potassium channels open. K+ flows out, repolarizing the cell back past resting potential to about -80mV (the undershoot or hyperpolarization). The ion pumps then restore the resting state.
 
-<svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" style="max-width:460px;width:100%;height:auto;display:block;margin:1.5em auto;">
+<svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Graph of an action potential showing membrane voltage over time: resting at -70mV, rapid depolarization to +40mV peak, repolarization, undershoot to -80mV, then return to resting potential." style="max-width:460px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <title>Action potential voltage trace showing the all-or-nothing spike from resting potential through depolarization, peak, repolarization, and undershoot</title>
   <rect width="420" height="220" rx="8" fill="#181818"/>
   <text x="210" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">action potential</text>
   <!-- axes -->
@@ -131,6 +153,8 @@ Within a millisecond, sodium channels inactivate and potassium channels open. K+
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.09;0.1;0.9;0.95;1" dur="4s" repeatCount="indefinite"/>
   </circle>
 </svg>
+
+*Figure 2: The action potential. Membrane voltage sits at the resting potential (-70mV) until depolarization crosses the threshold (-55mV), triggering a rapid spike to +40mV. The signal is all-or-nothing: same amplitude every time, regardless of stimulus strength.*
 
 The critical insight: this is a **binary event**. The neuron either fires a full action potential or it does not fire at all. There is no partial spike, no half-signal. The amplitude of every action potential is the same regardless of stimulus strength. Stimulus intensity is encoded in **firing rate** (how many spikes per second), not spike amplitude.
 
