@@ -24,9 +24,7 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
 <svg viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg" style="max-width:540px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <rect width="500" height="180" rx="8" fill="#181818"/>
   <text x="250" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">biological neuron signal flow</text>
-
-  <!--
-    TIMELINE (7s loop):
+  <!-- TIMELINE (7s loop):
     0.00-0.04  rest
     0.04-0.24  dendrite signals travel from sub-branch tips -> fork -> main branch -> soma (staggered)
     0.22-0.24  1st signal arrives at soma, stroke dims green
@@ -37,9 +35,7 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
     0.42-0.46  soma settles
     0.46-0.64  action potential (cyan) travels down axon
     0.64-0.78  yellow pulses travel from axon end -> main branch -> fork -> sub-branch tips (6 pulses)
-    0.78-1.00  everything resets to resting state
-  -->
-
+    0.78-1.00  everything resets to resting state -->
   <!-- === STRUCTURE: DENDRITES (pure tendrils, no nodes) === -->
   <!-- top dendrite: main path + 2 outward sub-branches -->
   <path d="M55,35 Q90,42 112,58 Q128,70 138,82" fill="none" stroke="#888" stroke-width="1.5"/>
@@ -53,7 +49,6 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
   <path d="M55,145 Q90,138 112,122 Q128,110 138,97" fill="none" stroke="#888" stroke-width="1.5"/>
   <path d="M55,145 Q46,132 35,125" fill="none" stroke="#888" stroke-width="1"/>
   <path d="M55,145 Q38,154 22,158" fill="none" stroke="#888" stroke-width="1"/>
-
   <!-- === STRUCTURE: SOMA === -->
   <ellipse cx="170" cy="90" rx="32" ry="26" fill="#333" stroke="#888" stroke-width="1.5">
     <animate attributeName="stroke"
@@ -67,7 +62,6 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
       keyTimes="0;0.22;0.26;0.30;0.34;0.36;0.38;0.40;0.44;1" dur="7s" repeatCount="indefinite"/>
   </ellipse>
   <text x="170" y="94" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">soma</text>
-
   <!-- === STRUCTURE: AXON === -->
   <line x1="202" y1="90" x2="380" y2="90" stroke="#888" stroke-width="2"/>
   <!-- myelin sheath (Nodes of Ranvier = gaps between segments) -->
@@ -76,7 +70,6 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
   <rect x="278" y="80" width="32" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
   <rect x="314" y="80" width="32" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
   <rect x="346" y="80" width="32" height="20" rx="10" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2"/>
-
   <!-- === STRUCTURE: AXON TERMINALS (pure tendrils, no nodes) === -->
   <!-- top branch + 2 sub-branches -->
   <path d="M380,90 Q398,70 418,52" fill="none" stroke="#888" stroke-width="1.5"/>
@@ -90,18 +83,15 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
   <path d="M380,90 Q398,110 418,128" fill="none" stroke="#888" stroke-width="1.5"/>
   <path d="M418,128 Q428,140 438,150" fill="none" stroke="#888" stroke-width="1"/>
   <path d="M418,128 Q432,132 446,138" fill="none" stroke="#888" stroke-width="1"/>
-
   <!-- === LABELS === -->
   <text x="50" y="172" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Dendrites</text>
   <text x="170" y="130" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Soma</text>
   <text x="295" y="76" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Axon</text>
   <text x="448" y="172" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">Synapses</text>
-
   <!-- === ANIMATION: DENDRITE SIGNALS === -->
   <!-- Each signal starts at a sub-branch tip, travels down the small branch to the
        fork point, then continues along the main (bigger) branch to the soma.
        3 signals, one per main dendrite, staggered arrival. -->
-
   <!-- top: tip (22,22) -> fork (55,35) -> main branch -> soma (138,82) -->
   <circle r="4" fill="#4ade80" opacity="0">
     <animateMotion path="M22,22 Q38,26 55,35 Q90,42 112,58 Q128,70 138,82" dur="7s" repeatCount="indefinite"
@@ -123,14 +113,12 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0"
       keyTimes="0;0.07;0.08;0.24;0.26;1" dur="7s" repeatCount="indefinite"/>
   </circle>
-
   <!-- === ANIMATION: THRESHOLD LABEL === -->
   <text x="170" y="56" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle" opacity="0">
     threshold
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0"
       keyTimes="0;0.35;0.37;0.43;0.45;1" dur="7s" repeatCount="indefinite"/>
   </text>
-
   <!-- === ANIMATION: ACTION POTENTIAL (cyan, down the axon) === -->
   <circle r="5" fill="#22d3ee" opacity="0">
     <animateMotion path="M202,90 L380,90" dur="7s" repeatCount="indefinite"
@@ -138,12 +126,10 @@ The critical behavior is **all-or-nothing firing**. If the integrated signal at 
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0"
       keyTimes="0;0.45;0.46;0.62;0.64;1" dur="7s" repeatCount="indefinite"/>
   </circle>
-
   <!-- === ANIMATION: TERMINAL SIGNALS === -->
   <!-- Each signal travels from axon end along the main (bigger) branch to the fork,
        then continues along a sub-branch to the tip. 6 pulses total (2 per main branch)
        to show the signal splitting at each fork into both sub-branches. -->
-
   <!-- top branch -> sub-branch A: (380,90) -> fork (418,52) -> tip (438,30) -->
   <circle r="3" fill="#fbbf24" opacity="0">
     <animateMotion path="M380,90 Q398,70 418,52 Q428,40 438,30" dur="7s" repeatCount="indefinite"
