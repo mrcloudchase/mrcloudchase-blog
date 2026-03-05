@@ -63,18 +63,36 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <text x="218" y="135" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">hillock</text>
   <text x="310" y="78" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">axon + myelin</text>
   <text x="456" y="190" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">terminals</text>
-  <!-- phase 1: input signals travel from dendrite tips to soma edge (0-2.2s) -->
+  <!-- phase 1: input signals from all 6 dendrite tips to soma edge (0-2.2s) -->
+  <!-- top branch: tip 1 (30,22) -> junction (60,40) -> soma edge (140,85) -->
   <circle r="3" fill="#4ade80" opacity="0">
     <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85" dur="8s" repeatCount="indefinite" keyTimes="0;0.02;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.02;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
+  <!-- top branch: tip 2 (38,60) -> junction (60,40) -> soma edge (140,85) -->
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M38,60 Q50,52 60,40 Q90,50 110,65 Q125,75 140,85" dur="8s" repeatCount="indefinite" keyTimes="0;0.04;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.04;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- middle branch: tip 1 (28,78) -> junction (55,100) -> soma edge (140,90) -->
   <circle r="3" fill="#4ade80" opacity="0">
     <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90" dur="8s" repeatCount="indefinite" keyTimes="0;0.05;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.05;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
+  <!-- middle branch: tip 2 (28,122) -> junction (55,100) -> soma edge (140,90) -->
   <circle r="3" fill="#4ade80" opacity="0">
-    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animateMotion path="M28,122 Q40,112 55,100 Q85,98 110,94 Q130,90 140,90" dur="8s" repeatCount="indefinite" keyTimes="0;0.07;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.07;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- bottom branch: tip 1 (38,135) -> junction (60,155) -> soma edge (140,100) -->
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M38,135 Q50,142 60,155 Q90,148 110,130 Q125,115 140,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.08;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- bottom branch: tip 2 (30,172) -> junction (60,155) -> soma edge (140,100) -->
+  <circle r="3" fill="#4ade80" opacity="0">
+    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.10;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.10;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- phase 2: soma stroke brightens as it summates inputs (see ellipse animate above) -->
   <!-- phase 3: depolarization builds at axon hillock (3.2-4.4s) -->
@@ -87,17 +105,35 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
     <animateMotion path="M218,95 L225,95 L400,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.56;0.72;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.55;0.56;0.71;0.73;1" dur="8s" repeatCount="indefinite"/>
   </circle>
-  <!-- phase 5: signal branches to synaptic terminal tips (5.9-7.2s) -->
+  <!-- phase 5: signal branches from axon end to all 6 terminal tips (5.9-7.2s) -->
+  <!-- top terminal: main (400,95) -> junction (430,58) -> tip 1 (450,36) -->
   <circle r="3" fill="#fbbf24" opacity="0">
     <animateMotion path="M400,95 Q415,75 430,58 Q440,46 450,36" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
+  <!-- top terminal: main (400,95) -> junction (430,58) -> tip 2 (456,48) -->
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M400,95 Q415,75 430,58 Q442,54 456,48" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- middle terminal: main (400,95) -> junction (442,93) -> tip 1 (466,78) -->
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M400,95 Q420,95 442,93 Q454,86 466,78" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- middle terminal: main (400,95) -> junction (442,93) -> tip 2 (466,108) -->
   <circle r="3" fill="#fbbf24" opacity="0">
     <animateMotion path="M400,95 Q420,95 442,93 Q454,100 466,108" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
+  <!-- bottom terminal: main (400,95) -> junction (430,132) -> tip 1 (450,154) -->
   <circle r="3" fill="#fbbf24" opacity="0">
     <animateMotion path="M400,95 Q415,115 430,132 Q440,144 450,154" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- bottom terminal: main (400,95) -> junction (430,132) -> tip 2 (456,142) -->
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M400,95 Q415,115 430,132 Q442,136 456,142" dur="8s" repeatCount="indefinite" keyTimes="0;0.74;0.90;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.73;0.74;0.88;0.91;1" dur="8s" repeatCount="indefinite"/>
   </circle>
 </svg>
