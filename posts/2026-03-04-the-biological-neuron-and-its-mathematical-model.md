@@ -63,17 +63,17 @@ The human brain contains roughly 86 billion neurons. Each one is a specialized c
   <text x="218" y="135" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">hillock</text>
   <text x="310" y="78" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">axon + myelin</text>
   <text x="456" y="190" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">terminals</text>
-  <!-- phase 1: input signals travel from dendrite tips to soma (0-2.2s) -->
+  <!-- phase 1: input signals travel from dendrite tips to soma edge (0-2.2s) -->
   <circle r="3" fill="#4ade80" opacity="0">
-    <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.02;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animateMotion path="M30,22 Q45,30 60,40 Q90,50 110,65 Q125,75 140,85" dur="8s" repeatCount="indefinite" keyTimes="0;0.02;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.02;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <circle r="3" fill="#4ade80" opacity="0">
-    <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.05;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animateMotion path="M28,78 Q40,88 55,100 Q85,98 110,94 Q130,90 140,90" dur="8s" repeatCount="indefinite" keyTimes="0;0.05;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.05;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <circle r="3" fill="#4ade80" opacity="0">
-    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100 L175,95" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animateMotion path="M30,172 Q45,165 60,155 Q90,148 110,130 Q125,115 140,100" dur="8s" repeatCount="indefinite" keyTimes="0;0.08;0.28;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.5;0.5;0;0" keyTimes="0;0.08;0.25;0.28;1" dur="8s" repeatCount="indefinite"/>
   </circle>
   <!-- phase 2: soma stroke brightens as it summates inputs (see ellipse animate above) -->
