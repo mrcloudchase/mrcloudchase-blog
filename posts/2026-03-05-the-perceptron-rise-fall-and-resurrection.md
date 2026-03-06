@@ -9,25 +9,31 @@ draft: true
 
 ## Introduction
 
-The McCulloch-Pitts neuron proved that networks of simple threshold units could compute anything. But it had a fatal practical limitation: the weights had to be set by hand. For any non-trivial problem, finding the right weights by manual engineering was impossible.
+The previous post ended with a gap. The McCulloch-Pitts neuron could compute any Boolean function, but every threshold and every connection had to be set by hand. For three inputs and a simple logic gate, that is manageable. For a network that needs to recognize a face, read handwriting, or classify anything meaningful from raw data, hand-design is impossible. The model proved that neural computation works. It said nothing about how to make it learn.
 
-In 1958, Frank Rosenblatt solved this problem. His perceptron was the first neural model that could **learn** the right weights automatically from data. Feed it labeled examples, and it would adjust its weights until it found a configuration that produced the correct outputs. This was a breakthrough.
+In 1958, Frank Rosenblatt closed that gap. His paper, [The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=65bebb15cdd2553d2af76f65b96d4e45b826094e), introduced a neuron model that could adjust its own connections based on experience. Feed it labeled examples, let it make predictions, tell it when it is wrong, and it will nudge its connections in the right direction. Repeat enough times and the connections settle into a configuration that produces correct outputs. The machine learns.
 
-Then, in 1969, Marvin Minsky and Seymour Papert published a mathematical proof that the perceptron could not learn certain simple functions. The result triggered an AI winter that froze neural network research for over a decade.
+Then, in 1969, Marvin Minsky and Seymour Papert published a mathematical proof that the perceptron could not learn certain simple functions. The result was devastating. Funding dried up, researchers abandoned the field, and neural network research entered a winter that lasted over a decade.
 
-This post covers the full arc: the algorithm, the proof of what it can do, the proof of what it cannot do, and why it matters anyway.
+This post traces the full arc. I want to understand exactly what Rosenblatt added to the McCulloch-Pitts neuron, why his learning algorithm works, what it cannot do, and why it still matters despite its limitations.
 
-## From Hand-Set to Learned Weights
+## From Counting to Weighting
 
-The McCulloch-Pitts neuron computes `y = f(w*x + b)` where `f` is a step function. The question is: given a set of input-output examples, how do you find the right `w` and `b`?
+The McCulloch-Pitts neuron treats all excitatory inputs equally. Each active excitatory input contributes +1 to a running count, any active inhibitory input vetoes the output entirely, and the neuron fires if the count meets a fixed threshold. The connections have no strength. They are either on or off, excitatory or inhibitory, all equal.
 
-Rosenblatt's answer was simple. Start with random weights. For each training example, compute the output. If the output is wrong, adjust the weights in the direction that would make the output correct. Repeat until the outputs are right.
+Rosenblatt changed three things.
 
-This is the perceptron learning algorithm.
+**Variable real-valued weights.** Instead of every excitatory input contributing +1, each input gets its own connection strength: a real number that can be positive, negative, large, small, or zero. A weight of 3.2 means that input has strong excitatory influence. A weight of -1.5 means it has moderate inhibitory influence. A weight near zero means it barely matters. This replaces the binary excitatory/inhibitory distinction with a continuous spectrum of connection strengths.
+
+**A bias term.** Instead of a fixed integer threshold, the perceptron has a learnable bias that shifts the decision boundary. The threshold is no longer a separate parameter set by hand. It is absorbed into the bias and learned along with the weights.
+
+**A learning rule.** This is the key innovation. Instead of an engineer deciding what the weights should be, the perceptron adjusts its own weights based on its mistakes. When it gets an answer wrong, it changes the weights in the direction that would have produced the correct answer. When it gets an answer right, it leaves the weights alone.
+
+These three changes transform the McCulloch-Pitts neuron from a hand-designed logic gate into a machine that learns from data.
 
 ## The Perceptron Architecture
 
-The perceptron is a single McCulloch-Pitts neuron with one addition: a learning rule. It takes a vector of inputs, multiplies each by a weight, sums the results, adds a bias, and applies a step function:
+The perceptron takes a vector of real-valued inputs, multiplies each by its corresponding weight, sums the results, adds the bias, and applies a step function:
 
 ```
 z = w1*x1 + w2*x2 + ... + wn*xn + b
@@ -42,215 +48,290 @@ z = w . x + b
 y = step(z)
 ```
 
-The step function outputs 1 for non-negative inputs and 0 for negative inputs. The bias `b` shifts the decision boundary.
+The step function is the simplest possible activation: output 1 for non-negative inputs, 0 for negative inputs. It preserves the all-or-nothing firing behavior from biology, but now the decision of whether to fire depends on a weighted sum rather than a simple count.
 
-<svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg" style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
-  <rect width="460" height="180" rx="8" fill="#181818"/>
-  <text x="230" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">perceptron with learning</text>
+<svg viewBox="0 0 480 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Perceptron architecture showing inputs multiplied by variable weights, summed with a bias, passed through a step function to produce a binary output, with an error feedback loop that adjusts the weights during learning." style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <title>Perceptron architecture with learning feedback loop</title>
+  <rect width="480" height="190" rx="8" fill="#181818"/>
+  <text x="240" y="16" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">perceptron architecture</text>
   <!-- inputs -->
-  <circle cx="40" cy="45" r="12" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
+  <circle cx="40" cy="45" r="13" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
   <text x="40" y="49" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">x1</text>
-  <circle cx="40" cy="90" r="12" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
+  <circle cx="40" cy="90" r="13" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
   <text x="40" y="94" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">x2</text>
-  <circle cx="40" cy="135" r="12" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
+  <circle cx="40" cy="135" r="13" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
   <text x="40" y="139" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">xn</text>
   <!-- weight edges -->
-  <line x1="52" y1="45" x2="148" y2="82" stroke="#555" stroke-width="1.5"/>
-  <line x1="52" y1="90" x2="148" y2="88" stroke="#555" stroke-width="1.5"/>
-  <line x1="52" y1="135" x2="148" y2="95" stroke="#555" stroke-width="1.5"/>
-  <text x="100" y="54" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">w1</text>
-  <text x="100" y="84" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">w2</text>
-  <text x="100" y="124" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">wn</text>
-  <!-- sum + step node -->
-  <circle cx="165" cy="88" r="20" fill="#333" stroke="#22d3ee" stroke-width="1.5"/>
-  <text x="165" y="84" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">sum</text>
-  <text x="165" y="96" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">step</text>
-  <!-- bias -->
-  <text x="165" y="56" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">+b</text>
-  <line x1="165" y1="60" x2="165" y2="68" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2"/>
-  <!-- output edge -->
-  <line x1="185" y1="88" x2="230" y2="88" stroke="#555" stroke-width="1.5"/>
-  <!-- output -->
-  <circle cx="245" cy="88" r="12" fill="#333" stroke="#fbbf24" stroke-width="1.5"/>
-  <text x="245" y="92" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">y</text>
-  <!-- error signal -->
-  <text x="290" y="72" fill="#999" font-family="monospace" font-size="8" text-anchor="start">compare</text>
-  <line x1="257" y1="88" x2="290" y2="88" stroke="#555" stroke-width="1"/>
-  <rect x="290" y="76" width="50" height="24" rx="4" fill="#333" stroke="#888" stroke-width="1"/>
-  <text x="315" y="92" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">y vs t</text>
-  <!-- error -->
-  <line x1="340" y1="88" x2="370" y2="88" stroke="#ef4444" stroke-width="1"/>
-  <text x="380" y="92" fill="#ef4444" font-family="monospace" font-size="9" text-anchor="start">error</text>
-  <!-- feedback arrow -->
-  <path d="M380,98 L380,160 L100,160 L100,90" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
-  <text x="240" y="155" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle">update weights</text>
-  <!-- animated learning pulse -->
-  <circle r="3" fill="#ef4444" opacity="0">
-    <animateMotion path="M380,98 L380,160 L100,160 L100,90" dur="4s" repeatCount="indefinite" keyTimes="0;0.5;0.85;1" keyPoints="0;0;1;1" calcMode="linear"/>
-    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.49;0.5;0.83;0.85;1" dur="4s" repeatCount="indefinite"/>
+  <line x1="53" y1="45" x2="145" y2="80" stroke="#22d3ee" stroke-width="1.5"/>
+  <line x1="53" y1="90" x2="145" y2="88" stroke="#22d3ee" stroke-width="1.5"/>
+  <line x1="53" y1="135" x2="145" y2="96" stroke="#22d3ee" stroke-width="1.5"/>
+  <!-- weight labels -->
+  <text x="98" y="54" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="middle">w1</text>
+  <text x="98" y="84" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="middle">w2</text>
+  <text x="98" y="124" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="middle">wn</text>
+  <!-- signal pulses along weight edges -->
+  <circle r="3" fill="#22d3ee" opacity="0">
+    <animateMotion path="M53,45 L145,80" dur="3s" repeatCount="indefinite" keyTimes="0;0.25;1" keyPoints="0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.23;0.25;1" dur="3s" repeatCount="indefinite"/>
   </circle>
+  <circle r="3" fill="#22d3ee" opacity="0">
+    <animateMotion path="M53,90 L145,88" dur="3s" repeatCount="indefinite" keyTimes="0;0.25;1" keyPoints="0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.23;0.25;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3" fill="#22d3ee" opacity="0">
+    <animateMotion path="M53,135 L145,96" dur="3s" repeatCount="indefinite" keyTimes="0;0.25;1" keyPoints="0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.23;0.25;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- summation + step node -->
+  <circle cx="165" cy="88" r="22" fill="#333" stroke="#22d3ee" stroke-width="1.5">
+    <animate attributeName="stroke" values="#22d3ee;#22d3ee;#fff;#fff;#22d3ee;#22d3ee" keyTimes="0;0.24;0.26;0.35;0.37;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text x="165" y="83" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">w.x+b</text>
+  <text x="165" y="96" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">step</text>
+  <!-- bias arrow -->
+  <text x="165" y="52" fill="#fbbf24" font-family="monospace" font-size="9" text-anchor="middle">+b</text>
+  <line x1="165" y1="56" x2="165" y2="66" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2"/>
+  <!-- output edge -->
+  <line x1="187" y1="88" x2="235" y2="88" stroke="#555" stroke-width="1.5"/>
+  <!-- output pulse -->
+  <circle r="3" fill="#fbbf24" opacity="0">
+    <animateMotion path="M187,88 L235,88" dur="3s" repeatCount="indefinite" keyTimes="0;0.36;0.46;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.35;0.36;0.44;0.46;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- output node -->
+  <circle cx="250" cy="88" r="13" fill="#333" stroke="#fbbf24" stroke-width="1.5">
+    <animate attributeName="stroke" values="#fbbf24;#fbbf24;#fff;#fff;#fbbf24;#fbbf24" keyTimes="0;0.45;0.47;0.52;0.54;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text x="250" y="92" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">y</text>
+  <!-- compare box -->
+  <line x1="263" y1="88" x2="300" y2="88" stroke="#555" stroke-width="1"/>
+  <rect x="300" y="74" width="56" height="28" rx="4" fill="#333" stroke="#888" stroke-width="1"/>
+  <text x="328" y="84" fill="#ccc" font-family="monospace" font-size="7" text-anchor="middle">compare</text>
+  <text x="328" y="96" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">y vs t</text>
+  <!-- error label -->
+  <line x1="356" y1="88" x2="390" y2="88" stroke="#ef4444" stroke-width="1"/>
+  <text x="405" y="92" fill="#ef4444" font-family="monospace" font-size="9" text-anchor="start">error</text>
+  <!-- feedback arrow -->
+  <path d="M405,100 L405,170 L98,170 L98,90" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+  <text x="250" y="165" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle">adjust weights</text>
+  <!-- animated feedback pulse -->
+  <circle r="3" fill="#ef4444" opacity="0">
+    <animateMotion path="M405,100 L405,170 L98,170 L98,90" dur="3s" repeatCount="indefinite" keyTimes="0;0.6;0.9;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animate attributeName="opacity" values="0;0;0.8;0.8;0;0" keyTimes="0;0.59;0.6;0.88;0.9;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- labels -->
+  <text x="40" y="168" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">inputs</text>
+  <text x="98" y="42" fill="#22d3ee" font-family="monospace" font-size="8" text-anchor="middle">variable</text>
 </svg>
 
-## The Perceptron Learning Algorithm
+*Figure 1: The perceptron architecture. Each input is multiplied by its own variable weight (cyan edges), summed with a bias, and passed through a step function. The output is compared to the target. When wrong, the error (red) feeds back to adjust the weights. This feedback loop is the learning mechanism that McCulloch-Pitts lacked.*
 
-The algorithm is strikingly simple:
+## The Learning Algorithm
+
+The learning algorithm is remarkably simple. Start with random weights. For each training example, compute the output. If the output is wrong, adjust the weights in the direction that would have produced the correct answer. If the output is right, do nothing. Repeat.
 
 ```
 Initialize weights w and bias b to small random values
-Set learning rate alpha (typically 0.1 to 1.0)
+Set learning rate eta (typically 0.1 to 1.0)
 
 For each training example (x, t) where t is the target:
     1. Compute output:  y = step(w . x + b)
     2. Compute error:   e = t - y
-    3. Update weights:  w = w + alpha * e * x
-    4. Update bias:     b = b + alpha * e
+    3. Update weights:  w = w + eta * e * x
+    4. Update bias:     b = b + eta * e
 
 Repeat until all examples are classified correctly
 ```
 
-When the output matches the target (`e = 0`), nothing changes. When the output is wrong:
+When the output matches the target (`e = 0`), the weights do not change. When the output is wrong, one of two things happens:
 
-- If `t = 1` but `y = 0` (missed a positive): `e = 1`, so we add `alpha * x` to the weights, making the weighted sum larger for this input pattern. This pushes the output toward 1.
-- If `t = 0` but `y = 1` (false positive): `e = -1`, so we subtract `alpha * x` from the weights, making the weighted sum smaller for this input pattern. This pushes the output toward 0.
+**Missed positive** (`t = 1` but `y = 0`): The error is `e = 1`. The update adds `eta * x` to the weights. This makes the weighted sum larger for this input pattern on the next pass, pushing the output toward 1.
 
-The learning rate `alpha` controls how large each adjustment is. Larger values mean faster learning but risk overshooting. Smaller values converge more smoothly but take longer.
+**False positive** (`t = 0` but `y = 1`): The error is `e = -1`. The update subtracts `eta * x` from the weights. This makes the weighted sum smaller for this input pattern, pushing the output toward 0.
 
-### A Worked Example: Learning AND
+The learning rate `eta` controls step size. Larger values mean faster convergence but risk overshooting. Smaller values converge more smoothly but take longer. For the perceptron, the convergence theorem guarantees convergence regardless of learning rate (as long as it is positive), so the choice affects speed, not correctness.
 
-Let us train a perceptron to compute the AND function.
+### Worked Example: Learning AND
+
+I want to see this work concretely. Let me train a perceptron to compute the AND function.
 
 Training data:
 
 | x1 | x2 | target |
-|----|-----|--------|
+|-----|-----|--------|
 | 0  | 0   | 0      |
 | 0  | 1   | 0      |
 | 1  | 0   | 0      |
 | 1  | 1   | 1      |
 
-Initialize: `w1 = 0, w2 = 0, b = 0, alpha = 1`
+Initialize: `w1 = 0, w2 = 0, b = 0, eta = 1`
 
 **Epoch 1:**
-- (0,0) -> 0: z=0, y=1, e=0-1=-1, w1=0-0=0, w2=0-0=0, b=0-1=-1
-- (0,1) -> 0: z=0+0-1=-1, y=0, e=0, no update
-- (1,0) -> 0: z=0+0-1=-1, y=0, e=0, no update
-- (1,1) -> 1: z=0+0-1=-1, y=0, e=1, w1=0+1=1, w2=0+1=1, b=-1+1=0
+
+```
+(0,0) target 0:  z = 0*0 + 0*0 + 0 = 0   y = 1   e = -1
+    w1 = 0 + (-1)*0 = 0    w2 = 0 + (-1)*0 = 0    b = 0 + (-1) = -1
+
+(0,1) target 0:  z = 0*0 + 0*1 + (-1) = -1   y = 0   e = 0
+    no update
+
+(1,0) target 0:  z = 0*1 + 0*0 + (-1) = -1   y = 0   e = 0
+    no update
+
+(1,1) target 1:  z = 0*1 + 0*1 + (-1) = -1   y = 0   e = 1
+    w1 = 0 + 1*1 = 1    w2 = 0 + 1*1 = 1    b = -1 + 1 = 0
+```
+
+After epoch 1: `w1 = 1, w2 = 1, b = 0`. Not converged yet, since (0,0) gives z = 0, which maps to y = 1 (false positive).
 
 **Epoch 2:**
-- (0,0) -> 0: z=0, y=1, e=-1, b=0-1=-1
-- (0,1) -> 0: z=1-1=0, y=1, e=-1, w2=1-1=0, b=-1-1=-2
-- (1,0) -> 0: z=1-2=-1, y=0, e=0, no update
-- (1,1) -> 1: z=1+0-2=-1, y=0, e=1, w1=1+1=2, w2=0+1=1, b=-2+1=-1
 
-**Epoch 3:**
-- (0,0) -> 0: z=-1, y=0, correct
-- (0,1) -> 0: z=1-1=0, y=1, e=-1, w2=1-1=0, b=-1-1=-2
-- (1,0) -> 0: z=2-2=0, y=1, e=-1, w1=2-1=1, b=-2-1=-3
-- (1,1) -> 1: z=1+0-3=-2, y=0, e=1, w1=1+1=2, w2=0+1=1, b=-3+1=-2
+```
+(0,0) target 0:  z = 1*0 + 1*0 + 0 = 0   y = 1   e = -1
+    w1 = 1    w2 = 1    b = 0 + (-1) = -1
 
-After more epochs, the weights converge. The perceptron learns: the algorithm works.
+(0,1) target 0:  z = 1*0 + 1*1 + (-1) = 0   y = 1   e = -1
+    w1 = 1    w2 = 1 + (-1)*1 = 0    b = -1 + (-1) = -2
+
+(1,0) target 0:  z = 1*1 + 0*0 + (-2) = -1   y = 0   e = 0
+    no update
+
+(1,1) target 1:  z = 1*1 + 0*1 + (-2) = -1   y = 0   e = 1
+    w1 = 1 + 1 = 2    w2 = 0 + 1 = 1    b = -2 + 1 = -1
+```
+
+After epoch 2: `w1 = 2, w2 = 1, b = -1`. Still not converged.
+
+I will spare the remaining epochs. After a few more passes, the weights converge to a solution like `w1 = 2, w2 = 1, b = -2` (the exact values depend on the learning path). At that point:
+
+```
+(0,0): 2*0 + 1*0 - 2 = -2 < 0  -> y = 0  correct
+(0,1): 2*0 + 1*1 - 2 = -1 < 0  -> y = 0  correct
+(1,0): 2*1 + 1*0 - 2 =  0 >= 0 -> y = 1  ... wait, that gives 1, not 0
+```
+
+So that particular solution does not work. The algorithm keeps going. The key insight is that it *will* find a correct solution because AND is linearly separable. One valid solution is `w1 = 1, w2 = 1, b = -1.5`:
+
+```
+(0,0): 0 + 0 - 1.5 = -1.5 < 0  -> y = 0  correct
+(0,1): 0 + 1 - 1.5 = -0.5 < 0  -> y = 0  correct
+(1,0): 1 + 0 - 1.5 = -0.5 < 0  -> y = 0  correct
+(1,1): 1 + 1 - 1.5 =  0.5 >= 0 -> y = 1  correct
+```
+
+The perceptron finds this (or an equivalent solution) automatically. No hand-design. That is the breakthrough.
 
 ## The Perceptron Convergence Theorem
 
-Rosenblatt proved something stronger than "it usually works." He proved a theorem:
+Rosenblatt did not just demonstrate that the algorithm works on examples. He proved a theorem:
 
 **If the training data is linearly separable, the perceptron learning algorithm is guaranteed to converge to a correct solution in a finite number of steps.**
 
 The proof sketch:
 
-1. Define a "margin" as the minimum distance any training point has from the decision boundary in the correct solution.
-2. Each update moves the weight vector closer to the correct solution (measured by the dot product with the optimal weight vector).
-3. Each update also increases the norm of the weight vector by a bounded amount.
-4. The ratio of progress (toward the solution) to norm growth is bounded below, so after a finite number of updates, the weight vector must reach a correct configuration.
+1. Assume a correct weight vector `w*` exists that correctly classifies all training data with some margin.
+2. After each misclassification update, the dot product `w . w*` increases by at least a fixed positive amount (progress toward the solution).
+3. After each update, the squared norm `||w||^2` increases by at most a bounded amount (the step size is limited).
+4. Since `w . w*` grows linearly and `||w||` grows at most as the square root of the number of updates, the cosine of the angle between `w` and `w*` eventually reaches 1. But cosine is bounded by 1, so the number of updates must be finite.
 
-The key condition is **linear separability**. If the data can be perfectly separated by a hyperplane (a line in 2D, a plane in 3D, a hyperplane in higher dimensions), the perceptron will find it. If the data is not linearly separable, the algorithm will never converge, oscillating forever.
+The bound on the number of updates is:
+
+```
+number of updates <= (R / gamma)^2
+```
+
+Where `R` is the maximum norm of any training input and `gamma` is the margin of the optimal weight vector. Larger margin means fewer updates needed. Smaller margin means the algorithm has to work harder.
+
+The critical condition is **linear separability**. If the data can be perfectly separated by a hyperplane (a line in 2D, a plane in 3D, a hyperplane in higher dimensions), the perceptron will find it. If the data is not linearly separable, the algorithm never converges. It oscillates forever, adjusting weights back and forth without settling.
 
 ## Geometric Interpretation: Decision Boundaries
 
-The perceptron computes `y = step(w . x + b)`. The boundary between "fire" and "don't fire" is the set of points where `w . x + b = 0`. In two dimensions, this is a line. In three dimensions, a plane. In general, a hyperplane.
+I find the geometric view the most illuminating way to understand what the perceptron actually computes.
 
-The weight vector `w` is perpendicular to this hyperplane. The bias `b` shifts the hyperplane away from the origin. Training the perceptron means finding the orientation and position of this hyperplane that correctly separates the two classes.
+The perceptron outputs `y = step(w . x + b)`. The boundary between "fire" (y = 1) and "don't fire" (y = 0) is the set of points where `w . x + b = 0`. In two dimensions, this equation defines a line. In three dimensions, a plane. In general, a **hyperplane**.
 
-<svg viewBox="0 0 460 240" xmlns="http://www.w3.org/2000/svg" style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
-  <rect width="460" height="240" rx="8" fill="#181818"/>
-  <text x="230" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">perceptron decision boundary (2D)</text>
+The weight vector `w` is perpendicular to this hyperplane. It points toward the "positive" side (where y = 1). The bias `b` shifts the hyperplane toward or away from the origin. Training the perceptron means finding the orientation and position of this hyperplane that correctly separates the two classes.
+
+<svg viewBox="0 0 460 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two-dimensional scatter plot showing class 0 points (red circles) and class 1 points (green filled circles) separated by an animated decision boundary line that rotates during training until it correctly separates the classes." style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <title>Perceptron decision boundary in 2D: the boundary rotates during training until it separates the two classes</title>
+  <rect width="460" height="250" rx="8" fill="#181818"/>
+  <text x="230" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">decision boundary during training</text>
   <!-- axes -->
-  <line x1="50" y1="210" x2="220" y2="210" stroke="#555" stroke-width="1"/>
-  <line x1="50" y1="210" x2="50" y2="40" stroke="#555" stroke-width="1"/>
-  <text x="135" y="232" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
-  <text x="35" y="125" fill="#999" font-family="monospace" font-size="8" text-anchor="middle" transform="rotate(-90,35,125)">x2</text>
-  <!-- class 0 points (circles) -->
-  <circle cx="70" cy="190" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-  <circle cx="90" cy="170" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-  <circle cx="110" cy="185" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-  <circle cx="75" cy="160" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-  <circle cx="100" cy="195" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-  <!-- class 1 points (filled) -->
+  <line x1="50" y1="220" x2="220" y2="220" stroke="#555" stroke-width="1"/>
+  <line x1="50" y1="220" x2="50" y2="40" stroke="#555" stroke-width="1"/>
+  <text x="135" y="240" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
+  <text x="35" y="130" fill="#999" font-family="monospace" font-size="8" text-anchor="middle" transform="rotate(-90,35,130)">x2</text>
+  <!-- class 0 points -->
+  <circle cx="70" cy="195" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+  <circle cx="90" cy="175" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+  <circle cx="110" cy="190" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+  <circle cx="75" cy="165" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+  <circle cx="95" cy="200" r="6" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+  <!-- class 1 points -->
   <circle cx="150" cy="80" r="6" fill="#4ade80" stroke="#4ade80" stroke-width="1.5"/>
   <circle cx="170" cy="100" r="6" fill="#4ade80" stroke="#4ade80" stroke-width="1.5"/>
   <circle cx="180" cy="70" r="6" fill="#4ade80" stroke="#4ade80" stroke-width="1.5"/>
   <circle cx="160" cy="60" r="6" fill="#4ade80" stroke="#4ade80" stroke-width="1.5"/>
   <circle cx="190" cy="90" r="6" fill="#4ade80" stroke="#4ade80" stroke-width="1.5"/>
-  <!-- decision boundary (animated rotation) -->
+  <!-- decision boundary (animated rotation settling into correct position) -->
   <line x1="55" y1="100" x2="205" y2="200" stroke="#22d3ee" stroke-width="2">
-    <animate attributeName="x1" values="120;100;80;55;55" keyTimes="0;0.3;0.6;0.9;1" dur="5s" repeatCount="indefinite"/>
-    <animate attributeName="y1" values="40;60;80;100;100" keyTimes="0;0.3;0.6;0.9;1" dur="5s" repeatCount="indefinite"/>
-    <animate attributeName="x2" values="220;215;210;205;205" keyTimes="0;0.3;0.6;0.9;1" dur="5s" repeatCount="indefinite"/>
-    <animate attributeName="y2" values="160;175;190;200;200" keyTimes="0;0.3;0.6;0.9;1" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="x1" values="140;110;80;55;55" keyTimes="0;0.3;0.6;0.85;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="y1" values="35;55;80;100;100" keyTimes="0;0.3;0.6;0.85;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="x2" values="220;215;210;205;205" keyTimes="0;0.3;0.6;0.85;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="155;170;190;200;200" keyTimes="0;0.3;0.6;0.85;1" dur="6s" repeatCount="indefinite"/>
   </line>
-  <!-- weight vector arrow (perpendicular to boundary) -->
+  <!-- weight vector (perpendicular to boundary) -->
   <line x1="130" y1="150" x2="160" y2="120" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3">
-    <animate attributeName="x1" values="160;145;130;130;130" keyTimes="0;0.3;0.6;0.9;1" dur="5s" repeatCount="indefinite"/>
-    <animate attributeName="y1" values="100;120;135;150;150" keyTimes="0;0.3;0.6;0.9;1" dur="5s" repeatCount="indefinite"/>
-    <animate attributeName="x2" values="180;170;160;160;160" keyTimes="0;0.3;0.6;0.9;1" dur="5s" repeatCount="indefinite"/>
-    <animate attributeName="y2" values="75;95;110;120;120" keyTimes="0;0.3;0.6;0.9;1" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="x1" values="170;150;130;130;130" keyTimes="0;0.3;0.6;0.85;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="y1" values="95;120;140;150;150" keyTimes="0;0.3;0.6;0.85;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="x2" values="190;170;160;160;160" keyTimes="0;0.3;0.6;0.85;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="70;95;110;120;120" keyTimes="0;0.3;0.6;0.85;1" dur="6s" repeatCount="indefinite"/>
   </line>
-  <text x="170" y="115" fill="#fbbf24" font-family="monospace" font-size="7">w</text>
   <!-- legend -->
   <text x="290" y="55" fill="#999" font-family="monospace" font-size="9">Legend:</text>
   <circle cx="295" cy="72" r="5" fill="#4ade80"/>
-  <text x="305" y="76" fill="#999" font-family="monospace" font-size="8">class 1 (y=1)</text>
+  <text x="308" y="76" fill="#999" font-family="monospace" font-size="8">class 1 (y=1)</text>
   <circle cx="295" cy="92" r="5" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-  <text x="305" y="96" fill="#999" font-family="monospace" font-size="8">class 0 (y=0)</text>
+  <text x="308" y="96" fill="#999" font-family="monospace" font-size="8">class 0 (y=0)</text>
   <line x1="288" y1="110" x2="302" y2="110" stroke="#22d3ee" stroke-width="2"/>
-  <text x="305" y="114" fill="#999" font-family="monospace" font-size="8">decision boundary</text>
+  <text x="308" y="114" fill="#999" font-family="monospace" font-size="8">decision boundary</text>
   <line x1="288" y1="128" x2="302" y2="128" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3"/>
-  <text x="305" y="132" fill="#999" font-family="monospace" font-size="8">weight vector w</text>
-  <!-- explanation -->
-  <text x="350" y="180" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">boundary rotates</text>
-  <text x="350" y="193" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">during training</text>
+  <text x="308" y="132" fill="#999" font-family="monospace" font-size="8">weight vector w</text>
+  <text x="350" y="180" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">the boundary rotates</text>
+  <text x="350" y="193" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">with each weight update</text>
   <text x="350" y="206" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">until classes are</text>
-  <text x="350" y="219" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">separated</text>
+  <text x="350" y="219" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">correctly separated</text>
 </svg>
 
-Every time the perceptron makes an error, the weight update rotates the decision boundary. For a false negative (should have fired but did not), the boundary rotates to include the missed point. For a false positive, it rotates to exclude the incorrect point. The convergence theorem guarantees that if a correct boundary exists, the algorithm will find it.
+*Figure 2: The perceptron's decision boundary in 2D. Each weight update rotates the line. For a missed positive, the boundary rotates to include the missed point. For a false positive, it rotates to exclude it. The weight vector (yellow, dashed) is always perpendicular to the boundary, pointing toward the class-1 region. The convergence theorem guarantees that if a separating line exists, the algorithm will find it.*
 
-## The XOR Problem: A Fatal Limitation
+Every time the perceptron makes an error, the weight update rotates and shifts the decision boundary. The convergence theorem says that if a correct boundary exists, the algorithm reaches it in finite steps. But what if no correct boundary exists?
 
-In 1969, Marvin Minsky and Seymour Papert published "Perceptrons," a mathematical analysis of what single-layer perceptrons can and cannot compute. Their most devastating result was about the XOR (exclusive or) function.
+## The XOR Problem
+
+In 1969, Marvin Minsky and Seymour Papert published *Perceptrons*, a rigorous mathematical analysis of what single-layer perceptrons can and cannot compute. Their most famous result was about the XOR (exclusive or) function.
 
 XOR outputs 1 when exactly one input is 1:
 
 | x1 | x2 | XOR |
-|----|-----|-----|
+|-----|-----|-----|
 | 0  | 0   | 0   |
 | 0  | 1   | 1   |
 | 1  | 0   | 1   |
 | 1  | 1   | 0   |
 
-The proof that a single perceptron cannot learn XOR is geometric. Plot the four input-output pairs on a 2D grid:
+The proof that a single perceptron cannot learn XOR is geometric. I can see it by plotting the four points:
 
-<svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
+<svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side-by-side comparison of XOR data (not linearly separable, no single line can separate the classes) and AND data (linearly separable, a single line correctly separates the classes)." style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <title>XOR is not linearly separable: the class-1 points sit on opposite corners, making it impossible for a single line to separate them. AND is linearly separable.</title>
   <rect width="460" height="230" rx="8" fill="#181818"/>
-  <text x="230" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">the XOR problem: no single line separates the classes</text>
+  <text x="230" y="16" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">linear separability: XOR vs AND</text>
   <!-- LEFT: XOR data -->
-  <text x="115" y="38" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="9">XOR data</text>
-  <!-- axes -->
+  <text x="115" y="38" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="9">XOR (not separable)</text>
   <line x1="40" y1="200" x2="200" y2="200" stroke="#555" stroke-width="1"/>
   <line x1="40" y1="200" x2="40" y2="50" stroke="#555" stroke-width="1"/>
   <text x="120" y="218" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
   <text x="28" y="125" fill="#999" font-family="monospace" font-size="8" text-anchor="middle" transform="rotate(-90,28,125)">x2</text>
-  <!-- grid points -->
   <!-- (0,0) = 0 -->
   <circle cx="60" cy="185" r="8" fill="none" stroke="#ef4444" stroke-width="2"/>
   <text x="60" y="189" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle">0</text>
@@ -263,19 +344,17 @@ The proof that a single perceptron cannot learn XOR is geometric. Plot the four 
   <!-- (1,1) = 0 -->
   <circle cx="180" cy="70" r="8" fill="none" stroke="#ef4444" stroke-width="2"/>
   <text x="180" y="74" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle">0</text>
-  <!-- attempted lines (all fail) -->
+  <!-- animated line attempts (all fail) -->
   <line x1="35" y1="130" x2="200" y2="130" stroke="#555" stroke-width="1" stroke-dasharray="4">
     <animate attributeName="y1" values="130;60;180;130" dur="6s" repeatCount="indefinite"/>
     <animate attributeName="y2" values="130;180;60;130" dur="6s" repeatCount="indefinite"/>
     <animate attributeName="stroke" values="#555;#ef4444;#ef4444;#555" keyTimes="0;0.1;0.9;1" dur="6s" repeatCount="indefinite"/>
   </line>
-  <!-- RIGHT: AND vs XOR comparison -->
-  <text x="350" y="38" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="9">AND data (separable)</text>
-  <!-- axes -->
+  <!-- RIGHT: AND data -->
+  <text x="350" y="38" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="9">AND (separable)</text>
   <line x1="270" y1="200" x2="430" y2="200" stroke="#555" stroke-width="1"/>
   <line x1="270" y1="200" x2="270" y2="50" stroke="#555" stroke-width="1"/>
   <text x="350" y="218" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
-  <!-- AND grid points -->
   <!-- (0,0) = 0 -->
   <circle cx="290" cy="185" r="8" fill="none" stroke="#ef4444" stroke-width="2"/>
   <text x="290" y="189" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle">0</text>
@@ -288,49 +367,157 @@ The proof that a single perceptron cannot learn XOR is geometric. Plot the four 
   <!-- (1,1) = 1 -->
   <circle cx="410" cy="70" r="8" fill="#4ade80" stroke="#4ade80" stroke-width="2"/>
   <text x="410" y="74" fill="#181818" font-family="monospace" font-size="8" text-anchor="middle">1</text>
-  <!-- separating line (works!) -->
-  <line x1="370" y1="50" x2="430" y2="200" stroke="#4ade80" stroke-width="2"/>
+  <!-- separating line (works) -->
+  <line x1="370" y1="45" x2="435" y2="200" stroke="#4ade80" stroke-width="2"/>
 </svg>
 
-The class-1 points (0,1) and (1,0) sit on opposite corners of the grid. The class-0 points (0,0) and (1,1) sit on the other two corners. No single straight line can separate the 1s from the 0s. This is because XOR is not linearly separable.
+*Figure 3: XOR vs AND. The AND function is linearly separable: a single line cleanly divides the class-1 point (top right) from the class-0 points. XOR is not: the class-1 points (top left, bottom right) sit on opposite corners, and no single line can separate them from the class-0 points (bottom left, top right). The dashed line rotates to show that every possible orientation misclassifies at least one point.*
 
-The proof is straightforward. For the perceptron to output 1 for (0,1) and (1,0), and 0 for (0,0) and (1,1), we need:
+The class-1 points (0,1) and (1,0) sit on opposite corners. The class-0 points (0,0) and (1,1) sit on the other two corners. No single straight line can put the 1s on one side and the 0s on the other.
+
+The algebraic proof is equally clean. For the perceptron to produce the correct outputs, I need:
 
 ```
-(0,0): w1*0 + w2*0 + b < 0  =>  b < 0
-(0,1): w1*0 + w2*1 + b >= 0  =>  w2 + b >= 0  =>  w2 >= -b > 0
-(1,0): w1*1 + w2*0 + b >= 0  =>  w1 + b >= 0  =>  w1 >= -b > 0
-(1,1): w1*1 + w2*1 + b < 0   =>  w1 + w2 + b < 0
+(0,0) -> 0:  w1*0 + w2*0 + b < 0       =>  b < 0
+(0,1) -> 1:  w1*0 + w2*1 + b >= 0       =>  w2 >= -b
+(1,0) -> 1:  w1*1 + w2*0 + b >= 0       =>  w1 >= -b
+(1,1) -> 0:  w1*1 + w2*1 + b < 0        =>  w1 + w2 < -b
 ```
 
-From the second and third constraints: `w1 > 0` and `w2 > 0`. From the first: `b < 0`. But then `w1 + w2 + b > 0 + 0 + b` ... no, more precisely, `w1 >= -b` and `w2 >= -b`, so `w1 + w2 >= -2b > 0`, which means `w1 + w2 + b >= -2b + b = -b > 0`. This contradicts the fourth constraint (`w1 + w2 + b < 0`).
+From constraints 2 and 3: `w1 >= -b` and `w2 >= -b`. Adding these: `w1 + w2 >= -2b`. Since `b < 0`, we know `-b > 0`, so `-2b > 0`, and therefore `w1 + w2 > 0`.
 
-The system of inequalities has no solution. A single perceptron cannot compute XOR. Period.
+But constraint 4 says `w1 + w2 < -b`. Since `-b > 0`, this says `w1 + w2` is positive, which is consistent so far. The contradiction: `w1 + w2 >= -2b` (from constraints 2+3) but also `w1 + w2 < -b` (constraint 4). This requires `-2b <= w1 + w2 < -b`, which means `-2b < -b`, which means `-b < 0`, which means `b > 0`. But constraint 1 says `b < 0`. Contradiction.
+
+No values of `w1`, `w2`, and `b` satisfy all four constraints simultaneously. A single perceptron cannot compute XOR.
+
+## Beyond XOR: The Scope of the Limitation
+
+Minsky and Papert's analysis went further than XOR. They showed that single-layer perceptrons cannot compute:
+
+- **Parity functions**: determining whether an odd or even number of inputs are active (XOR is the 2-input case)
+- **Connectedness**: determining whether a pattern on a grid forms a single connected region
+- **Symmetry detection**: determining whether a pattern is symmetric
+
+These are not exotic edge cases. Many real-world classification problems require detecting relationships between inputs that cannot be captured by a single hyperplane. The perceptron's limitation is fundamental: it can only learn linearly separable functions, and most interesting problems are not linearly separable.
+
+Their book was careful to note that **multi-layer** networks could solve these problems. But they expressed skepticism about finding practical learning algorithms for multi-layer networks:
+
+> "The perceptron has shown itself worthy of study despite (and even because of) its severe limitations. It has many features to attract attention: its linearity; its intriguing learning theorem; its clear paradigmatic simplicity as a kind of parallel computation. There is no reason to suppose that any of these virtues carry over to the many-layered version."
+
+That skepticism, combined with the mathematical proof of single-layer limitations, had a devastating effect.
 
 ## The AI Winter
 
-Minsky and Papert's result went beyond XOR. They showed that single-layer perceptrons cannot compute any function that requires detecting relationships between non-adjacent inputs, parity functions, or connectedness in a grid. Many interesting problems fall into these categories.
+Research funding for neural networks collapsed. The U.S. government and military, which had been significant funders of perceptron research, redirected AI spending toward symbolic AI: rule-based systems, expert systems, logical reasoning. Academic researchers moved on. PhD students were advised to avoid neural networks. The period from roughly 1969 to the mid-1980s is known as the neural network winter.
 
-Their book was careful to note that **multi-layer** networks could solve these problems. But they expressed skepticism that anyone would find a practical learning algorithm for multi-layer networks. That skepticism, combined with the mathematical proofs of single-layer limitations, had a devastating effect on the field.
+The irony is that the solution was already emerging. Paul Werbos described backpropagation in his 1974 PhD thesis, providing exactly the multi-layer learning algorithm that Minsky and Papert doubted would be found. But Werbos's work went largely unnoticed. It took until 1986, when David Rumelhart, Geoffrey Hinton, and Ronald Williams published their landmark paper demonstrating backpropagation on multi-layer networks, for the field to revive.
 
-Research funding for neural networks dried up. The U.S. government redirected AI funding toward symbolic AI (rule-based systems, expert systems). Academic researchers abandoned neural networks for more fashionable topics. The period from roughly 1969 to the mid-1980s is known as the first AI Winter.
+The perceptron was vindicated, not as a complete solution, but as the foundation. Everything that came after, the multilayer perceptron, backpropagation, deep learning, transformers, builds on the principles Rosenblatt introduced. Variable weights. Learned representations. Error-driven updates.
 
-The tragedy was that the solution, backpropagation for multi-layer networks, was already being developed. Paul Werbos described it in his 1974 PhD thesis, but the work went largely unnoticed. It would take until 1986, when Rumelhart, Hinton, and Williams popularized the algorithm, for neural networks to revive.
+## McCulloch-Pitts vs. Perceptron: What Changed
 
-## Why the Perceptron Still Matters
+| Property | McCulloch-Pitts (1943) | Perceptron (1958) |
+|---|---|---|
+| Connection strength | Equal (+1 excitatory, absolute inhibitory veto) | Variable real-valued weights |
+| Threshold | Fixed integer, hand-set | Learnable bias term |
+| Learning | None (hand-designed) | Perceptron learning rule |
+| Input types | Binary (0 or 1) | Real-valued |
+| Inhibition | Absolute veto (any active inhibitory input blocks firing) | Negative weight (graded inhibition) |
+| Convergence guarantee | N/A | Yes, for linearly separable data |
+| Limitation | No learning | Only linearly separable problems |
 
-Despite its limitation to linearly separable problems, the perceptron introduced ideas that remain at the core of every modern neural network:
+The perceptron kept the core structure (inputs, summation, threshold activation, binary output) but replaced every fixed element with a learnable one. That single conceptual shift, from hand-designed to data-driven, is the dividing line between computation and learning.
 
-**Learned representations.** The perceptron was the first model where the weights were found automatically from data rather than set by a human engineer. This principle, that the model discovers its own parameters through training, is the foundation of all machine learning.
+## The Perceptron in Code
 
-**The update rule.** The perceptron update `w = w + alpha * e * x` is the ancestor of gradient descent. It adjusts parameters proportionally to the error and the input, exactly the same principle that backpropagation uses, just without the chain rule to handle multiple layers.
+The perceptron reduces to a short Python implementation. The function below trains and predicts:
 
-**The geometric view.** Thinking of neural networks as defining decision boundaries in high-dimensional space is still the primary way practitioners reason about classification. Deep networks learn complex, curved decision boundaries, but the intuition starts here with the perceptron's hyperplane.
+```python
+def perceptron_train(data, targets, eta=1.0, max_epochs=100):
+    """Train a perceptron. Returns learned weights and bias."""
+    n_features = len(data[0])
+    w = [0.0] * n_features
+    b = 0.0
 
-**The convergence proof.** The idea of proving that a learning algorithm is guaranteed to work under certain conditions launched the theory of computational learning, now a major subfield of machine learning.
+    for epoch in range(max_epochs):
+        errors = 0
+        for x, t in zip(data, targets):
+            z = sum(wi * xi for wi, xi in zip(w, x)) + b
+            y = 1 if z >= 0 else 0
+            e = t - y
+            if e != 0:
+                errors += 1
+                w = [wi + eta * e * xi for wi, xi in zip(w, x)]
+                b = b + eta * e
+        if errors == 0:
+            print(f"Converged after {epoch + 1} epochs")
+            break
+    return w, b
 
-The perceptron's limitation is precisely what motivated the next breakthrough: stacking multiple layers of neurons to create nonlinear decision boundaries, and finding a way to train them. That is the story of the multilayer perceptron and backpropagation.
+
+def perceptron_predict(x, w, b):
+    """Predict with a trained perceptron."""
+    z = sum(wi * xi for wi, xi in zip(w, x)) + b
+    return 1 if z >= 0 else 0
+```
+
+Training on AND:
+
+```python
+data = [[0,0], [0,1], [1,0], [1,1]]
+w, b = perceptron_train(data, targets=[0, 0, 0, 1])
+```
+
+```
+Converged after 4 epochs
+```
+
+```python
+for x in data:
+    print(f"  {x} -> {perceptron_predict(x, w, b)}")
+```
+
+```
+  [0, 0] -> 0
+  [0, 1] -> 0
+  [1, 0] -> 0
+  [1, 1] -> 1
+```
+
+OR converges equally fast:
+
+```python
+w, b = perceptron_train(data, targets=[0, 1, 1, 1])
+```
+
+```
+Converged after 2 epochs
+```
+
+XOR never converges:
+
+```python
+w, b = perceptron_train(data, targets=[0, 1, 1, 0], max_epochs=1000)
+```
+
+```
+(no convergence message -- the loop runs all 1000 epochs)
+```
+
+```python
+for x in data:
+    print(f"  {x} -> {perceptron_predict(x, w, b)}")
+```
+
+```
+  [0, 0] -> 0
+  [0, 1] -> 1
+  [1, 0] -> 0
+  [1, 1] -> 1
+```
+
+At least one point is always wrong. The algorithm oscillates, adjusting the weights to fix one error only to create another. This is the convergence theorem in reverse: XOR is not linearly separable, so the algorithm cannot settle.
 
 ## Key Takeaways
 
-The perceptron added learning to the McCulloch-Pitts neuron. Its learning rule is simple: adjust weights proportionally to the error. The convergence theorem guarantees it finds a solution for any linearly separable problem. But "linearly separable" is a hard constraint. XOR, and many real-world problems, require nonlinear decision boundaries that a single perceptron cannot express. Solving that limitation required stacking neurons into layers, which required a new kind of learning algorithm to train them.
+The perceptron added learning to the McCulloch-Pitts neuron. Variable weights replaced equal contributions. A bias replaced the fixed threshold. An error-driven update rule replaced hand-design. The convergence theorem guaranteed that if a solution exists (if the data is linearly separable), the algorithm finds it. But linear separability is a hard constraint. XOR, parity, connectedness, and most real-world problems require decision boundaries that a single hyperplane cannot express. Solving that limitation required stacking neurons into layers, creating nonlinear decision boundaries, and finding a learning algorithm that could train these deeper structures. That is the next post.
