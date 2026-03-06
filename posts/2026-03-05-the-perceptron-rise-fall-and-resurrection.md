@@ -440,42 +440,46 @@ Starting from the McCulloch-Pitts model, I kept the core structure (inputs, summ
 
 ## The Perceptron in Code
 
-Everything I have built reduces to a short Python implementation. The function below trains and predicts:
+Everything I have built reduces to three Python functions. `perceptron()` computes the forward pass (the model itself), `learn()` applies the update rule to a single example (the novelty Rosenblatt added), and `train()` runs the full learning loop:
 
 ```python
-def perceptron_train(data, targets, eta=1.0, max_epochs=100):
-    """Train a perceptron. Returns learned weights and bias."""
-    n_features = len(data[0])
-    w = [0.0] * n_features
-    b = 0.0
+def perceptron(x, w, b):
+    """Rosenblatt's perceptron: weighted sum, step activation."""
+    z = sum(wi * xi for wi, xi in zip(w, x)) + b
+    return 1 if z >= 0 else 0
 
+
+def learn(x, target, w, b, eta=1.0):
+    """Single perceptron update. Returns (w, b, error)."""
+    output = perceptron(x, w, b)
+    error = target - output
+    if error != 0:
+        w = [wi + eta * error * xi for wi, xi in zip(w, x)]
+        b = b + eta * error
+    return w, b, error
+
+
+def train(data, targets, eta=1.0, max_epochs=100):
+    """Train a perceptron on data. Returns (w, b)."""
+    w = [0.0] * len(data[0])
+    b = 0.0
     for epoch in range(max_epochs):
         errors = 0
         for x, t in zip(data, targets):
-            z = sum(wi * xi for wi, xi in zip(w, x)) + b
-            y = 1 if z >= 0 else 0
-            e = t - y
+            w, b, e = learn(x, t, w, b, eta)
             if e != 0:
                 errors += 1
-                w = [wi + eta * e * xi for wi, xi in zip(w, x)]
-                b = b + eta * e
         if errors == 0:
             print(f"Converged after {epoch + 1} epochs")
             break
     return w, b
-
-
-def perceptron_predict(x, w, b):
-    """Predict with a trained perceptron."""
-    z = sum(wi * xi for wi, xi in zip(w, x)) + b
-    return 1 if z >= 0 else 0
 ```
 
 Training on AND:
 
 ```python
 data = [[0,0], [0,1], [1,0], [1,1]]
-w, b = perceptron_train(data, targets=[0, 0, 0, 1])
+w, b = train(data, targets=[0, 0, 0, 1])
 ```
 
 ```
@@ -484,7 +488,7 @@ Converged after 6 epochs
 
 ```python
 for x in data:
-    print(f"  {x} -> {perceptron_predict(x, w, b)}")
+    print(f"  {x} -> {perceptron(x, w, b)}")
 ```
 
 ```
@@ -494,10 +498,10 @@ for x in data:
   [1, 1] -> 1
 ```
 
-OR converges equally fast:
+OR also converges:
 
 ```python
-w, b = perceptron_train(data, targets=[0, 1, 1, 1])
+w, b = train(data, targets=[0, 1, 1, 1])
 ```
 
 ```
@@ -507,7 +511,7 @@ Converged after 4 epochs
 XOR never converges:
 
 ```python
-w, b = perceptron_train(data, targets=[0, 1, 1, 0], max_epochs=1000)
+w, b = train(data, targets=[0, 1, 1, 0], max_epochs=1000)
 ```
 
 ```
@@ -516,7 +520,7 @@ w, b = perceptron_train(data, targets=[0, 1, 1, 0], max_epochs=1000)
 
 ```python
 for x in data:
-    print(f"  {x} -> {perceptron_predict(x, w, b)}")
+    print(f"  {x} -> {perceptron(x, w, b)}")
 ```
 
 ```

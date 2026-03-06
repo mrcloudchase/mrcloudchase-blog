@@ -723,7 +723,7 @@ The original model was deliberately minimal. It captured the essence of neural c
 Everything above reduces to a handful of lines of Python. The function below is the complete McCulloch-Pitts neuron: count the active excitatory inputs, check for any inhibitory veto, compare against the threshold.
 
 ```python
-def mcculloch_pitts(excitatory, inhibitory, threshold):
+def neuron(excitatory, inhibitory, threshold):
     """McCulloch-Pitts neuron (1943).
 
     excitatory: list of binary inputs (0 or 1), each contributing +1
@@ -738,9 +738,9 @@ def mcculloch_pitts(excitatory, inhibitory, threshold):
 The three logic gates from earlier, each a single neuron with the right threshold:
 
 ```python
-def AND(a, b):  return mcculloch_pitts([a, b], [], threshold=2)
-def OR(a, b):   return mcculloch_pitts([a, b], [], threshold=1)
-def NOT(x):     return mcculloch_pitts([], [x], threshold=0)
+def AND(a, b):  return neuron([a, b], [], threshold=2)
+def OR(a, b):   return neuron([a, b], [], threshold=1)
+def NOT(x):     return neuron([], [x], threshold=0)
 ```
 
 ```
