@@ -225,7 +225,7 @@ The perceptron finds this (or an equivalent solution) automatically. No hand-des
 
 ## The Perceptron Convergence Theorem
 
-The worked example shows the algorithm working, but does it always work? Rosenblatt did not just demonstrate it on examples. He proved a theorem:
+The worked example shows the algorithm working, but does it always work? Rosenblatt claimed convergence for linearly separable data, and the formal proof was later provided by Novikoff in 1962:
 
 **If the training data is linearly separable, the perceptron learning algorithm is guaranteed to converge to a correct solution in a finite number of steps.**
 
@@ -479,7 +479,7 @@ w, b = perceptron_train(data, targets=[0, 0, 0, 1])
 ```
 
 ```
-Converged after 4 epochs
+Converged after 6 epochs
 ```
 
 ```python
@@ -501,7 +501,7 @@ w, b = perceptron_train(data, targets=[0, 1, 1, 1])
 ```
 
 ```
-Converged after 2 epochs
+Converged after 4 epochs
 ```
 
 XOR never converges:
@@ -520,10 +520,10 @@ for x in data:
 ```
 
 ```
-  [0, 0] -> 0
+  [0, 0] -> 1
   [0, 1] -> 1
   [1, 0] -> 0
-  [1, 1] -> 1
+  [1, 1] -> 0
 ```
 
 At least one point is always wrong. The algorithm oscillates, adjusting the weights to fix one error only to create another. This is the convergence theorem in reverse: XOR is not linearly separable, so the algorithm cannot settle.
