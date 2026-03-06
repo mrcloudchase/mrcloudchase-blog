@@ -400,17 +400,17 @@ Here is the critical insight for building a model: this is a **binary event**. T
 
 This is the property that makes mathematical modeling tractable. If I ignore firing rate and look at a single moment in time, the neuron's output is binary: 1 or 0, fire or do not fire. That maps directly to a mathematical function with a binary output.
 
-## Synaptic Transmission: Weights Before There Were Weights
+## Synaptic Transmission: How Neurons Talk
 
 I have inputs, summation, a threshold, and a binary output. But not all inputs are equal. The next piece of the puzzle is how neurons communicate across the gaps between them, and why some connections matter more than others.
 
 When an action potential reaches an axon terminal, it triggers the release of neurotransmitter molecules into the synaptic cleft (the gap between neurons, roughly 20 nanometers wide). These molecules bind to receptors on the receiving neuron's dendrite, opening ion channels that either depolarize or hyperpolarize the receiving cell.
 
-**Excitatory synapses** (using neurotransmitters like glutamate) push the receiving neuron toward firing. They depolarize the membrane, bringing it closer to threshold. In the mathematical model, these correspond to **positive weights**.
+**Excitatory synapses** (using neurotransmitters like glutamate) push the receiving neuron toward firing. They depolarize the membrane, bringing it closer to threshold.
 
-**Inhibitory synapses** (using neurotransmitters like GABA) push the receiving neuron away from firing. They hyperpolarize the membrane, making it harder to reach threshold. These correspond to **negative weights**.
+**Inhibitory synapses** (using neurotransmitters like GABA) push the receiving neuron away from firing. They hyperpolarize the membrane, making it harder to reach threshold.
 
-Not all synapses are equal. Some connections are strong (more neurotransmitter released, more receptors available, larger effect on membrane potential) and some are weak. The strength of a synapse determines how much influence it has on the receiving neuron's decision to fire. In mathematical terms, this is exactly what a weight does: it scales the input. So each input does not just arrive, it arrives with a strength. Multiply the input by that strength and I have a weighted input.
+Not all synapses are equal. Some connections are strong (more neurotransmitter released, more receptors available, larger effect on membrane potential) and some are weak. The strength of a synapse determines how much influence it has on the receiving neuron's decision to fire. This variable synaptic strength is a real and important feature of biology. But as I will see shortly, McCulloch and Pitts chose to throw it away in their model, treating all excitatory inputs as equal and giving inhibitory inputs an absolute veto. That simplification is what makes their math tractable.
 
 Furthermore, synaptic strength is not fixed. **Synaptic plasticity**, the ability of synapses to strengthen or weaken over time, is the biological basis of learning. Donald Hebb described this principle in 1949: when a presynaptic neuron consistently contributes to causing the postsynaptic neuron to fire, the synapse between them strengthens. This is often paraphrased as "neurons that fire together wire together" (a summary coined decades later by Carla Shatz, not Hebb's own words, but a faithful distillation of his idea). This is worth noting for later: the connection strengths can change. The brain learns by adjusting them.
 
@@ -480,14 +480,14 @@ For the purposes of a minimal model, spatial summation is the mechanism that mat
 
 ## The McCulloch-Pitts Neuron (1943)
 
-At this point I have all the biological pieces: weighted inputs, summation, a threshold, and a binary output. This is exactly where McCulloch and Pitts were in 1943. They looked at the same biology and asked the same question I have been working toward: what is the minimum abstraction that preserves the computational behavior?
+At this point I have all the biological pieces: inputs (excitatory and inhibitory), summation, a threshold, and a binary output. This is exactly where McCulloch and Pitts were in 1943. They looked at the same biology and asked the same question I have been working toward: what is the minimum abstraction that preserves the computational behavior?
 
 Their answer was deliberately reductive.
 
 ### What They Kept
 
 1. **Multiple binary inputs**: A neuron receives signals from many sources (dendrites from many upstream neurons). Each input is either active (1) or inactive (0).
-2. **Excitatory and inhibitory classes**: Inputs are either excitatory (contributing toward firing) or inhibitory (vetoing firing entirely). In the original model, all excitatory inputs had equal weight (+1 each), and any single active inhibitory input could prevent the neuron from firing regardless of excitatory count.
+2. **Excitatory and inhibitory classes**: Inputs are either excitatory (contributing toward firing) or inhibitory (vetoing firing entirely). In the original model, all excitatory inputs contributed equally (+1 each), and any single active inhibitory input could prevent the neuron from firing regardless of excitatory count.
 3. **Threshold firing**: If the total excitatory count exceeds a threshold (and no inhibitory input is active), the neuron fires (all-or-nothing).
 4. **Binary output**: The neuron either fires (1) or does not fire (0).
 
@@ -696,7 +696,7 @@ Since AND, OR, and NOT gates are sufficient to compute any Boolean function (the
 
 They went further. By adding feedback loops (outputs feeding back as inputs, introducing a notion of time steps), they showed that networks of binary threshold units can simulate any finite automaton. This linked neural computation to the formal theory of computation that Turing had developed just seven years earlier. Finite automata are not Turing-complete (they lack unbounded memory), but the result was still remarkable: a model derived from biology could replicate any fixed-state computational process.
 
-But there is a glaring limitation: the weights and thresholds have to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right configuration from data. Their model was a proof of computational capability, not a learning algorithm. Remember the synaptic plasticity I noted earlier, the brain's ability to strengthen and weaken connections? That is the biological mechanism for learning, and it is entirely absent from this model. The question of how to find the right configuration automatically would take another 15 years to answer.
+But there is a glaring limitation: the thresholds and connections have to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right configuration from data. Their model was a proof of computational capability, not a learning algorithm. Remember the synaptic plasticity I noted earlier, the brain's ability to strengthen and weaken connections? That is the biological mechanism for learning, and it is entirely absent from this model. The question of how to find the right configuration automatically would take another 15 years to answer.
 
 ## Biology vs. Model: A Side-by-Side View
 
