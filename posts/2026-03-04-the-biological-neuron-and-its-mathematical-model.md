@@ -694,7 +694,7 @@ x1=1 (active)   -> inhibitory veto      -> output 0
 
 Since AND, OR, and NOT gates are sufficient to compute any Boolean function (they form a functionally complete set), this means networks of McCulloch-Pitts neurons can, in principle, compute anything that Boolean circuits can compute.
 
-They went further. By adding feedback loops (outputs feeding back as inputs, introducing a notion of time steps), they showed that networks of binary threshold units can simulate any finite automaton. This linked neural computation to the formal theory of computation that Turing had developed just seven years earlier. Finite automata are not Turing-complete (they lack unbounded memory), but the result was still remarkable: a model derived from biology could replicate any fixed-state computational process.
+They went further. The model already operates in discrete time steps (each neuron's output at time *t* depends on its inputs at time *t-1*). By adding feedback loops (outputs feeding back as inputs to the same network), they showed that networks of binary threshold units can simulate any finite automaton. This linked neural computation to the formal theory of computation that Turing had developed just seven years earlier. Finite automata are not Turing-complete (they lack unbounded memory), but the result was still remarkable: a model derived from biology could replicate any fixed-state computational process.
 
 But there is a glaring limitation: the thresholds and connections have to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right configuration from data. Their model was a proof of computational capability, not a learning algorithm. Remember the synaptic plasticity I noted earlier, the brain's ability to strengthen and weaken connections? That is the biological mechanism for learning, and it is entirely absent from this model. The question of how to find the right configuration automatically would take another 15 years to answer.
 
@@ -717,6 +717,56 @@ Now I can step back and see exactly what was kept and what was thrown away. This
 | Neurotransmitter diversity | No | Still mostly ignored |
 
 The original model was deliberately minimal. It captured the essence of neural computation, enough to compute any Boolean function, but not enough to learn. The gap column on the right is a roadmap for the next 80 years of AI research. The next step in the lineage, the perceptron, would add exactly what was missing: a rule for adjusting the weights automatically.
+
+## The McCulloch-Pitts Neuron in Code
+
+Everything above reduces to a handful of lines of Python. The function below is the complete McCulloch-Pitts neuron: count the active excitatory inputs, check for any inhibitory veto, compare against the threshold.
+
+```python
+def mcculloch_pitts(excitatory, inhibitory, threshold):
+    """McCulloch-Pitts neuron (1943).
+
+    excitatory: list of binary inputs (0 or 1), each contributing +1
+    inhibitory: list of binary inputs (0 or 1), any active one vetoes
+    threshold:  minimum excitatory count needed to fire
+    """
+    if any(i == 1 for i in inhibitory):
+        return 0
+    return 1 if sum(excitatory) >= threshold else 0
+```
+
+The three logic gates from earlier, each a single neuron with the right threshold:
+
+```python
+def AND(a, b):  return mcculloch_pitts([a, b], [], threshold=2)
+def OR(a, b):   return mcculloch_pitts([a, b], [], threshold=1)
+def NOT(x):     return mcculloch_pitts([], [x], threshold=0)
+```
+
+```
+>>> AND(1, 1), AND(1, 0), AND(0, 0)
+(1, 0, 0)
+
+>>> OR(1, 0), OR(0, 1), OR(0, 0)
+(1, 1, 0)
+
+>>> NOT(0), NOT(1)
+(1, 0)
+```
+
+A single McCulloch-Pitts neuron cannot compute XOR (it requires a nonlinear decision boundary). But a network of them can. XOR is just AND(OR(a, b), NOT(AND(a, b))):
+
+```python
+def XOR(a, b):
+    return AND(OR(a, b), NOT(AND(a, b)))
+```
+
+```
+>>> XOR(0, 0), XOR(0, 1), XOR(1, 0), XOR(1, 1)
+(0, 1, 1, 0)
+```
+
+Four neurons, hand-wired, no learning. Every threshold set manually. That is the McCulloch-Pitts model in its entirety: powerful enough to compute any Boolean function, but every connection and threshold must be designed by the engineer. The question of how to make the network figure out the right configuration on its own is the subject of the next post.
 
 ## Key Takeaways
 
