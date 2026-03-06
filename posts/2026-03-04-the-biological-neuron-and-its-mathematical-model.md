@@ -418,54 +418,55 @@ Furthermore, synaptic strength is not fixed. **Synaptic plasticity**, the abilit
 
 I said the soma sums its inputs, but the reality is more nuanced than simple addition. The soma performs two distinct types of integration, and understanding the difference matters for deciding what to keep in the model and what to throw away.
 
-**Spatial summation** occurs when signals arrive from multiple synapses at the same time. Each synapse produces a small voltage change (an excitatory or inhibitory postsynaptic potential). These changes propagate through the dendrites to the soma, where they combine. If enough excitatory inputs arrive simultaneously to push the hillock past threshold, the neuron fires. This is the biological version of the weighted sum I am building toward: multiply each input by its synaptic strength and add them up.
+**Spatial summation** occurs when signals arrive from multiple synapses at the same time. Each synapse produces a small voltage change (an excitatory or inhibitory postsynaptic potential). These changes propagate through the dendrites to the soma, where they combine. If enough excitatory inputs arrive simultaneously to push the hillock past threshold, the neuron fires. In reality, each synapse contributes a different amount based on its strength. But for the simplest model, I can treat each excitatory input as contributing equally and ask: did enough of them fire at once to cross the threshold? That is the counting operation I am building toward.
 
 **Temporal summation** occurs when signals arrive from the same synapse in rapid succession. Each individual signal might be too weak to trigger firing, but if they arrive fast enough, the voltage changes accumulate before the previous one decays. This integrates information over time.
 
-For the purposes of a minimal model, spatial summation is the mechanism that matters most. It captures the core computation: take all inputs arriving at this moment, weight them, sum them, check the threshold. Temporal summation adds a time dimension that makes the math significantly harder. If I want the simplest possible abstraction, I can set it aside and treat each computation as a single snapshot in time.
+For the purposes of a minimal model, spatial summation is the mechanism that matters most. It captures the core computation: take all excitatory inputs arriving at this moment, count how many are active, check if any inhibitory input vetoes, and compare the count against the threshold. Temporal summation adds a time dimension that makes the math significantly harder. If I want the simplest possible abstraction, I can set it aside and treat each computation as a single snapshot in time.
 
 <svg viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg" style="max-width:540px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <rect width="500" height="180" rx="8" fill="#181818"/>
   <text x="250" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">signal integration at the soma</text>
-  <!-- three input signals arriving -->
-  <!-- signal 1: excitatory (strong) -->
-  <rect x="20" y="35" width="80" height="25" rx="4" fill="#333" stroke="#4ade80" stroke-width="1"/>
-  <text x="60" y="51" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">excitatory +3</text>
-  <!-- signal 2: excitatory (weak) -->
-  <rect x="20" y="70" width="80" height="25" rx="4" fill="#333" stroke="#4ade80" stroke-width="1"/>
-  <text x="60" y="86" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">excitatory +1</text>
-  <!-- signal 3: inhibitory -->
-  <rect x="20" y="105" width="80" height="25" rx="4" fill="#333" stroke="#ef4444" stroke-width="1"/>
-  <text x="60" y="121" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle">inhibitory -2</text>
+  <!-- three excitatory input signals -->
+  <rect x="20" y="28" width="80" height="22" rx="4" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="60" y="43" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">excitatory +1</text>
+  <rect x="20" y="56" width="80" height="22" rx="4" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="60" y="71" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">excitatory +1</text>
+  <rect x="20" y="84" width="80" height="22" rx="4" fill="#333" stroke="#4ade80" stroke-width="1"/>
+  <text x="60" y="99" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">excitatory +1</text>
+  <!-- one inhibitory input (inactive in this example) -->
+  <rect x="20" y="112" width="80" height="22" rx="4" fill="#333" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+  <text x="60" y="127" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle" opacity="0.5">inhibitory (off)</text>
   <!-- arrows to soma -->
-  <line x1="100" y1="47" x2="155" y2="78" stroke="#4ade80" stroke-width="1"/>
-  <line x1="100" y1="82" x2="155" y2="82" stroke="#4ade80" stroke-width="1"/>
-  <line x1="100" y1="117" x2="155" y2="88" stroke="#ef4444" stroke-width="1"/>
+  <line x1="100" y1="39" x2="155" y2="72" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <line x1="100" y1="67" x2="155" y2="78" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <line x1="100" y1="95" x2="155" y2="84" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <line x1="100" y1="123" x2="155" y2="90" stroke="#ef4444" stroke-width="1" stroke-dasharray="4" opacity="0.3"/>
   <!-- soma integration -->
   <ellipse cx="190" cy="82" rx="35" ry="25" fill="#333" stroke="#888" stroke-width="1.5"/>
-  <text x="190" y="79" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">sum</text>
-  <text x="190" y="92" fill="#22d3ee" font-family="monospace" font-size="10" text-anchor="middle">= +2</text>
+  <text x="190" y="79" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">count</text>
+  <text x="190" y="92" fill="#22d3ee" font-family="monospace" font-size="10" text-anchor="middle">= 3</text>
   <!-- threshold comparison -->
   <line x1="225" y1="82" x2="280" y2="82" stroke="#888" stroke-width="1.5"/>
   <rect x="280" y="62" width="70" height="40" rx="4" fill="#333" stroke="#fbbf24" stroke-width="1"/>
   <text x="315" y="79" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">threshold</text>
-  <text x="315" y="94" fill="#fbbf24" font-family="monospace" font-size="10" text-anchor="middle">= +2</text>
+  <text x="315" y="94" fill="#fbbf24" font-family="monospace" font-size="10" text-anchor="middle">= 2</text>
   <!-- output -->
   <line x1="350" y1="82" x2="400" y2="82" stroke="#888" stroke-width="1.5"/>
   <rect x="400" y="62" width="70" height="40" rx="4" fill="#333" stroke="#22d3ee" stroke-width="1.5"/>
   <text x="435" y="79" fill="#22d3ee" font-family="monospace" font-size="9" text-anchor="middle">FIRE</text>
   <text x="435" y="94" fill="#22d3ee" font-family="monospace" font-size="10" text-anchor="middle">y = 1</text>
-  <!-- animated pulse showing summation -->
+  <!-- animated pulses: 3 excitatory signals arrive -->
   <circle r="4" fill="#4ade80" opacity="0">
-    <animateMotion path="M100,47 L155,78 L190,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.1;0.3;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animateMotion path="M100,39 L155,72 L190,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.1;0.3;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.1;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
   </circle>
   <circle r="4" fill="#4ade80" opacity="0">
-    <animateMotion path="M100,82 L155,82 L190,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.15;0.35;1" keyPoints="0;0;1;1" calcMode="linear"/>
+    <animateMotion path="M100,67 L155,78 L190,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.15;0.35;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.14;0.15;0.33;0.35;1" dur="3s" repeatCount="indefinite"/>
   </circle>
-  <circle r="4" fill="#ef4444" opacity="0">
-    <animateMotion path="M100,117 L155,88 L190,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.2;0.4;1" keyPoints="0;0;1;1" calcMode="linear"/>
+  <circle r="4" fill="#4ade80" opacity="0">
+    <animateMotion path="M100,95 L155,84 L190,82" dur="3s" repeatCount="indefinite" keyTimes="0;0.2;0.4;1" keyPoints="0;0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.19;0.2;0.38;0.4;1" dur="3s" repeatCount="indefinite"/>
   </circle>
   <!-- output pulse -->
@@ -474,7 +475,7 @@ For the purposes of a minimal model, spatial summation is the mechanism that mat
     <animate attributeName="opacity" values="0;0;0.9;0.9;0;0" keyTimes="0;0.49;0.5;0.78;0.8;1" dur="3s" repeatCount="indefinite"/>
   </circle>
   <!-- explanation -->
-  <text x="250" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">+3 + 1 + (-2) = +2 >= threshold -> neuron fires</text>
+  <text x="250" y="170" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">3 excitatory active, no inhibitory veto, count 3 >= 2 -> neuron fires</text>
 </svg>
 
 ## The McCulloch-Pitts Neuron (1943)
