@@ -695,7 +695,7 @@ Since AND, OR, and NOT gates are sufficient to compute any Boolean function (the
 
 They went further. By adding feedback loops (outputs feeding back as inputs, introducing a notion of time steps), they showed that networks of binary threshold units can simulate any finite automaton. This linked neural computation to the formal theory of computation that Turing had developed just seven years earlier. Finite automata are not Turing-complete (they lack unbounded memory), but the result was still remarkable: a model derived from biology could replicate any fixed-state computational process.
 
-But there is a glaring limitation: the weights and thresholds have to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right configuration from data. Their model was a proof of computational capability, not a learning algorithm. Remember the synaptic plasticity I noted earlier, the brain's ability to strengthen and weaken connections? That is the biological mechanism for learning, and it is entirely absent from this model. The question of how to find the right weights automatically would take another 15 years to answer.
+But there is a glaring limitation: the weights and thresholds have to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right configuration from data. Their model was a proof of computational capability, not a learning algorithm. Remember the synaptic plasticity I noted earlier, the brain's ability to strengthen and weaken connections? That is the biological mechanism for learning, and it is entirely absent from this model. The question of how to find the right configuration automatically would take another 15 years to answer.
 
 ## Biology vs. Model: A Side-by-Side View
 
@@ -715,7 +715,7 @@ Now I can step back and see exactly what was kept and what was thrown away. This
 | Firing rate coding | No | Rate-coded networks |
 | Neurotransmitter diversity | No | Still mostly ignored |
 
-The original model was deliberately minimal. It captured the essence of neural computation, enough to prove universality, but not enough to learn. The gap column on the right is a roadmap for the next 80 years of AI research. The next step in the lineage, the perceptron, would add exactly what was missing: a rule for adjusting the weights automatically.
+The original model was deliberately minimal. It captured the essence of neural computation, enough to compute any Boolean function, but not enough to learn. The gap column on the right is a roadmap for the next 80 years of AI research. The next step in the lineage, the perceptron, would add exactly what was missing: a rule for adjusting the weights automatically.
 
 ## Key Takeaways
 
