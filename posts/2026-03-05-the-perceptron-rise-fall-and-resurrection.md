@@ -15,25 +15,27 @@ In 1958, psychologist Frank Rosenblatt looked at the McCulloch-Pitts model and a
 
 The perceptron could learn. But it could only learn functions that a single hyperplane can separate. When Marvin Minsky and Seymour Papert proved this limitation in 1969, the obvious fix was to stack multiple perceptrons into layers, creating what is now called a multilayer perceptron (MLP). Rosenblatt himself proposed this architecture. The problem was that nobody, Rosenblatt included, could figure out how to train it. His learning rule only worked for a single layer. With no way to train deeper networks, the field stalled. Funding collapsed, researchers moved on, and neural networks entered a winter that lasted over a decade.
 
-This post traces the full arc. I want to understand exactly what Rosenblatt changed about the McCulloch-Pitts model, why his learning algorithm works, what it cannot do, and why it still matters despite its limitations.
+I wanted to put myself in Rosenblatt's shoes. He looked at McCulloch and Pitts' hand-designed neuron and asked: how do I make this learn? I want to ask myself the same question, starting from the M-P model I built in the previous post, and work through the reasoning that leads to the perceptron, its learning rule, its power, and its limits.
 
 ## From Counting to Weighting
 
-Rosenblatt started from the McCulloch-Pitts model. That model treats all excitatory inputs equally: each active input contributes +1 to a running count, any active inhibitory input vetoes the output entirely, and the neuron fires if the count meets a fixed threshold. The connections have no strength. They are either on or off, excitatory or inhibitory, all equal.
+I left the McCulloch-Pitts model with a clear limitation: every connection was equal and every threshold was fixed. If I want the model to learn from data, those fixed elements are the first things that need to change.
 
-Rosenblatt saw this and modified three things in the mathematical model.
+The M-P model treats all excitatory inputs equally: each active input contributes +1 to a running count, any active inhibitory input vetoes the output entirely, and the neuron fires if the count meets a fixed threshold. The connections have no strength. They are either on or off, excitatory or inhibitory, all equal.
 
-**Variable real-valued weights.** Instead of every excitatory input contributing +1, each input gets its own connection strength: a real number that can be positive, negative, large, small, or zero. A weight of 3.2 means that input has strong excitatory influence. A weight of -1.5 means it has moderate inhibitory influence. A weight near zero means it barely matters. This replaces the binary excitatory/inhibitory distinction with a continuous spectrum of connection strengths.
+I need to change three things.
 
-**A bias term.** Instead of a fixed integer threshold, the perceptron has a learnable bias that shifts the decision boundary. The threshold is no longer a separate parameter set by hand. It is absorbed into the bias and learned along with the weights.
+**Variable real-valued weights.** Instead of every excitatory input contributing +1, what if each input gets its own connection strength? A real number that can be positive, negative, large, small, or zero. A weight of 3.2 means that input has strong excitatory influence. A weight of -1.5 means it has moderate inhibitory influence. A weight near zero means it barely matters. This replaces the binary excitatory/inhibitory distinction with a continuous spectrum of connection strengths.
 
-**A learning rule.** This is the key innovation. Instead of an engineer deciding what the weights should be, the perceptron adjusts its own weights based on its mistakes. When it gets an answer wrong, it changes the weights in the direction that would have produced the correct answer. When it gets an answer right, it leaves the weights alone.
+**A bias term.** Instead of a fixed integer threshold, I replace it with a learnable bias that shifts the decision boundary. The threshold is no longer a separate parameter set by hand. It is absorbed into the bias and can be adjusted along with the weights.
 
-These three changes transform the McCulloch-Pitts neuron from a hand-designed logic gate into a machine that learns from data.
+**A learning rule.** This is the key piece. Instead of an engineer deciding what the weights should be, the model adjusts its own weights based on its mistakes. When it gets an answer wrong, it changes the weights in the direction that would have produced the correct answer. When it gets an answer right, it leaves the weights alone.
+
+These three changes transform the McCulloch-Pitts neuron from a hand-designed logic gate into a machine that learns from data. This is exactly what Rosenblatt did. Let me build it step by step.
 
 ## The Perceptron Architecture
 
-The perceptron takes a vector of real-valued inputs, multiplies each by its corresponding weight, sums the results, adds the bias, and applies a step function:
+With variable weights and a bias, the model takes a vector of real-valued inputs, multiplies each by its corresponding weight, sums the results, adds the bias, and applies a step function:
 
 ```
 z = w1*x1 + w2*x2 + ... + wn*xn + b
@@ -48,7 +50,7 @@ z = w . x + b
 y = step(z)
 ```
 
-The step function is the simplest possible activation: output 1 for non-negative inputs, 0 for negative inputs. It preserves the all-or-nothing firing behavior from biology, but now the decision of whether to fire depends on a weighted sum rather than a simple count.
+The step function is the simplest possible activation: output 1 for non-negative inputs, 0 for negative inputs. It preserves the all-or-nothing firing behavior from biology, but now the decision of whether to fire depends on a weighted sum rather than a simple count. I have gone from counting active inputs to computing a weighted combination of them.
 
 <svg viewBox="0 0 480 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Perceptron architecture showing inputs multiplied by variable weights, summed with a bias, passed through a step function to produce a binary output, with an error feedback loop that adjusts the weights during learning." style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <title>Perceptron architecture with learning feedback loop</title>
@@ -128,7 +130,7 @@ The step function is the simplest possible activation: output 1 for non-negative
 
 ## The Learning Algorithm
 
-The learning algorithm is remarkably simple. Start with random weights. For each training example, compute the output. If the output is wrong, adjust the weights in the direction that would have produced the correct answer. If the output is right, do nothing. Repeat.
+Now I have an architecture with adjustable weights, but I still need a rule for adjusting them. The algorithm Rosenblatt devised is remarkably simple. Start with random weights. For each training example, compute the output. If the output is wrong, adjust the weights in the direction that would have produced the correct answer. If the output is right, do nothing. Repeat.
 
 ```
 Initialize weights w and bias b to small random values
@@ -153,7 +155,7 @@ The learning rate `eta` controls step size. Larger values mean faster convergenc
 
 ### Worked Example: Learning AND
 
-I want to see this work concretely. Let me train a perceptron to compute the AND function.
+I want to see this work concretely. The McCulloch-Pitts post required me to hand-design AND with a threshold of 2 and two equal +1 inputs. Now let me see if the perceptron can find a solution on its own.
 
 Training data:
 
@@ -223,7 +225,7 @@ The perceptron finds this (or an equivalent solution) automatically. No hand-des
 
 ## The Perceptron Convergence Theorem
 
-Rosenblatt did not just demonstrate that the algorithm works on examples. He proved a theorem:
+The worked example shows the algorithm working, but does it always work? Rosenblatt did not just demonstrate it on examples. He proved a theorem:
 
 **If the training data is linearly separable, the perceptron learning algorithm is guaranteed to converge to a correct solution in a finite number of steps.**
 
@@ -242,15 +244,15 @@ number of updates <= (R / gamma)^2
 
 Where `R` is the maximum norm of any training input and `gamma` is the margin of the optimal weight vector. Larger margin means fewer updates needed. Smaller margin means the algorithm has to work harder.
 
-The critical condition is **linear separability**. If the data can be perfectly separated by a hyperplane (a line in 2D, a plane in 3D, a hyperplane in higher dimensions), the perceptron will find it. If the data is not linearly separable, the algorithm never converges. It oscillates forever, adjusting weights back and forth without settling.
+The critical condition is **linear separability**. If the data can be perfectly separated by a hyperplane (a line in 2D, a plane in 3D, a hyperplane in higher dimensions), the perceptron will find it. If the data is not linearly separable, the algorithm never converges. It oscillates forever, adjusting weights back and forth without settling. That condition will become very important shortly.
 
 ## Geometric Interpretation: Decision Boundaries
 
-I find the geometric view the most illuminating way to understand what the perceptron actually computes.
+To understand what the convergence theorem is really saying, I need to think about what the perceptron computes geometrically.
 
 The perceptron outputs `y = step(w . x + b)`. The boundary between "fire" (y = 1) and "don't fire" (y = 0) is the set of points where `w . x + b = 0`. In two dimensions, this equation defines a line. In three dimensions, a plane. In general, a **hyperplane**.
 
-The weight vector `w` is perpendicular to this hyperplane. It points toward the "positive" side (where y = 1). The bias `b` shifts the hyperplane toward or away from the origin. Training the perceptron means finding the orientation and position of this hyperplane that correctly separates the two classes.
+The weight vector `w` is perpendicular to this hyperplane. It points toward the "positive" side (where y = 1). The bias `b` shifts the hyperplane toward or away from the origin. So what the perceptron is really doing during training is searching for the orientation and position of a hyperplane that correctly separates the two classes.
 
 <svg viewBox="0 0 460 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two-dimensional scatter plot showing class 0 points (red circles) and class 1 points (green filled circles) separated by an animated decision boundary line that rotates during training until it correctly separates the classes." style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <title>Perceptron decision boundary in 2D: the boundary rotates during training until it separates the two classes</title>
@@ -305,11 +307,11 @@ The weight vector `w` is perpendicular to this hyperplane. It points toward the 
 
 *Figure 2: The perceptron's decision boundary in 2D. Each weight update rotates the line. For a missed positive, the boundary rotates to include the missed point. For a false positive, it rotates to exclude it. The weight vector (yellow, dashed) is always perpendicular to the boundary, pointing toward the class-1 region. The convergence theorem guarantees that if a separating line exists, the algorithm will find it.*
 
-Every time the perceptron makes an error, the weight update rotates and shifts the decision boundary. The convergence theorem says that if a correct boundary exists, the algorithm reaches it in finite steps. But what if no correct boundary exists?
+Every time the perceptron makes an error, the weight update rotates and shifts the decision boundary. The convergence theorem says that if a correct boundary exists, the algorithm reaches it in finite steps. But what if no correct boundary exists? What if the problem requires a decision boundary that is not a straight line?
 
 ## The XOR Problem
 
-In 1969, Marvin Minsky and Seymour Papert published *Perceptrons*, a rigorous mathematical analysis of what single-layer perceptrons can and cannot compute. Their most famous result was about the XOR (exclusive or) function.
+This is where the perceptron breaks. Consider the XOR (exclusive or) function.
 
 XOR outputs 1 when exactly one input is 1:
 
@@ -320,7 +322,7 @@ XOR outputs 1 when exactly one input is 1:
 | 1  | 0   | 1   |
 | 1  | 1   | 0   |
 
-The proof that a single perceptron cannot learn XOR is geometric. I can see it by plotting the four points:
+In the McCulloch-Pitts post, I built XOR from a network of hand-designed neurons: AND, OR, and NOT composed together. A single M-P neuron could not compute it either. But now I have a learning rule. Can the perceptron learn XOR? The answer is no, and the proof is geometric. I can see it by plotting the four points:
 
 <svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side-by-side comparison of XOR data (not linearly separable, no single line can separate the classes) and AND data (linearly separable, a single line correctly separates the classes)." style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <title>XOR is not linearly separable: the class-1 points sit on opposite corners, making it impossible for a single line to separate them. AND is linearly separable.</title>
@@ -392,11 +394,11 @@ No values of `w1`, `w2`, and `b` satisfy all four constraints simultaneously. A 
 
 ## The Obvious Fix and the Real Problem
 
-The fix for XOR is conceptually simple: add another layer of neurons. In the previous post, I showed that a network of McCulloch-Pitts neurons can compute XOR by composing AND, OR, and NOT gates. The same idea applies here. If I stack perceptrons into layers, with the outputs of one layer feeding as inputs to the next, the network can learn nonlinear decision boundaries. This architecture, multiple layers of perceptrons, is called a **multilayer perceptron** (MLP).
+The fix for XOR is conceptually obvious to me: add another layer of neurons. In the previous post, I built XOR from a network of McCulloch-Pitts neurons by composing AND, OR, and NOT gates. The same idea applies here. If I stack perceptrons into layers, with the outputs of one layer feeding as inputs to the next, the network can learn nonlinear decision boundaries. This architecture, multiple layers of perceptrons, is called a **multilayer perceptron** (MLP).
 
-Rosenblatt knew this. He proposed multi-layer architectures and understood that they could solve problems beyond linear separability. The issue was not the architecture. The issue was **training**. His perceptron learning rule works by comparing the output to the target and adjusting the weights accordingly. But in a multi-layer network, how do you adjust the weights in the first layer? Those neurons do not have targets. They produce intermediate representations that feed into the next layer, and there is no direct way to know what those intermediate values should be. The learning rule has no mechanism for assigning credit (or blame) to neurons that are not directly connected to the output.
+Rosenblatt knew this too. He proposed multi-layer architectures and understood that they could solve problems beyond linear separability. The issue was not the architecture. The issue was **training**. The perceptron learning rule works by comparing the output to the target and adjusting the weights accordingly. But in a multi-layer network, how do I adjust the weights in the first layer? Those neurons do not have targets. They produce intermediate representations that feed into the next layer, and there is no direct way to know what those intermediate values should be. The learning rule has no mechanism for assigning credit (or blame) to neurons that are not directly connected to the output.
 
-This is the **credit assignment problem**, and it is what made multi-layer networks impractical. Rosenblatt could build them. He could not train them.
+This is the **credit assignment problem**. I can build multi-layer networks. I cannot train them. And neither could Rosenblatt.
 
 ## Minsky, Papert, and the AI Winter
 
@@ -434,11 +436,11 @@ The perceptron was vindicated, not as a complete solution, but as the foundation
 | Convergence guarantee | N/A | Yes, for linearly separable data |
 | Limitation | No learning | Only linearly separable problems |
 
-The perceptron kept the core structure (inputs, summation, threshold activation, binary output) but replaced every fixed element with a learnable one. That single conceptual shift, from hand-designed to data-driven, is the dividing line between computation and learning.
+Starting from the McCulloch-Pitts model, I kept the core structure (inputs, summation, threshold activation, binary output) and replaced every fixed element with a learnable one. That single conceptual shift, from hand-designed to data-driven, is the dividing line between computation and learning. It is exactly what Rosenblatt did.
 
 ## The Perceptron in Code
 
-The perceptron reduces to a short Python implementation. The function below trains and predicts:
+Everything I have built reduces to a short Python implementation. The function below trains and predicts:
 
 ```python
 def perceptron_train(data, targets, eta=1.0, max_epochs=100):
@@ -528,4 +530,4 @@ At least one point is always wrong. The algorithm oscillates, adjusting the weig
 
 ## Key Takeaways
 
-Rosenblatt looked at the McCulloch-Pitts model and made it learn. He replaced equal contributions with variable weights, the fixed threshold with a learnable bias, and hand-design with an error-driven update rule. The convergence theorem guaranteed that if a solution exists (if the data is linearly separable), the algorithm finds it. But linear separability is a hard constraint. XOR, parity, connectedness, and most real-world problems require decision boundaries that a single hyperplane cannot express. The fix, stacking perceptrons into multiple layers, was architecturally obvious. The problem was training: Rosenblatt's learning rule could not assign credit to neurons that were not directly connected to the output. That unsolved problem froze the field for over a decade. The solution, a way to propagate error backward through every layer of a deep network, is the subject of the next post.
+I started where the McCulloch-Pitts post left off: a model that computes but cannot learn. Following Rosenblatt's reasoning, I replaced equal contributions with variable weights, the fixed threshold with a learnable bias, and hand-design with an error-driven update rule. The convergence theorem guaranteed that if a solution exists (if the data is linearly separable), the algorithm finds it. But linear separability is a hard constraint. XOR, parity, connectedness, and most real-world problems require decision boundaries that a single hyperplane cannot express. The fix, stacking perceptrons into multiple layers, was architecturally obvious. The problem was training: Rosenblatt's learning rule could not assign credit to neurons that were not directly connected to the output. That unsolved problem froze the field for over a decade. The solution, a way to propagate error backward through every layer of a deep network, is the subject of the next post.
