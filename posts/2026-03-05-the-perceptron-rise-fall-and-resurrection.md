@@ -13,7 +13,7 @@ The previous post ended with a gap. The McCulloch-Pitts neuron could compute any
 
 In 1958, psychologist Frank Rosenblatt looked at the McCulloch-Pitts model and asked a natural follow-up question: what if the connections could adjust themselves? He took the same mathematical structure (inputs, summation, threshold, binary output) and modified it. He replaced the equal +1 excitatory contributions with variable real-valued weights. He replaced the fixed integer threshold with a learnable bias. And then he added the piece that McCulloch and Pitts never had: a learning rule. An algorithm that takes labeled examples, computes the error, and nudges the weights in the direction that would have produced the correct answer. He called the result the perceptron, described in his paper [The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=65bebb15cdd2553d2af76f65b96d4e45b826094e).
 
-The perceptron could learn. But it could only learn functions that a single hyperplane can separate. Rosenblatt knew this. In his 1962 book *Principles of Neurodynamics*, he spent years working on multi-layer architectures that could overcome the limitation. He tried multiple approaches to propagate learning into hidden layers, but none of them worked. His learning rule required targets, and hidden neurons had no targets. When Marvin Minsky and Seymour Papert published their critique in 1969, the single-layer model was formally proven limited and the multi-layer training problem remained unsolved. Rosenblatt died in a boating accident in 1971, never seeing the solution. Funding collapsed, researchers moved on, and neural networks entered a winter that lasted over a decade.
+The perceptron could learn. But it could only learn functions that a single hyperplane can separate. Rosenblatt knew this. In his 1962 book [*Principles of Neurodynamics*](https://archive.org/details/principles-of-neurodynamics), he spent years working on multi-layer architectures that could overcome the limitation. He tried multiple approaches to propagate learning into hidden layers, but none of them worked. His learning rule required targets, and hidden neurons had no targets. When Marvin Minsky and Seymour Papert published their critique in 1969, the single-layer model was formally proven limited and the multi-layer training problem remained unsolved. Rosenblatt died in a boating accident in 1971, never seeing the solution. Funding collapsed, researchers moved on, and neural networks entered a winter that lasted over a decade.
 
 I wanted to put myself in Rosenblatt's shoes. He looked at McCulloch and Pitts' hand-designed neuron and asked: how do I make this learn? I want to ask myself the same question, starting from the M-P model I built in the previous post, and work through the reasoning that leads to the perceptron, its learning rule, its power, and its limits.
 
@@ -225,7 +225,7 @@ The perceptron finds this (or an equivalent solution) automatically. No hand-des
 
 ## The Perceptron Convergence Theorem
 
-The worked example shows the algorithm working, but does it always work? Rosenblatt claimed convergence for linearly separable data, and the formal proof was later provided by Novikoff in 1962:
+The worked example shows the algorithm working, but does it always work? Rosenblatt claimed convergence for linearly separable data, and the formal proof was later provided by [Novikoff in 1962](https://cs.uwaterloo.ca/~y328yu/classics/novikoff.pdf):
 
 **If the training data is linearly separable, the perceptron learning algorithm is guaranteed to converge to a correct solution in a finite number of steps.**
 
@@ -412,7 +412,7 @@ This is the **credit assignment problem**. Rosenblatt could build multi-layer ne
 
 ## Minsky, Papert, and the End of an Era
 
-In 1969, Marvin Minsky and Seymour Papert published *Perceptrons*, a rigorous mathematical analysis of what single-layer perceptrons can and cannot compute. Their analysis went beyond XOR. They showed that single-layer perceptrons cannot compute:
+In 1969, Marvin Minsky and Seymour Papert published [*Perceptrons*](https://direct.mit.edu/books/monograph/3132/PerceptronsAn-Introduction-to-Computational), a rigorous mathematical analysis of what single-layer perceptrons can and cannot compute. Their analysis went beyond XOR. They showed that single-layer perceptrons cannot compute:
 
 - **Parity functions**: determining whether an odd or even number of inputs are active (XOR is the 2-input case)
 - **Connectedness**: determining whether a pattern on a grid forms a single connected region
@@ -432,7 +432,7 @@ Research funding for neural networks collapsed. The U.S. government and military
 
 The cause was not XOR itself. XOR was just the clearest demonstration of a deeper problem: the perceptron learning rule could not train multi-layer networks, and single-layer networks could not solve interesting problems. The field was stuck between an architecture that was too simple and a learning algorithm that could not scale.
 
-The irony is that the solution was already emerging. Paul Werbos described backpropagation in his 1974 PhD thesis, providing exactly the multi-layer learning algorithm that solved the credit assignment problem. But Werbos's work went largely unnoticed. It took until 1986, when David Rumelhart, Geoffrey Hinton, and Ronald Williams published their landmark paper demonstrating backpropagation on multi-layer networks, for the field to revive.
+The irony is that the solution was already emerging. Paul Werbos described backpropagation in his 1974 PhD thesis [*Beyond Regression*](https://gwern.net/doc/ai/nn/1974-werbos.pdf), providing exactly the multi-layer learning algorithm that solved the credit assignment problem. But Werbos's work went largely unnoticed. It took until 1986, when David Rumelhart, Geoffrey Hinton, and Ronald Williams published their landmark paper [*Learning Representations by Back-Propagating Errors*](https://www.nature.com/articles/323533a0) demonstrating backpropagation on multi-layer networks, for the field to revive.
 
 The perceptron was vindicated, not as a complete solution, but as the foundation. Everything that came after builds on the principles Rosenblatt introduced: variable weights, learned representations, error-driven updates. The missing piece was a way to propagate that error backward through multiple layers. That is the next post.
 
