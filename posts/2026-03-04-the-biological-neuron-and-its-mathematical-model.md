@@ -514,34 +514,34 @@ Where:
 - Any single active inhibitory input forces the output to 0 regardless of excitatory count
 - The threshold is a fixed integer: the minimum number of active excitatory inputs needed to fire
 
-This is the strict McCulloch-Pitts formulation. Later work, particularly Rosenblatt's perceptron in 1958, generalized it by introducing real-valued weights that could vary per connection, replacing the binary excitatory/inhibitory distinction with a continuous scale:
+This is the strict McCulloch-Pitts formulation. It is deliberately simple: count the active excitatory inputs, check for any inhibitory veto, compare against a threshold. Later work would generalize this by introducing variable real-valued weights and a learning rule, but that is the next chapter in the story.
 
-```
-y = 1  if  w1*x1 + w2*x2 + ... + wn*xn + b >= 0
-y = 0  otherwise
-```
-
-Here `wi` are real-valued weights (positive for excitatory, negative for inhibitory, with variable strength) and `b` is a bias term (the negative of the threshold). This generalized form is what most modern references call the "McCulloch-Pitts neuron," though it is technically the perceptron's contribution to allow variable weights and learning.
-
-<svg viewBox="0 0 440 150" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
-  <rect width="440" height="150" rx="8" fill="#181818"/>
+<svg viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
+  <rect width="440" height="170" rx="8" fill="#181818"/>
   <text x="220" y="18" text-anchor="middle" fill="#999" font-family="monospace" font-size="10">McCulloch-Pitts neuron</text>
-  <!-- input nodes -->
+  <!-- excitatory input nodes -->
   <circle cx="40" cy="35" r="14" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
   <text x="40" y="39" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">x1</text>
   <circle cx="40" cy="75" r="14" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
   <text x="40" y="79" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">x2</text>
   <circle cx="40" cy="115" r="14" fill="#333" stroke="#4ade80" stroke-width="1.5"/>
   <text x="40" y="119" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">xn</text>
-  <!-- weight labels -->
-  <text x="105" y="30" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">w1</text>
-  <text x="105" y="72" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">w2</text>
-  <text x="105" y="112" fill="#999" font-family="monospace" font-size="9" text-anchor="middle">wn</text>
-  <!-- edges -->
-  <line x1="54" y1="35" x2="156" y2="70" stroke="#555" stroke-width="1.5"/>
-  <line x1="54" y1="75" x2="156" y2="75" stroke="#555" stroke-width="1.5"/>
-  <line x1="54" y1="115" x2="156" y2="80" stroke="#555" stroke-width="1.5"/>
-  <!-- signal pulses -->
+  <!-- inhibitory input node -->
+  <circle cx="40" cy="150" r="12" fill="#333" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="40" y="154" fill="#ef4444" font-family="monospace" font-size="9" text-anchor="middle">inh</text>
+  <!-- equal weight labels (+1 each) -->
+  <text x="105" y="30" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle">+1</text>
+  <text x="105" y="72" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle">+1</text>
+  <text x="105" y="112" fill="#4ade80" font-family="monospace" font-size="9" text-anchor="middle">+1</text>
+  <!-- inhibitory veto label -->
+  <text x="105" y="148" fill="#ef4444" font-family="monospace" font-size="9" text-anchor="middle">veto</text>
+  <!-- excitatory edges -->
+  <line x1="54" y1="35" x2="156" y2="70" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <line x1="54" y1="75" x2="156" y2="75" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <line x1="54" y1="115" x2="156" y2="80" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <!-- inhibitory edge -->
+  <line x1="52" y1="150" x2="156" y2="85" stroke="#ef4444" stroke-width="1" stroke-dasharray="4" opacity="0.6"/>
+  <!-- excitatory signal pulses -->
   <circle r="4" fill="#4ade80" opacity="0">
     <animateMotion path="M54,35 L156,70" dur="3s" repeatCount="indefinite" keyTimes="0;0.3;1" keyPoints="0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
@@ -554,11 +554,11 @@ Here `wi` are real-valued weights (positive for excitatory, negative for inhibit
     <animateMotion path="M54,115 L156,80" dur="3s" repeatCount="indefinite" keyTimes="0;0.3;1" keyPoints="0;1;1" calcMode="linear"/>
     <animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;0.01;0.28;0.3;1" dur="3s" repeatCount="indefinite"/>
   </circle>
-  <!-- sum node -->
+  <!-- count node -->
   <circle cx="170" cy="75" r="18" fill="#333" stroke="#888" stroke-width="1.5">
     <animate attributeName="stroke" values="#888;#888;#22d3ee;#22d3ee;#888;#888" keyTimes="0;0.29;0.31;0.5;0.52;1" dur="3s" repeatCount="indefinite"/>
   </circle>
-  <text x="170" y="79" fill="#ccc" font-family="monospace" font-size="10" text-anchor="middle">sum</text>
+  <text x="170" y="79" fill="#ccc" font-family="monospace" font-size="9" text-anchor="middle">count</text>
   <!-- edge to threshold -->
   <line x1="188" y1="75" x2="250" y2="75" stroke="#555" stroke-width="1.5"/>
   <!-- threshold pulse -->
@@ -585,10 +585,10 @@ Here `wi` are real-valued weights (positive for excitatory, negative for inhibit
   </circle>
   <text x="380" y="79" fill="#ccc" font-family="monospace" font-size="11" text-anchor="middle">y</text>
   <!-- labels -->
-  <text x="40" y="143" fill="#4ade80" font-family="monospace" font-size="8" text-anchor="middle">inputs</text>
-  <text x="170" y="143" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">weighted sum</text>
-  <text x="265" y="143" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">threshold</text>
-  <text x="380" y="143" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">output</text>
+  <text x="40" y="30" fill="#4ade80" font-family="monospace" font-size="7" text-anchor="end" dx="-20">excitatory</text>
+  <text x="170" y="100" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">count</text>
+  <text x="265" y="100" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">threshold</text>
+  <text x="380" y="100" fill="#999" font-family="monospace" font-size="8" text-anchor="middle">output</text>
 </svg>
 
 ## Computing with Threshold Logic
@@ -597,42 +597,39 @@ The model raises an immediate question: is this abstraction powerful enough to d
 
 ### AND Gate
 
-An AND gate outputs 1 only when both inputs are 1. Set both weights to 1 and the threshold to 2:
+An AND gate outputs 1 only when both inputs are 1. Two excitatory inputs, no inhibitory inputs, threshold of 2:
 
 ```
-weights: w1 = 1, w2 = 1
-threshold: 2
+2 excitatory inputs, threshold: 2
 
-x1=0, x2=0 -> 0+0 = 0 < 2 -> output 0
-x1=1, x2=0 -> 1+0 = 1 < 2 -> output 0
-x1=0, x2=1 -> 0+1 = 1 < 2 -> output 0
-x1=1, x2=1 -> 1+1 = 2 >= 2 -> output 1
+x1=0, x2=0 -> count 0 < 2 -> output 0
+x1=1, x2=0 -> count 1 < 2 -> output 0
+x1=0, x2=1 -> count 1 < 2 -> output 0
+x1=1, x2=1 -> count 2 >= 2 -> output 1
 ```
 
 ### OR Gate
 
-An OR gate outputs 1 when at least one input is 1. Set both weights to 1 and the threshold to 1:
+An OR gate outputs 1 when at least one input is 1. Two excitatory inputs, no inhibitory inputs, threshold of 1:
 
 ```
-weights: w1 = 1, w2 = 1
-threshold: 1
+2 excitatory inputs, threshold: 1
 
-x1=0, x2=0 -> 0+0 = 0 < 1 -> output 0
-x1=1, x2=0 -> 1+0 = 1 >= 1 -> output 1
-x1=0, x2=1 -> 0+1 = 1 >= 1 -> output 1
-x1=1, x2=1 -> 1+1 = 2 >= 1 -> output 1
+x1=0, x2=0 -> count 0 < 1 -> output 0
+x1=1, x2=0 -> count 1 >= 1 -> output 1
+x1=0, x2=1 -> count 1 >= 1 -> output 1
+x1=1, x2=1 -> count 2 >= 1 -> output 1
 ```
 
 ### NOT Gate
 
-A NOT gate inverts the input. Set the weight to -1 and the threshold to 0:
+A NOT gate inverts the input. The single input is inhibitory, there are no excitatory inputs, and the threshold is 0 (the neuron fires by default unless inhibited):
 
 ```
-weight: w1 = -1
-threshold: 0 (bias = 0)
+0 excitatory inputs, 1 inhibitory input, threshold: 0
 
-x1=0 -> -1*0 = 0 >= 0 -> output 1
-x1=1 -> -1*1 = -1 < 0 -> output 0
+x1=0 (inactive) -> no veto, count 0 >= 0 -> output 1
+x1=1 (active)   -> inhibitory veto      -> output 0
 ```
 
 <svg viewBox="0 0 500 160" xmlns="http://www.w3.org/2000/svg" style="max-width:540px;width:100%;height:auto;display:block;margin:1.5em auto;">
@@ -644,10 +641,10 @@ x1=1 -> -1*1 = -1 < 0 -> output 0
   <text x="30" y="64" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
   <circle cx="30" cy="100" r="10" fill="#333" stroke="#4ade80" stroke-width="1"/>
   <text x="30" y="104" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x2</text>
-  <line x1="40" y1="60" x2="70" y2="75" stroke="#555" stroke-width="1"/>
-  <line x1="40" y1="100" x2="70" y2="85" stroke="#555" stroke-width="1"/>
-  <text x="55" y="56" fill="#999" font-family="monospace" font-size="7">1</text>
-  <text x="55" y="104" fill="#999" font-family="monospace" font-size="7">1</text>
+  <line x1="40" y1="60" x2="70" y2="75" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <line x1="40" y1="100" x2="70" y2="85" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <text x="55" y="56" fill="#4ade80" font-family="monospace" font-size="7">+1</text>
+  <text x="55" y="104" fill="#4ade80" font-family="monospace" font-size="7">+1</text>
   <circle cx="83" cy="80" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
   <text x="83" y="77" fill="#fbbf24" font-family="monospace" font-size="7" text-anchor="middle">t=2</text>
   <text x="83" y="87" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">f</text>
@@ -663,10 +660,10 @@ x1=1 -> -1*1 = -1 < 0 -> output 0
   <text x="197" y="64" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
   <circle cx="197" cy="100" r="10" fill="#333" stroke="#4ade80" stroke-width="1"/>
   <text x="197" y="104" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x2</text>
-  <line x1="207" y1="60" x2="237" y2="75" stroke="#555" stroke-width="1"/>
-  <line x1="207" y1="100" x2="237" y2="85" stroke="#555" stroke-width="1"/>
-  <text x="222" y="56" fill="#999" font-family="monospace" font-size="7">1</text>
-  <text x="222" y="104" fill="#999" font-family="monospace" font-size="7">1</text>
+  <line x1="207" y1="60" x2="237" y2="75" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <line x1="207" y1="100" x2="237" y2="85" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+  <text x="222" y="56" fill="#4ade80" font-family="monospace" font-size="7">+1</text>
+  <text x="222" y="104" fill="#4ade80" font-family="monospace" font-size="7">+1</text>
   <circle cx="250" cy="80" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
   <text x="250" y="77" fill="#fbbf24" font-family="monospace" font-size="7" text-anchor="middle">t=1</text>
   <text x="250" y="87" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">f</text>
@@ -678,10 +675,10 @@ x1=1 -> -1*1 = -1 < 0 -> output 0
   <text x="250" y="144" fill="#999" font-family="monospace" font-size="7" text-anchor="middle">0 OR 0 = 0</text>
   <!-- NOT gate -->
   <text x="417" y="35" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="9" font-weight="bold">NOT</text>
-  <circle cx="370" cy="80" r="10" fill="#333" stroke="#4ade80" stroke-width="1"/>
-  <text x="370" y="84" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
-  <line x1="380" y1="80" x2="403" y2="80" stroke="#555" stroke-width="1"/>
-  <text x="392" y="74" fill="#ef4444" font-family="monospace" font-size="7">-1</text>
+  <circle cx="370" cy="80" r="10" fill="#333" stroke="#ef4444" stroke-width="1"/>
+  <text x="370" y="84" fill="#ef4444" font-family="monospace" font-size="8" text-anchor="middle">x1</text>
+  <line x1="380" y1="80" x2="403" y2="80" stroke="#ef4444" stroke-width="1" stroke-dasharray="4" opacity="0.6"/>
+  <text x="388" y="74" fill="#ef4444" font-family="monospace" font-size="7">veto</text>
   <circle cx="417" cy="80" r="14" fill="#333" stroke="#888" stroke-width="1.5"/>
   <text x="417" y="77" fill="#fbbf24" font-family="monospace" font-size="7" text-anchor="middle">t=0</text>
   <text x="417" y="87" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">f</text>
