@@ -13,9 +13,9 @@ What is a neuron? A specialized type of cell, nicknamed a brain cell, that provi
 
 Humans have always been obsessed with this question. How does tissue produce thought? One of the most powerful approaches we have developed is building mathematical models of biology. You take a system you cannot fully observe, strip it down to its essential behavior, express that behavior in mathematics, and test whether the model reproduces what the real system does. If it does, you have captured something true about the mechanism. If it does not, the gap tells you what you missed.
 
-In 1943, neurophysiologist Warren McCulloch and mathematician Walter Pitts applied exactly this method to the neuron in their paper [A Logical Calculus of the Ideas Immanent in Nervous Activity](https://www.cs.cmu.edu/~./epxing/Class/10715/reading/McCulloch.and.Pitts.pdf). They asked a deceptively simple question: can you describe what a single neuron does using math? They studied the biology. A neuron receives signals through its input branches, sums them in its cell body, and if the total exceeds a threshold, fires a signal down its output line to the next neuron. Receive, sum, decide, output. They realized this behavior maps directly to a mathematical function. Take a set of inputs, multiply each by a weight representing connection strength, add them up, and check if the total crosses a threshold. If it does, output a 1. If not, output a 0. They threw away the chemistry, the timing, the cell's shape, the ions flowing through membranes. They kept only the logic.
+In 1943, neurophysiologist Warren McCulloch and mathematician Walter Pitts applied exactly this method to the neuron in their paper [A Logical Calculus of the Ideas Immanent in Nervous Activity](https://www.cs.cmu.edu/~./epxing/Class/10715/reading/McCulloch.and.Pitts.pdf). They asked a deceptively simple question: can you describe what a single neuron does using math? They studied the biology. A neuron receives signals through its input branches, sums them in its cell body, and if the total exceeds a threshold, fires a signal down its output line to the next neuron. Receive, sum, decide, output. They realized this behavior maps directly to a mathematical function. Take a set of binary inputs, count the excitatory ones, check if any inhibitory input vetoes firing, and if the excitatory total crosses a threshold, output a 1. If not, output a 0. They threw away the chemistry, the timing, the cell's shape, the ions flowing through membranes. They kept only the logic.
 
-That distillation, inputs weighted by connection strength, summation, threshold activation, binary output, turned out to be one of the most consequential simplifications in the history of computing. Every neural network, every deep learning model, every transformer powering today's LLMs can trace its lineage back to that 1943 paper.
+That distillation, binary inputs, excitatory summation, inhibitory veto, threshold activation, binary output, turned out to be one of the most consequential simplifications in the history of computing. Every neural network, every deep learning model, every transformer powering today's LLMs can trace its lineage back to that 1943 paper.
 
 I wanted to put myself in their shoes. Not just learn the model, but understand what they were looking at when they built it. So I asked myself the same question McCulloch and Pitts asked: what does a neuron actually do, and what is the simplest mathematical abstraction that captures it? The rest of this post is that chain of thought. The biology they started with, the mathematics they extracted, and the gap between the two.
 
@@ -412,7 +412,7 @@ When an action potential reaches an axon terminal, it triggers the release of ne
 
 Not all synapses are equal. Some connections are strong (more neurotransmitter released, more receptors available, larger effect on membrane potential) and some are weak. The strength of a synapse determines how much influence it has on the receiving neuron's decision to fire. In mathematical terms, this is exactly what a weight does: it scales the input. So each input does not just arrive, it arrives with a strength. Multiply the input by that strength and I have a weighted input.
 
-Furthermore, synaptic strength is not fixed. **Synaptic plasticity**, the ability of synapses to strengthen or weaken over time, is the biological basis of learning. Donald Hebb captured this principle in 1949: "neurons that fire together wire together." When a presynaptic neuron consistently contributes to causing the postsynaptic neuron to fire, the synapse between them strengthens. This is worth noting for later: the weights can change. The brain learns by adjusting connection strengths.
+Furthermore, synaptic strength is not fixed. **Synaptic plasticity**, the ability of synapses to strengthen or weaken over time, is the biological basis of learning. Donald Hebb described this principle in 1949: when a presynaptic neuron consistently contributes to causing the postsynaptic neuron to fire, the synapse between them strengthens. This is often paraphrased as "neurons that fire together wire together" (a summary coined decades later by Carla Shatz, not Hebb's own words, but a faithful distillation of his idea). This is worth noting for later: the connection strengths can change. The brain learns by adjusting them.
 
 ## Spatial and Temporal Integration
 
@@ -485,9 +485,9 @@ Their answer was deliberately reductive.
 
 ### What They Kept
 
-1. **Multiple inputs**: A neuron receives signals from many sources (dendrites from many upstream neurons).
-2. **Weighted combination**: Each input has a different influence (synaptic strength varies).
-3. **Threshold firing**: If the combined signal exceeds a threshold, the neuron fires (all-or-nothing).
+1. **Multiple binary inputs**: A neuron receives signals from many sources (dendrites from many upstream neurons). Each input is either active (1) or inactive (0).
+2. **Excitatory and inhibitory classes**: Inputs are either excitatory (contributing toward firing) or inhibitory (vetoing firing entirely). In the original model, all excitatory inputs had equal weight (+1 each), and any single active inhibitory input could prevent the neuron from firing regardless of excitatory count.
+3. **Threshold firing**: If the total excitatory count exceeds a threshold (and no inhibitory input is active), the neuron fires (all-or-nothing).
 4. **Binary output**: The neuron either fires (1) or does not fire (0).
 
 ### What They Threw Away
@@ -496,30 +496,32 @@ Their answer was deliberately reductive.
 2. **Analog voltage**: Real membrane potentials are continuous values. The model uses binary.
 3. **Spatial structure**: Dendritic geometry matters in real neurons. The model treats all inputs as arriving at a single point.
 4. **Refractory period**: Real neurons cannot fire again immediately after an action potential. The model has no memory of previous states.
-5. **Neurotransmitter chemistry**: The model reduces the complex molecular machinery of synaptic transmission to a simple multiplication.
-6. **Firing rate**: Real neurons encode information in spike frequency. The model produces a single binary value.
+5. **Neurotransmitter chemistry**: The model reduces the complex molecular machinery of synaptic transmission to a binary active/inactive signal.
+6. **Variable synaptic strength**: Real synapses have different strengths. The original model treats all excitatory inputs equally (+1 each).
+7. **Firing rate**: Real neurons encode information in spike frequency. The model produces a single binary value.
 
 ### The Mathematical Formulation
 
-The McCulloch-Pitts neuron computes:
+In the original 1943 model, the neuron computes:
 
 ```
-y = f(w1*x1 + w2*x2 + ... + wn*xn)
+y = 1  if  no inhibitory input is active  AND  (x1 + x2 + ... + xn) >= threshold
+y = 0  otherwise
 ```
 
 Where:
-- `xi` are the binary inputs (0 or 1)
-- `wi` are the weights (positive for excitatory, negative for inhibitory)
-- `f` is the threshold function: output 1 if the sum exceeds the threshold, 0 otherwise
+- `xi` are the binary excitatory inputs (0 or 1), each with equal influence
+- Any single active inhibitory input forces the output to 0 regardless of excitatory count
+- The threshold is a fixed integer: the minimum number of active excitatory inputs needed to fire
 
-More precisely, with bias term `b` replacing the threshold:
+This is the strict McCulloch-Pitts formulation. Later work, particularly Rosenblatt's perceptron in 1958, generalized it by introducing real-valued weights that could vary per connection, replacing the binary excitatory/inhibitory distinction with a continuous scale:
 
 ```
 y = 1  if  w1*x1 + w2*x2 + ... + wn*xn + b >= 0
 y = 0  otherwise
 ```
 
-The bias `b` is the negative of the threshold. Moving it to the left side of the inequality recovers the original formulation: fire if the weighted sum exceeds the threshold.
+Here `wi` are real-valued weights (positive for excitatory, negative for inhibitory, with variable strength) and `b` is a bias term (the negative of the threshold). This generalized form is what most modern references call the "McCulloch-Pitts neuron," though it is technically the perceptron's contribution to allow variable weights and learning.
 
 <svg viewBox="0 0 440 150" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <rect width="440" height="150" rx="8" fill="#181818"/>
@@ -694,9 +696,9 @@ x1=1 -> -1*1 = -1 < 0 -> output 0
 
 Since AND, OR, and NOT gates are sufficient to compute any Boolean function (they form a functionally complete set), this means networks of McCulloch-Pitts neurons can, in principle, compute anything that Boolean circuits can compute.
 
-They went further. By adding feedback loops (outputs feeding back as inputs, introducing a notion of time steps), they argued that networks of binary threshold units can simulate any finite automaton. This linked neural computation to the formal theory of computation that Turing had developed just seven years earlier. The abstraction is not just useful, it is computationally universal.
+They went further. By adding feedback loops (outputs feeding back as inputs, introducing a notion of time steps), they showed that networks of binary threshold units can simulate any finite automaton. This linked neural computation to the formal theory of computation that Turing had developed just seven years earlier. Finite automata are not Turing-complete (they lack unbounded memory), but the result was still remarkable: a model derived from biology could replicate any fixed-state computational process.
 
-But there is a glaring limitation: the weights have to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right weights from data. Their model was a proof of computational universality, not a learning algorithm. Remember the synaptic plasticity I noted earlier, the brain's ability to strengthen and weaken connections? That is the biological mechanism for learning, and it is entirely absent from this model. The question of how to find the right weights automatically would take another 15 years to answer.
+But there is a glaring limitation: the weights and thresholds have to be **set by hand**. McCulloch and Pitts provided no mechanism for a network to learn the right configuration from data. Their model was a proof of computational capability, not a learning algorithm. Remember the synaptic plasticity I noted earlier, the brain's ability to strengthen and weaken connections? That is the biological mechanism for learning, and it is entirely absent from this model. The question of how to find the right weights automatically would take another 15 years to answer.
 
 ## Biology vs. Model: A Side-by-Side View
 
@@ -705,7 +707,7 @@ Now I can step back and see exactly what was kept and what was thrown away. This
 | Biological Property | McCulloch-Pitts | Later Models |
 |---|---|---|
 | Multiple inputs | Yes | Yes |
-| Variable connection strength | Yes (weights) | Yes (learnable weights) |
+| Variable connection strength | No (equal excitatory, absolute inhibitory) | Yes (real-valued learnable weights) |
 | Threshold firing | Yes (step function) | Yes (activation functions) |
 | Binary output | Yes | No (continuous activations) |
 | Temporal dynamics | No | RNNs, LSTMs |
@@ -720,4 +722,4 @@ The original model was deliberately minimal. It captured the essence of neural c
 
 ## Key Takeaways
 
-I started with a question: what does a neuron actually do, and what is the simplest mathematical abstraction that captures it? The answer, the same answer McCulloch and Pitts arrived at in 1943, is: weighted inputs, summation, threshold, binary output. A sophisticated electrochemical computer stripped down to its computational essence. That abstraction was powerful enough to prove that networks of simple threshold units can compute any Boolean function. But the weights had to be hand-designed, and the biology I set aside along the way, temporal dynamics, analog voltage, synaptic plasticity, is exactly what later generations of models would recover. The path from here to modern deep learning is the story of adding those pieces back, one by one.
+I started with a question: what does a neuron actually do, and what is the simplest mathematical abstraction that captures it? The answer, the same answer McCulloch and Pitts arrived at in 1943, is: binary inputs, excitatory summation with inhibitory veto, a threshold, and a binary output. A sophisticated electrochemical computer stripped down to its computational essence. That abstraction was powerful enough to prove that networks of simple threshold units can compute any Boolean function. But the thresholds and connections had to be hand-designed, and the biology I set aside along the way, variable synaptic strength, temporal dynamics, analog voltage, synaptic plasticity, is exactly what later generations of models would recover. The path from here to modern deep learning is the story of adding those pieces back, one by one.
