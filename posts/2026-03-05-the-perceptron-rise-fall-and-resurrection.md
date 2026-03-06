@@ -532,6 +532,39 @@ for x in data:
 
 At least one point is always wrong. The algorithm oscillates, adjusting the weights to fix one error only to create another. This is the convergence theorem in reverse: XOR is not linearly separable, so the algorithm cannot settle.
 
+The architecture fix is straightforward. Stack perceptrons into layers:
+
+```python
+def mlp(x, hidden_weights, hidden_biases, output_weights, output_bias):
+    """Forward pass through a two-layer network."""
+    hidden = [perceptron(x, w, b) for w, b in zip(hidden_weights, hidden_biases)]
+    return perceptron(hidden, output_weights, output_bias)
+```
+
+Hand-wired, it solves XOR:
+
+```python
+# Hidden layer: neuron 1 computes OR-like, neuron 2 computes NAND-like
+hidden_w = [[1, 1], [-1, -1]]
+hidden_b = [-0.5, 1.5]
+
+# Output layer: AND-like on hidden outputs
+output_w = [1, 1]
+output_b = -1.5
+
+for x in data:
+    print(f"  {x} -> {mlp(x, hidden_w, hidden_b, output_w, output_b)}")
+```
+
+```
+  [0, 0] -> 0
+  [0, 1] -> 1
+  [1, 0] -> 1
+  [1, 1] -> 0
+```
+
+XOR solved. But I had to set every weight by hand, just like McCulloch-Pitts. The `train()` function cannot find these weights because `learn()` computes `error = target - output`. For the output neuron, the target is known. For the hidden neurons, there is no target. What should the OR-like neuron output for input (1,1)? What should the NAND-like neuron output for input (0,1)? The learning rule has no way to answer these questions. That is the credit assignment problem, expressed in code. The solution is the subject of the next post.
+
 ## Key Takeaways
 
 I started where the McCulloch-Pitts post left off: a model that computes but cannot learn. Following Rosenblatt's reasoning, I replaced equal contributions with variable weights, the fixed threshold with a learnable bias, and hand-design with an error-driven update rule. The convergence theorem guaranteed that if a solution exists (if the data is linearly separable), the algorithm finds it. But linear separability is a hard constraint. XOR, parity, connectedness, and most real-world problems require decision boundaries that a single hyperplane cannot express. The fix, stacking perceptrons into multiple layers, was architecturally obvious. The problem was training: Rosenblatt's learning rule could not assign credit to neurons that were not directly connected to the output. That unsolved problem froze the field for over a decade. The solution, a way to propagate error backward through every layer of a deep network, is the subject of the next post.
