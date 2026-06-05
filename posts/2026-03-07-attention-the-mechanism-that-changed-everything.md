@@ -4,7 +4,7 @@ date: "2026-03-07"
 excerpt: "Why sequential models hit a wall with long sequences, and how the attention mechanism - queries, keys, and values - solved the problem and unlocked modern AI."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]
-draft: true
+draft: false
 ---
 
 ## Introduction
@@ -259,7 +259,7 @@ Step by step:
 
 ### Why sqrt(d_k)?
 
-Without the scaling factor, the dot products `Q . K^T` grow proportionally to `d_k`. When `d_k = 512` (a typical value), the dot products can be in the hundreds. Softmax of large values produces near-one-hot distributions with near-zero gradients. Dividing by `sqrt(d_k)` keeps the variance of the scores around 1, maintaining healthy gradients.
+Without the scaling factor, the dot products `Q . K^T` grow proportionally to `d_k`. When `d_k = 64` (the per-head size in the base transformer), the scores already have a standard deviation around 8, and for larger `d_k` they can reach the hundreds. Softmax of large values produces near-one-hot distributions with near-zero gradients. Dividing by `sqrt(d_k)` keeps the variance of the scores around 1, maintaining healthy gradients.
 
 ## Multi-Head Attention
 

@@ -4,7 +4,7 @@ date: "2026-03-08"
 excerpt: "How attention, normalization, and residual connections combine into the architecture powering every modern LLM, from the original encoder-decoder to decoder-only GPT."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]
-draft: true
+draft: false
 ---
 
 ## Introduction
@@ -541,7 +541,7 @@ The **KV cache** stores these previously computed keys and values, so they do no
 # ...
 ```
 
-Without the KV cache, generating a sequence of length `n` requires O(n^2) total computation (each step recomputes attention over all previous positions). With the KV cache, each step computes attention for just the new token against the cached keys and values: O(n) per step, O(n^2) total, but with a much smaller constant factor.
+Without the KV cache, every step recomputes the keys and values for all previous positions, so generating token `t` costs O(t^2) and the full sequence costs O(n^3). With the KV cache, each step computes attention for just the new token against the cached keys and values: O(n) per step, O(n^2) total.
 
 <svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg" style="max-width:500px;width:100%;height:auto;display:block;margin:1.5em auto;">
   <rect width="460" height="190" rx="8" fill="#181818"/>
@@ -600,9 +600,9 @@ In MQA, all heads share a single K and V. This reduces cache size by a factor of
 GQA groups the heads. With 32 query heads and 8 KV groups, every 4 query heads share the same K and V:
 
 ```
-Standard MHA: 32 Q heads, 32 K heads, 32 V heads  (32x cache)
-GQA:          32 Q heads,  8 K heads,  8 V heads   ( 8x cache)
-MQA:          32 Q heads,  1 K head,   1 V head    ( 1x cache)
+Standard MHA: 32 Q heads, 32 KV heads   (full KV cache)
+GQA:          32 Q heads,  8 KV heads    (1/4 the KV cache)
+MQA:          32 Q heads,  1 KV head     (1/32 the KV cache)
 ```
 
 GQA reduces KV cache memory by 4x (in this example) with minimal quality loss. LLaMA 2 70B, Mistral, and many modern models use GQA.
@@ -649,7 +649,7 @@ This had immediate impact. Instead of training a 280B model on 300B tokens (like
 
 Current practice often "over-trains" relative to Chinchilla-optimal, training smaller models on much more data than the Chinchilla ratio suggests. The reason: inference cost scales with model size, not training data. A smaller model trained on more data is cheaper to run, even if the training itself costs more.
 
-LLaMA 7B was trained on 1T tokens (143x Chinchilla ratio). LLaMA 2 7B on 2T tokens. The reasoning: training happens once, but inference happens billions of times.
+LLaMA 7B was trained on 1T tokens, about 143 tokens per parameter, roughly 7x the Chinchilla-optimal ratio of 20. LLaMA 2 7B on 2T tokens. The reasoning: training happens once, but inference happens billions of times.
 
 ## The Complete Lineage
 

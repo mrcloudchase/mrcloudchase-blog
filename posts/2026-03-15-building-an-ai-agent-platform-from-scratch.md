@@ -4,7 +4,7 @@ date: "2026-03-15"
 excerpt: "A technical deep dive into TinyClaw - a full-featured AI agent platform in ~11K lines of TypeScript. From message pipeline to multi-channel delivery, here's how every layer of an AI assistant system works."
 author: "Chase Dovey"
 tags: ["AI", "Architecture"]
-draft: true
+draft: false
 ---
 
 ## Introduction
@@ -478,7 +478,7 @@ The chunker splits at paragraph boundaries first, then sentences, then newlines,
 When pairing is enabled, unknown senders on any channel receive a pairing code instead of an AI response:
 
 ```
-🔒 Access requires pairing.
+Access requires pairing.
 
 Your pairing code: ABCD1234
 

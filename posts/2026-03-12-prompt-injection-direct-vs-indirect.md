@@ -4,7 +4,7 @@ date: "2026-03-12"
 excerpt: "Prompt injection is the most critical vulnerability in LLM-powered applications. Here's how direct and indirect injection work, why they're hard to defend against, and what you can do about it."
 author: "Chase Dovey"
 tags: ["AI", "Security"]
-draft: true
+draft: false
 ---
 
 ## What Is Prompt Injection?

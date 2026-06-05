@@ -4,7 +4,7 @@ date: "2026-03-13"
 excerpt: "MCP is the standard that lets AI agents use external tools. Here's how the protocol works, what the message flow looks like, and how to build a web search MCP server from scratch."
 author: "Chase Dovey"
 tags: ["AI", "Architecture"]
-draft: true
+draft: false
 ---
 
 ## Introduction

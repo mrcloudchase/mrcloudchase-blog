@@ -4,7 +4,7 @@ date: "2026-03-10"
 excerpt: "A technical walkthrough of building a foundation model - from architecture decisions and dataset curation to pretraining, supervised fine-tuning, and RLHF. With concrete examples at every stage."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]
-draft: true
+draft: false
 ---
 
 ## Introduction
@@ -66,7 +66,7 @@ These numbers aren't arbitrary. They follow scaling laws.
 Optimal tokens ~ 20 * model_parameters
 ```
 
-So a 7B model wants ~140B tokens, a 70B model wants ~1.4T tokens. Training a large model on too little data wastes compute; training a small model on too much data also wastes compute. In practice, teams now overtrain beyond Chinchilla-optimal because inference cost (which scales with model size) matters more than training cost for widely deployed models. LLaMA 3 trained a 8B model on 15T tokens - roughly 100x the Chinchilla-optimal ratio.
+So a 7B model wants ~140B tokens, a 70B model wants ~1.4T tokens. Training a large model on too little data wastes compute; training a small model on too much data also wastes compute. In practice, teams now overtrain beyond Chinchilla-optimal because inference cost (which scales with model size) matters more than training cost for widely deployed models. LLaMA 3 trained an 8B model on 15T tokens - roughly 100x the Chinchilla-optimal ratio.
 
 ### Normalization: RMSNorm Over LayerNorm
 
@@ -485,15 +485,14 @@ Models train in **bfloat16** (bf16) to halve memory usage and double throughput:
 
 ```python
 # Master weights in float32, forward/backward in bfloat16
-scaler = torch.amp.GradScaler()
-
 with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
     logits = model(input_ids)
     loss = F.cross_entropy(logits.view(-1, vocab_size), targets.view(-1))
 
-scaler.scale(loss).backward()
-scaler.step(optimizer)
-scaler.update()
+# bf16 keeps fp32's exponent range, so no GradScaler / loss scaling is needed
+loss.backward()
+optimizer.step()
+optimizer.zero_grad()
 ```
 
 BFloat16 has the same exponent range as float32 (8 bits) but reduced mantissa precision (7 bits vs. 23). This means it rarely overflows/underflows (unlike float16), making it safe for training without loss scaling in most cases.
@@ -516,7 +515,7 @@ def save_checkpoint(model, optimizer, step, path):
     }, path)
 ```
 
-A checkpoint includes model weights, optimizer state (momentum buffers - which are 2x the model size for AdamW), the current step, and the RNG state for deterministic resumption. For a 7B model, each checkpoint is ~60GB (14GB model + 28GB optimizer state + overhead).
+A checkpoint includes model weights, optimizer state, the current step, and the RNG state for deterministic resumption. AdamW dominates the size: it stores two fp32 moment buffers (first and second moment), each the size of the fp32 weights. For a 7B model that is ~56GB of optimizer state alone (2 buffers x 4 bytes x 7B), on top of fp32 master weights (~28GB) and the bf16 model (~14GB). A full training-state checkpoint runs well over 100GB, which is why large runs shard checkpoints across data-parallel ranks.
 
 ### What Pretraining Learns
 

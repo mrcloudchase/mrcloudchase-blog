@@ -4,7 +4,7 @@ date: "2026-03-06"
 excerpt: "How stacking neurons creates universal function approximators, and the mathematical machinery that finally solved the credit assignment problem that froze AI for fifteen years."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]
-draft: true
+draft: false
 ---
 
 ## Introduction
@@ -645,13 +645,13 @@ The other piece of the puzzle: how weights are initialized matters enormously fo
 [Xavier/Glorot initialization (2010)](https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf) sets weights to maintain variance across layers with sigmoid or tanh activations:
 
 ```
-w ~ Normal(0, sqrt(2 / (n_in + n_out)))
+w ~ Normal(mean=0, std=sqrt(2 / (n_in + n_out)))
 ```
 
 [He initialization (2015)](https://arxiv.org/abs/1502.01852) adjusts for ReLU, which zeros out half the distribution:
 
 ```
-w ~ Normal(0, sqrt(2 / n_in))
+w ~ Normal(mean=0, std=sqrt(2 / n_in))
 ```
 
 Both strategies keep the variance of activations and gradients roughly constant as signals pass through the network. Without them, deep networks fail to train. With them, networks of 10, 50, or 100 layers become feasible.

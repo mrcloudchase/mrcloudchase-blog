@@ -4,7 +4,7 @@ date: "2026-03-14"
 excerpt: "What makes an AI agent different from a chatbot is one while loop. Here's how to build one from scratch in Python - tools, state, error recovery, and the core loop that powers every AI coding agent."
 author: "Chase Dovey"
 tags: ["AI", "Python"]
-draft: true
+draft: false
 ---
 
 ## Introduction

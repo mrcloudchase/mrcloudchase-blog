@@ -4,7 +4,7 @@ date: "2026-03-11"
 excerpt: "A deep dive into building a complete LLM inference engine - from transformer math to OpenAI-compatible API - using nanollama, an educational implementation in ~1400 lines of Python."
 author: "Chase Dovey"
 tags: ["AI", "Python"]
-draft: true
+draft: false
 ---
 
 ## Introduction
@@ -110,7 +110,7 @@ Each dimension pair gets a different frequency (like the hands of a clock moving
 
 Attention is where the model decides which previous tokens matter for predicting the next one. The standard formula is `softmax(QK^T / sqrt(d)) * V`, where Q (queries), K (keys), and V (values) are linear projections of the input.
 
-**GQA** is a memory optimization: instead of giving every query head its own key/value head, multiple query heads *share* key/value heads. DeepSeek-R1-Distill-Qwen-1.5B uses 32 query heads but only 4 KV heads - an 8:1 ratio that cuts KV memory by 8x.
+**GQA** is a memory optimization: instead of giving every query head its own key/value head, multiple query heads *share* key/value heads. TinyLlama-1.1B uses 32 query heads but only 4 KV heads - an 8:1 ratio that cuts KV memory by 8x.
 
 The **KV cache** is what makes autoregressive generation fast. During the prefill phase, we compute keys and values for all prompt tokens and store them. During decode, we only process *one new token at a time* - we compute its Q, K, V, write K and V into the cache, then attend over the full cached history:
 
@@ -288,10 +288,14 @@ Keep the smallest set of tokens whose cumulative probability exceeds p:
 ```python
 if top_p < 1.0:
     sorted_logits, sorted_idx = torch.sort(logits, descending=True)
-    cumulative_probs = torch.softmax(sorted_logits, dim=-1).cumsum(dim=-1)
-    remove = cumulative_probs - torch.softmax(sorted_logits, dim=-1) >= top_p
+    cumulative = torch.softmax(sorted_logits, dim=-1).cumsum(dim=-1)
+    # Mask tokens once the cumulative probability passes p...
+    remove = cumulative > top_p
+    # ...but shift right so the first token over the threshold is always kept
+    remove[..., 1:] = remove[..., :-1].clone()
+    remove[..., 0] = False
     sorted_logits[remove] = float("-inf")
-    logits = torch.zeros_like(sorted_logits).scatter(-1, sorted_idx, sorted_logits)
+    logits = torch.full_like(logits, float("-inf")).scatter(-1, sorted_idx, sorted_logits)
 ```
 
 Unlike top-k (which always keeps a fixed count), top-p **adapts** to the distribution. When the model is confident, only a few tokens pass the threshold. When it's uncertain, more tokens make the cut. This produces more natural-sounding text than top-k alone.
@@ -354,8 +358,8 @@ On CUDA GPUs, float16 matmuls internally accumulate in float32, so this is less 
 
 Quantization stores weights as low-bit integers with a scale factor, saving memory at the cost of some precision:
 
-- **Q8 (int8):** ~4x memory savings, minimal quality loss
-- **Q4 (4-bit):** ~8x memory savings, noticeable but acceptable quality loss
+- **Q8 (int8):** 4x smaller than fp32 (2x vs. the fp16 these models usually run in), minimal quality loss
+- **Q4 (4-bit):** 8x smaller than fp32 (4x vs. fp16), noticeable but acceptable quality loss
 
 ```python
 class QuantizedLinear(nn.Module):
@@ -367,10 +371,10 @@ class QuantizedLinear(nn.Module):
         if bits == 4:
             # Pack two 4-bit values into one int8 byte
             even, odd = quantized[:, 0::2], quantized[:, 1::2]
-            quantized = (even << 4) | (odd & 0x0F)
+            quantized = ((even & 0x0F) << 4) | (odd & 0x0F)
 ```
 
-The 4-bit packing is particularly interesting - two values share one byte. Unpacking requires arithmetic right shifts (which preserve sign) for the high nibble and a shift-left-then-right trick for the low nibble. Real production engines (llama.cpp, GPTQ) use fused GPU kernels for this, but the math is the same.
+The 4-bit packing is particularly interesting - two signed values share one byte. Unpacking sign-extends each nibble: shift it into the top of a byte, then arithmetic-right-shift back down so the sign bit propagates. Real production engines (llama.cpp, GPTQ) use fused GPU kernels for this, but the math is the same.
 
 ### Batched Generation
 

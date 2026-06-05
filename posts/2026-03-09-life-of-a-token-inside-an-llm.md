@@ -4,7 +4,7 @@ date: "2026-03-09"
 excerpt: "Follow a single prompt through every layer of a decoder-only transformer - from raw text to tokenization to embedding, through 22 transformer blocks, to autoregressive next-token prediction and EOS."
 author: "Chase Dovey"
 tags: ["AI", "Deep Learning"]
-draft: true
+draft: false
 ---
 
 ## Introduction
@@ -103,10 +103,10 @@ For head_dim = 64, we have 32 dimension pairs.
 Each pair gets a frequency: freq_i = 1 / (10000^(2i/64))
 
 Pair 0:  freq = 1.0          (fast rotation)
-Pair 1:  freq = 0.68
-Pair 2:  freq = 0.46
+Pair 1:  freq = 0.75
+Pair 2:  freq = 0.56
 ...
-Pair 31: freq = 0.00001      (very slow rotation)
+Pair 31: freq = 0.00013      (very slow rotation)
 ```
 
 Low-frequency pairs change slowly across positions (capturing coarse distance), high-frequency pairs change quickly (capturing fine-grained ordering). These frequencies are combined with position indices to produce rotation angles.
@@ -573,7 +573,7 @@ Where do the ~1.1 billion parameters live?
 | Final RMSNorm | [2048] | 2K | ×1 |
 | LM Head | [32000, 2048] | 65.5M | ×1 (often tied to embedding) |
 
-The bulk of parameters (~96%) are in the per-layer weight matrices, with the attention projections and FFN projections roughly equal in size. The embedding/LM head tables are large but shared (tied), so they count once.
+The bulk of parameters (~94%) are in the per-layer weight matrices, with the attention projections and FFN projections roughly equal in size. The embedding/LM head tables are large but shared (tied), so they count once.
 
 ## What Each Layer Contributes
 
