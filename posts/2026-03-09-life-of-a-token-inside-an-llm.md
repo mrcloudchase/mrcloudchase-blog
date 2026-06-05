@@ -18,16 +18,16 @@ Here's the full journey:
 ```mermaid
 graph TD
     A["&quot;The capital of France is&quot;"] --> B[Tokenizer]
-    B --> C["Token IDs: [The, capital, of, France, is]"]
+    B --> C["Token IDs: [BOS, The, capital, of, France, is]"]
     C --> D["Embedding Lookup"]
-    D --> E["[1, 5, 2048] float vectors"]
+    D --> E["[1, 6, 2048] float vectors"]
     E --> F["Transformer Block 1"]
     F --> G["Transformer Block 2"]
     G --> H["..."]
     H --> I["Transformer Block 22"]
     I --> J["Final RMSNorm"]
     J --> K["LM Head (linear projection)"]
-    K --> L["[1, 5, 32000] logits"]
+    K --> L["[1, 6, 32000] logits"]
     L --> M["Sample from last position"]
     M --> N["Token ID: Paris"]
     N --> O{EOS?}

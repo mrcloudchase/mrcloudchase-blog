@@ -261,7 +261,7 @@ def fuzzy_dedup(doc_id, doc):
 
 **Substring dedup** removes documents that contain long repeated passages (e.g., shared boilerplate, copied paragraphs) using suffix arrays.
 
-LLaMA's training pipeline used CCNet for deduplication, removing ~86% of raw Common Crawl. This is typical - the vast majority of raw web data is duplicate or near-duplicate.
+LLaMA's training pipeline used CCNet to deduplicate and quality-filter Common Crawl, discarding the large majority of raw web data. This is typical - most raw web text is duplicate, near-duplicate, or low quality.
 
 #### PII Removal
 

@@ -332,7 +332,7 @@ def apply_chat_template(messages, tokenizer):
             bos_token=tokenizer.bos_token or "",
             eos_token=tokenizer.eos_token or "",
         )
-    # Fallback to ChatML
+    # Fallback to a minimal chat template
     return f"<|user|>\n{messages[-1]['content']}</s>\n<|assistant|>\n"
 ```
 

@@ -86,12 +86,13 @@ graph TD
     B --> C["remark-gfm<br/>Add tables, strikethrough, task lists, autolinks"]
     C --> D["remark-rehype<br/>Convert Markdown AST to HTML AST<br/>(preserves raw HTML)"]
     D --> E["rehype-raw<br/>Process raw HTML fragments into proper AST nodes"]
-    E --> F["rehype-mermaid<br/>Render Mermaid blocks to inline SVGs<br/>(headless Chromium via Playwright)"]
+    E --> E2["rehype-slug + rehype-autolink-headings<br/>Add heading id slugs and anchor links"]
+    E2 --> F["rehype-mermaid<br/>Render Mermaid blocks to inline SVGs<br/>(headless Chromium via Playwright)"]
     F --> G["rehype-stringify<br/>Serialize HTML AST to string"]
     G --> H["contentHtml via dangerouslySetInnerHTML"]
 ```
 
-Each plugin in the chain does one thing. `remark-parse` tokenizes Markdown into an AST (Abstract Syntax Tree). `remark-gfm` extends it with GitHub Flavored Markdown features. `remark-rehype` bridges the Markdown AST to an HTML AST. `rehype-raw` handles inline HTML that was passed through. `rehype-mermaid` finds fenced code blocks tagged as `mermaid` and renders them to inline SVGs using a headless Chromium instance via Playwright, so diagrams are baked into the HTML at build time, not rendered client-side. `rehype-stringify` serializes the final AST to an HTML string.
+Each plugin in the chain does one thing. `remark-parse` tokenizes Markdown into an AST (Abstract Syntax Tree). `remark-gfm` extends it with GitHub Flavored Markdown features. `remark-rehype` bridges the Markdown AST to an HTML AST. `rehype-raw` handles inline HTML that was passed through. `rehype-slug` and `rehype-autolink-headings` assign id slugs to headings and add clickable anchor links. `rehype-mermaid` finds fenced code blocks tagged as `mermaid` and renders them to inline SVGs using a headless Chromium instance via Playwright, so diagrams are baked into the HTML at build time, not rendered client-side. `rehype-stringify` serializes the final AST to an HTML string.
 
 The resulting HTML is injected into the page component via `dangerouslySetInnerHTML` (a React anti-pattern that's necessary here because the HTML is generated from trusted Markdown content) and styled by a `.prose-blog` CSS class that applies the site's terminal aesthetic to all standard HTML elements.
 
