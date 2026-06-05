@@ -9,7 +9,7 @@ draft: false
 
 ## Who I Am
 
-I'm Chase Dovey, an AI and cloud engineer based in Houston, Texas. I came up through systems administration, moved into cloud engineering, and now spend most of my time building/securing scalable infrastructure and intelligent systems. My work sits at the intersection of cloud platforms and artificial intelligence. I like building things that are modular, maintainable, and well-documented.
+I'm Chase Dovey, an AI engineering leader based in Houston, Texas. I design and secure production agentic systems: agent runtimes, tool execution and sandboxing, memory and retrieval, orchestration, and evaluation, plus the guardrails and red-teaming that keep them reliable in adversarial environments. At HiddenLayer I secure agentic systems for enterprise customers, and I founded cAIge, the vendor-agnostic Certified AI Guardrail Engineer program. I came up through systems administration and cloud architecture, and that foundation still shows in how I build: modular, observable, and well-documented.
 
 This blog is where I write about what I'm learning, building, and thinking about.
 
