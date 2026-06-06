@@ -3,7 +3,7 @@ title: "Sandboxing Agent Tool Execution"
 date: "2026-06-05"
 excerpt: "The tool that makes an agent useful, shell execution, is also the one that can wreck your host. Here is how to isolate agent tool calls: containers, syscall filtering, resource limits, egress control, and the threat model behind each layer."
 author: "Chase Dovey"
-tags: ["AI", "Security"]
+tags: ["Security", "Agents"]
 draft: false
 ---
 

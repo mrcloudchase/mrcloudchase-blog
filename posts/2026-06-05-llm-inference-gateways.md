@@ -3,7 +3,7 @@ title: "LLM Inference Gateways"
 date: "2026-06-05"
 excerpt: "The moment more than one application calls an LLM, you need a gateway: one endpoint, many providers, with routing, fallbacks, guardrails, quotas, and observability. Here is the architecture of an LLM gateway and why it becomes load-bearing infrastructure."
 author: "Chase Dovey"
-tags: ["AI", "Architecture"]
+tags: ["Architecture", "Agents"]
 draft: false
 ---
 

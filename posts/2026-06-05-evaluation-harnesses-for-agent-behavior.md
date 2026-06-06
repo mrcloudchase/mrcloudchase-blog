@@ -3,7 +3,7 @@ title: "Evaluation Harnesses for Agent Behavior"
 date: "2026-06-05"
 excerpt: "You cannot improve an agent you cannot measure, and agents resist measurement: non-deterministic, multi-step, open-ended. Here is how to build evaluation harnesses that test outcomes and behavior, not just single outputs, and the traps that make eval numbers lie."
 author: "Chase Dovey"
-tags: ["AI", "Architecture"]
+tags: ["Agents"]
 draft: false
 ---
 

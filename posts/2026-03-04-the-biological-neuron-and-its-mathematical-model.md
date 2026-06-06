@@ -3,7 +3,7 @@ title: "The Biological Neuron and Its Mathematical Model"
 date: "2026-03-04"
 excerpt: "From dendrites to equations. How researchers looked at a real brain cell and distilled it into the mathematical model that launched artificial intelligence."
 author: "Chase Dovey"
-tags: ["AI", "Deep Learning"]
+tags: ["Deep Learning"]
 draft: false
 ---
 

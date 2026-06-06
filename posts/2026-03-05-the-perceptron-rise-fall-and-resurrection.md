@@ -3,7 +3,7 @@ title: "The Perceptron: Rise, Fall, and Resurrection"
 date: "2026-03-05"
 excerpt: "The first machine that learned from data, the critique that nearly killed AI, and why Rosenblatt's insight still powers every neural network today."
 author: "Chase Dovey"
-tags: ["AI", "Deep Learning"]
+tags: ["Deep Learning"]
 draft: false
 ---
 

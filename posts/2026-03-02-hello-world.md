@@ -3,7 +3,7 @@ title: "Hello World"
 date: "2026-03-02"
 excerpt: "Welcome to my blog. A quick intro on who I am, what I'll be writing about, and how this site is built."
 author: "Chase Dovey"
-tags: ["General", "AI"]
+tags: ["General"]
 draft: false
 ---
 
@@ -69,7 +69,7 @@ title: "Post Title"
 date: "2026-03-02"
 excerpt: "Short description for cards and SEO."
 author: "Chase Dovey"
-tags: ["AI", "Architecture"]
+tags: ["Deep Learning", "Architecture"]
 draft: false
 ---
 
@@ -134,8 +134,8 @@ Tags aren't freeform strings. They're validated at build time against a central 
 ```json
 {
   "tags": [
-    { "name": "AI", "description": "AI engineering, LLM integrations, and agentic systems" },
-    { "name": "Security", "description": "Application security, prompt injection, ..." }
+    { "name": "Deep Learning", "description": "Neural network internals, transformers, and how LLMs work" },
+    { "name": "Security", "description": "AI and LLM security: prompt injection, red teaming, guardrails" }
   ]
 }
 ```

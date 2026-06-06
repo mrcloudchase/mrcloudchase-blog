@@ -3,7 +3,7 @@ title: "Building Effective Agents in Practice"
 date: "2026-06-05"
 excerpt: "Anthropic's 'Building Effective Agents' draws a hard line between workflows and agents. Here is what each pattern - prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer - looks like in practice, and how to choose the simplest one that works."
 author: "Chase Dovey"
-tags: ["AI", "Architecture"]
+tags: ["Agents"]
 draft: false
 ---
 

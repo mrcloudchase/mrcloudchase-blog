@@ -3,7 +3,7 @@ title: "Deep Networks and the Learning Problem"
 date: "2026-03-06"
 excerpt: "How stacking neurons creates universal function approximators, and the mathematical machinery that finally solved the credit assignment problem that froze AI for fifteen years."
 author: "Chase Dovey"
-tags: ["AI", "Deep Learning"]
+tags: ["Deep Learning"]
 draft: false
 ---
 

@@ -3,7 +3,7 @@ title: "Red-Teaming Agentic Systems"
 date: "2026-06-05"
 excerpt: "Red-teaming an agent is not red-teaming a chatbot. The interesting failures live in tools, memory, and multi-turn flows, not single prompts. A methodology for adversarially testing agentic systems and measuring how well they resist misuse."
 author: "Chase Dovey"
-tags: ["AI", "Security"]
+tags: ["Security", "Agents"]
 draft: false
 ---
 

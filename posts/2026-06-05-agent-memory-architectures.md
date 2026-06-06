@@ -3,7 +3,7 @@ title: "Agent Memory Architectures"
 date: "2026-06-05"
 excerpt: "An agent whose only memory is the context window restarts from near-zero every time it compacts. Here is how to give agents memory that lasts: working, episodic, and semantic memory, write-time fact extraction, and hybrid retrieval, plus the failure modes that break naive RAG-as-memory."
 author: "Chase Dovey"
-tags: ["AI", "Architecture"]
+tags: ["Agents", "Architecture"]
 draft: false
 ---
 

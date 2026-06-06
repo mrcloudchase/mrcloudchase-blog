@@ -3,7 +3,7 @@ title: "Detecting Prompt Injection"
 date: "2026-06-05"
 excerpt: "Pattern matching catches the lazy injections and misses the rest. A layered approach to detecting prompt injection: regex baselines, semantic scoring in embedding space, LLM-judge classifiers, and provenance, plus why detection is a filter and never a fix."
 author: "Chase Dovey"
-tags: ["AI", "Security"]
+tags: ["Security"]
 draft: false
 ---
 
