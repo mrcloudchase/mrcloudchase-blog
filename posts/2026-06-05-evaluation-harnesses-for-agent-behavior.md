@@ -9,7 +9,7 @@ draft: false
 
 ## Introduction
 
-In [Red-Teaming Agentic Systems](/blog/red-teaming-agentic-systems/) I said that red-teaming without metrics is just anecdote, and promised to take up measurement separately. This is that post. Evaluation is the unglamorous discipline that decides whether you can change a prompt or swap a model with confidence, or whether every deploy is a coin flip. For agents specifically, it is also genuinely hard, because everything that makes an agent useful also makes it difficult to measure.
+In [Building a Red-Team Agent](/blog/building-a-red-team-agent/) I said the only honest way to know whether a red-team agent helps is to measure its operational uplift, and pointed here for how. This is that post. Evaluation is the unglamorous discipline that decides whether you can change a prompt or swap a model with confidence, or whether every deploy is a coin flip. For agents specifically, it is also genuinely hard, because everything that makes an agent useful also makes it difficult to measure.
 
 I treat eval harnesses as core infrastructure, on the same tier as the agent loop itself. An agent you cannot evaluate is an agent you cannot improve, secure, or trust. Here is how I build the harness.
 
